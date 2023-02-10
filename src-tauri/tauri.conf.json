@@ -58,10 +58,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
         "title": "src-tauri",
-        "width": 800
+        "width": 600
       }
     ]
   }
