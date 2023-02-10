@@ -1,0 +1,33 @@
+header {
+  background-color: var(--accent);
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 4rem;
+  color: var(--tertiary);
+  border: 2px solid var(--alt);
+  width: 100%;
+}
+
+h1 {
+  margin: 0;
+  margin-left: 0.66rem;
+  font-size: 1.66rem;
+
+  letter-spacing: 0.11rem;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.title {
+}
+
+.header-utils {
+  margin-right: 0.33rem;
+}
+
+.unlocked,
+.locked {
+  color: var(--tertiary);
+}

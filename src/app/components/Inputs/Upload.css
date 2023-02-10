@@ -1,0 +1,8 @@
+input[type="file"] {
+  z-index: -1; /* move under anything else */
+  position: absolute; /* don't let it take up space */
+}
+
+input[type="file"]:focus + label {
+  outline: 2px solid; /* example focus style */
+}

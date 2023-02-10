@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;700&family=Oswald:wght@200&family=Source+Sans+Pro:ital,wght@0,300;1,300;1,700&display=swap");
+
+:root {
+  --Lato: "Lato";
+  --Os: "Oswald";
+  --Ssp: "Source Sans Pro", sans-serif;
+  --bg: #202124;
+  --accent: #303030;
+  --tertiary: #fff;
+  --util: rgba(0, 0, 0, 0.87);
+  --alt: #3c4043;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: var(--Os);
+}
+
+body {
+  margin: 0;
+  max-width: 100vw;
+  min-height: 100vh;
+  background-color: var(--bg);
+}
