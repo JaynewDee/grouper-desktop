@@ -3,14 +3,13 @@
     windows_subsystem = "windows"
 )]
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod ffi;
+mod s3;
 
+use ffi::{greet, list_buckets};
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, list_buckets])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

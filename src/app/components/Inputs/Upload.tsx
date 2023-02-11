@@ -1,5 +1,4 @@
-import React, { createRef, useRef, useState } from "react";
-import "./Upload.css";
+import { useRef, useState } from "react";
 
 const Upload = () => {
   // State `false` means collapsed

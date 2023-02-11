@@ -4,12 +4,14 @@ import React from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import Header from "./components/Header/Header";
 import Upload from "./components/Inputs/Upload";
+import { TestContent } from "./Test";
 
 function App() {
   return (
     <>
       <Header />
       <Upload />
+      <TestContent />
     </>
   );
 }

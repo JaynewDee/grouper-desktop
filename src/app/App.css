@@ -21,5 +21,77 @@ body {
   max-width: 100vw;
   min-height: 100vh;
   background-color: var(--bg);
-  overflow: hidden;
+}
+
+header {
+  background-color: var(--accent);
+  margin: 0;
+  position: fixed;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 4rem;
+  color: var(--tertiary);
+  border: 2px solid var(--alt);
+  width: 100%;
+}
+
+h1 {
+  margin: 0;
+  margin-left: 0.66rem;
+  font-size: 1.66rem;
+  letter-spacing: 0.11rem;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.title {
+}
+
+.header-utils {
+  margin-right: 0.33rem;
+}
+
+.unlocked,
+.locked {
+  color: var(--tertiary);
+}
+
+.test-content-box {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  overflow: auto;
+}
+
+.test-content-box > button {
+  width: 33%;
+  margin: auto;
+}
+
+input[type="file"] {
+  opacity: 0; /* make transparent */
+  z-index: -1; /* move under anything else */
+  position: absolute; /* don't let it take up space */
+}
+
+input[type="file"]:focus + label {
+  outline: 2px solid; /* example focus style */
+}
+
+.file-upload-container {
+  position: fixed;
+  transition: all 0.33s;
+  height: 3rem;
+  font-size: 2rem;
+  top: 4rem;
+}
+button {
+  font-size: 1rem;
+  border-radius: 3px;
+}
+button:hover {
+  cursor: pointer;
+  outline: 1px solid white;
 }

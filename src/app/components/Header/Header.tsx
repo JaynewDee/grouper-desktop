@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Unlocked, Locked } from "../Icons";
-import "./Header.css";
+
 const Header = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   return (
