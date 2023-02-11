@@ -51,8 +51,14 @@ h1 {
 
 .header-utils {
   margin-right: 0.33rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.header-utils > * {
+  margin: 0.11rem;
+}
 .unlocked,
 .locked {
   color: var(--tertiary);
@@ -70,6 +76,10 @@ h1 {
   margin: auto;
 }
 
+.bucket-list {
+  width: 66%;
+  margin: 3rem auto;
+}
 input[type="file"] {
   opacity: 0; /* make transparent */
   z-index: -1; /* move under anything else */

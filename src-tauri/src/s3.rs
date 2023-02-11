@@ -1,8 +1,11 @@
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::{
-    error::{CreateBucketError, DeleteBucketError, GetBucketLocationError, ListBucketsError},
-    model::{Bucket, BucketLocationConstraint, CreateBucketConfiguration},
-    output::{CreateBucketOutput, ListBucketsOutput},
+    error::{
+        CreateBucketError, DeleteBucketError, GetBucketLocationError, GetObjectError,
+        ListObjectsError,
+    },
+    model::CreateBucketConfiguration,
+    output::{CreateBucketOutput, GetObjectOutput, ListBucketsOutput, ListObjectsV2Output},
     types::SdkError,
     Client,
 };
@@ -45,5 +48,36 @@ impl S3Client {
     ) -> Result<ListBucketsOutput, SdkError<GetBucketLocationError>> {
         let resp = client.list_buckets().send().await.unwrap();
         Ok(resp)
+    }
+
+    pub async fn list_objects(
+        client: &Client,
+        bucket_name: &str,
+    ) -> Result<ListObjectsV2Output, ListObjectsError> {
+        let objects = client
+            .list_objects_v2()
+            .bucket(bucket_name)
+            .send()
+            .await
+            .unwrap();
+        println!("Objects in bucket:");
+        for obj in objects.contents().unwrap_or_default() {
+            println!("{:?}", obj.key().unwrap());
+        }
+
+        Ok(objects)
+    }
+
+    pub async fn download_object(
+        client: &Client,
+        bucket_name: &str,
+        key: &str,
+    ) -> Result<GetObjectOutput, SdkError<GetObjectError>> {
+        client
+            .get_object()
+            .bucket(bucket_name)
+            .key(key)
+            .send()
+            .await
     }
 }

@@ -7,14 +7,15 @@ use serde::Serialize;
 ///////////////////
 ///
 
-#[tauri::command]
-pub fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", &name)
-}
 #[derive(Serialize)]
 struct BucketDetails {
     name: String,
     created: i64,
+}
+
+#[tauri::command]
+pub fn greet(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", &name)
 }
 
 #[tauri::command]
@@ -24,6 +25,7 @@ pub async fn list_buckets() -> Result<Vec<String>, ()> {
     let buckets = res.buckets().unwrap();
 
     let mut results: Vec<String> = vec![];
+
     for buck in buckets {
         let details = BucketDetails {
             name: buck.name().unwrap().to_string(),
@@ -31,11 +33,34 @@ pub async fn list_buckets() -> Result<Vec<String>, ()> {
         };
         let json = serde_json::to_string(&details).unwrap();
         results.push(json);
-        println!(
-            "{:?}\n{:?}",
-            buck.name().unwrap(),
-            buck.creation_date().unwrap().secs()
-        );
     }
+
     Ok(results)
+}
+
+#[tauri::command]
+pub async fn create_bucket() -> String {
+    "'Create bucket' reached!".into()
+}
+
+#[tauri::command]
+pub async fn list_objects() -> String {
+    let test_bucket_name = String::from("grouper-client-test-bucket");
+    let client = S3Client::get_client().await.unwrap();
+    let objects = S3Client::list_objects(&client, &test_bucket_name)
+        .await
+        .unwrap();
+    println!("{:?}", objects);
+    "'List object' reached!".into()
+}
+
+#[tauri::command]
+pub async fn get_object() -> String {
+    let test_bucket_name = String::from("grouper-client-test-bucket");
+    let client = S3Client::get_client().await.unwrap();
+    let object = S3Client::download_object(&client, &test_bucket_name, "0")
+        .await
+        .unwrap();
+    println!("{:?}", object);
+    "'Get Object' reached!".into()
 }
