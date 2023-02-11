@@ -7,7 +7,6 @@ const Header = () => {
   const toggleLock = () => {
     setLoggedIn((prev) => !prev);
   };
-
   const Lock = loggedIn
     ? Unlocked({
         color: "white",

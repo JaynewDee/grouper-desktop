@@ -48,6 +48,7 @@ h1 {
 }
 
 .title {
+  pointer-events: none;
 }
 
 .header-utils {
@@ -78,7 +79,7 @@ h1 {
 
 .test-content-box > button {
   width: 33%;
-  margin: -0.17rem auto;
+  margin: auto;
 }
 
 .bucket-list {
@@ -96,16 +97,14 @@ input[type="file"]:focus + label {
 }
 
 .file-upload-container {
+  display: flex;
   position: fixed;
   transition: all 0.33s;
-  height: 3rem;
+  height: 2rem;
   font-size: 2rem;
   top: 4rem;
 }
-button {
-  font-size: 1rem;
-  border-radius: 3px;
-}
+
 button:hover {
   cursor: pointer;
   outline: 1px solid white;
@@ -113,4 +112,14 @@ button:hover {
 
 .upload-btn {
   letter-spacing: 0.11rem;
+}
+
+.expander-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.expander-btn > * {
 }

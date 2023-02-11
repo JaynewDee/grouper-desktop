@@ -3,17 +3,21 @@ import { API } from "../api";
 import { getFields } from "../utils/parse";
 import csv from "csvtojson";
 
-export const TestContent = () => {
-  const [displayState, setDisplayState] = useState(false);
+export const TestContent: React.FC<any> = ({
+  children
+}: {
+  children: JSX.Element | JSX.Element[];
+}) => {
+  const [response, setResponse] = useState<string | any[]>("");
 
   const handleGreet = async () => {
     const res = await API.greet();
-    console.log(res);
+    setResponse(res);
   };
   const handleShow = async () => {
-    const bucks = await API.showBuckets();
-    const json = bucks.map((buck: string) => JSON.parse(buck));
-    console.log(json);
+    const buckets = await API.showBuckets();
+    const json = buckets.map((buck: string) => JSON.parse(buck));
+    setResponse(json);
   };
 
   const handleCreate = async () => {
@@ -28,11 +32,10 @@ export const TestContent = () => {
 
   const handleGetObject = async () => {
     const res = await API.getObject();
+    console.log(res);
     const json = JSON.parse(res);
-    const csvString = await csv().fromString(json.res);
-    console.log(csvString);
-    const parsed = getFields(csvString);
-    console.log(parsed);
+    const jsonString = await csv({ output: "json" }).fromString(json.res);
+    console.log(jsonString);
   };
 
   return (
@@ -43,7 +46,18 @@ export const TestContent = () => {
       <button onClick={handleCreate}>Create Bucket</button>
       <button onClick={handleListObjects}>List Objects</button>
       <button onClick={handleGetObject}>Get Object</button>
-      <div className="bucket-list"></div>
+      <>
+        {typeof response === "string" ? (
+          <>{response}</>
+        ) : (
+          response.map(({ name, created }) => {
+            <>
+              <p>{name}</p>
+              <p>{created}</p>
+            </>;
+          })
+        )}
+      </>
     </div>
   );
 };

@@ -21,7 +21,7 @@ impl S3Client {
 
         Ok(client)
     }
-    pub async fn create_bucket(
+    pub async fn _create_bucket(
         client: &Client,
         bucket_name: &str,
     ) -> Result<CreateBucketOutput, SdkError<CreateBucketError>> {
@@ -34,7 +34,7 @@ impl S3Client {
             .await
     }
 
-    pub async fn delete_bucket(
+    pub async fn _delete_bucket(
         client: &Client,
         bucket_name: &str,
     ) -> Result<(), SdkError<DeleteBucketError>> {

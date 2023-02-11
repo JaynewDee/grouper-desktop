@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Arrow } from "../Icons";
 
 const Upload = () => {
   // State `false` means collapsed
@@ -38,7 +39,7 @@ const Upload = () => {
         className="expander-btn"
         style={containerState ? pointLeft : pointRight}
       >
-        {">"}
+        {Arrow({})}
       </button>
     </div>
   );
