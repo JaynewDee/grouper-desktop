@@ -1,4 +1,6 @@
 use super::s3::S3Client;
+use aws_sdk_s3::types::AggregatedBytes;
+use bytes::{Buf, Bytes};
 use serde::Serialize;
 
 ///
@@ -54,13 +56,24 @@ pub async fn list_objects() -> String {
     "'List object' reached!".into()
 }
 
+#[derive(Debug, Serialize)]
+pub struct GetResponse {
+    res: String,
+}
+
 #[tauri::command]
-pub async fn get_object() -> String {
+pub async fn get_object() -> Result<String, ()> {
     let test_bucket_name = String::from("grouper-client-test-bucket");
     let client = S3Client::get_client().await.unwrap();
-    let object = S3Client::download_object(&client, &test_bucket_name, "0")
+    let object = S3Client::download_object(&client, &test_bucket_name, "test-bcs.csv")
         .await
         .unwrap();
-    println!("{:?}", object);
-    "'Get Object' reached!".into()
+    let stream = object.body.collect().await.unwrap().into_bytes();
+
+    let json = String::from_utf8_lossy(&stream);
+    let response = GetResponse {
+        res: json.to_string(),
+    };
+    let serialized = serde_json::to_string(&response).unwrap();
+    Ok(serialized)
 }

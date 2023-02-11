@@ -1,27 +1,24 @@
 import { useState } from "react";
 import { API } from "../api";
+import { getFields } from "../utils/parse";
 import csv from "csvtojson";
+
 export const TestContent = () => {
   const [displayState, setDisplayState] = useState(false);
-  const [response, setResponse] = useState();
+
   const handleGreet = async () => {
-    if (!displayState) {
-      const res = await API.greet();
-    } else {
-    }
+    const res = await API.greet();
+    console.log(res);
   };
   const handleShow = async () => {
-    if (!displayState) {
-      const bucks = await API.showBuckets();
-      const json = bucks.map((buck: string) => JSON.parse(buck));
-      setDisplayState(json);
-    }
+    const bucks = await API.showBuckets();
+    const json = bucks.map((buck: string) => JSON.parse(buck));
+    console.log(json);
   };
 
   const handleCreate = async () => {
     const res = await API.createBucket();
     console.log(res);
-    setDisplayState(res);
   };
 
   const handleListObjects = async () => {
@@ -34,6 +31,8 @@ export const TestContent = () => {
     const json = JSON.parse(res);
     const csvString = await csv().fromString(json.res);
     console.log(csvString);
+    const parsed = getFields(csvString);
+    console.log(parsed);
   };
 
   return (

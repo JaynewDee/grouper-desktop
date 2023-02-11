@@ -60,6 +60,10 @@ h1 {
 .header-utils > * {
   margin: 0.11rem;
 }
+.header-utils > *:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
 .unlocked,
 .locked {
   color: var(--tertiary);
@@ -74,7 +78,7 @@ h1 {
 
 .test-content-box > button {
   width: 33%;
-  margin: auto;
+  margin: -0.17rem auto;
 }
 
 .bucket-list {
@@ -105,4 +109,8 @@ button {
 button:hover {
   cursor: pointer;
   outline: 1px solid white;
+}
+
+.upload-btn {
+  letter-spacing: 0.11rem;
 }

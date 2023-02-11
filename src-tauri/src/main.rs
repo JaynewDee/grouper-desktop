@@ -25,7 +25,7 @@ fn main() {
 // - Write any sdk-handler implementations in respective modules
 // - Define with tauri::command in ffi, accessing handers from sdk impl
 // - Import here to main
-// - add to handlers vector in Builder sequence
+// - add to handlers array in Builder sequence
 // On client:
 // - add api command to app/api/index.ts
 // - create an event activator in components/Test.tsx

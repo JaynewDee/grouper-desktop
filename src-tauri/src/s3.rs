@@ -77,6 +77,7 @@ impl S3Client {
             .get_object()
             .bucket(bucket_name)
             .key(key)
+            .response_content_type("text/csv")
             .send()
             .await
     }
