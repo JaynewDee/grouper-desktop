@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { API } from "../api";
-
+import csv from "csvtojson";
 export const TestContent = () => {
   const [displayState, setDisplayState] = useState(false);
   const [response, setResponse] = useState();
@@ -29,13 +29,21 @@ export const TestContent = () => {
     console.log(res);
   };
 
+  const handleGetObject = async () => {
+    const res = await API.getObject();
+    const json = JSON.parse(res);
+    const csvString = await csv().fromString(json.res);
+    console.log(csvString);
+  };
+
   return (
     <div className="test-content-box">
-      <h3 style={{ marginTop: "6rem", textAlign: "center" }}>TEST</h3>
+      <h3 style={{ marginTop: "9rem", textAlign: "center" }}>TEST</h3>
       <button onClick={handleGreet}>Greet</button>
       <button onClick={handleShow}>ShowBuckets</button>
       <button onClick={handleCreate}>Create Bucket</button>
       <button onClick={handleListObjects}>List Objects</button>
+      <button onClick={handleGetObject}>Get Object</button>
       <div className="bucket-list"></div>
     </div>
   );

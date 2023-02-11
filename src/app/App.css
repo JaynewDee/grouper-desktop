@@ -9,6 +9,7 @@
   --tertiary: #fff;
   --util: rgba(0, 0, 0, 0.87);
   --alt: #3c4043;
+  --o-white: #e3e3e3;
 }
 
 * {
@@ -32,7 +33,7 @@ header {
   justify-content: space-between;
   align-items: flex-end;
   height: 4rem;
-  color: var(--tertiary);
+  color: var(--o-white);
   border: 2px solid var(--alt);
   width: 100%;
 }
