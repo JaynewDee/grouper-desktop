@@ -2,22 +2,22 @@ import { useState } from "react";
 import { API } from "../api";
 import { getFields } from "../utils/parse";
 import csv from "csvtojson";
+import StudentCard from "./StudentCard";
 
 export const TestContent: React.FC<any> = ({
   children
 }: {
   children: JSX.Element | JSX.Element[];
 }) => {
-  const [response, setResponse] = useState<string | any[]>("");
+  const [students, setStudents] = useState<any[]>([]);
 
   const handleGreet = async () => {
     const res = await API.greet();
-    setResponse(res);
   };
+
   const handleShow = async () => {
     const buckets = await API.showBuckets();
     const json = buckets.map((buck: string) => JSON.parse(buck));
-    setResponse(json);
   };
 
   const handleCreate = async () => {
@@ -32,6 +32,9 @@ export const TestContent: React.FC<any> = ({
 
   const handleGetObject = async () => {
     const res = await API.getObject();
+    const objects = JSON.parse(res);
+    setStudents(objects);
+    console.log(objects);
   };
 
   return (
@@ -42,18 +45,7 @@ export const TestContent: React.FC<any> = ({
       <button onClick={handleCreate}>Create Bucket</button>
       <button onClick={handleListObjects}>List Objects</button>
       <button onClick={handleGetObject}>Get Object</button>
-      <>
-        {typeof response === "string" ? (
-          <>{response}</>
-        ) : (
-          response.map(({ name, created }) => {
-            <>
-              <p>{name}</p>
-              <p>{created}</p>
-            </>;
-          })
-        )}
-      </>
+      {students && students.map((stud: any) => <StudentCard data={stud} />)}
     </div>
   );
 };

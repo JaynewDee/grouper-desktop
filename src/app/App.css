@@ -123,3 +123,20 @@ button:hover {
 
 .expander-btn > * {
 }
+
+.student-card {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  border-bottom: 1px solid white;
+  margin: 1rem 3rem;
+}
+
+.student-field-header {
+  text-decoration: underline;
+}
+.student-field {
+  overflow: auto;
+  width: 20vw;
+  color: cyan;
+}
