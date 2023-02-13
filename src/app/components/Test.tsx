@@ -32,10 +32,6 @@ export const TestContent: React.FC<any> = ({
 
   const handleGetObject = async () => {
     const res = await API.getObject();
-    console.log(res);
-    const json = JSON.parse(res);
-    const jsonString = await csv({ output: "json" }).fromString(json.res);
-    console.log(jsonString);
   };
 
   return (

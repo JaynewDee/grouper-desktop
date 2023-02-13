@@ -2,6 +2,7 @@ use super::s3::S3Client;
 use serde::Serialize;
 
 use csv::ReaderBuilder;
+use src_tauri::parse::{assign_groups, Student, Template};
 use std::io::Cursor;
 
 ///
@@ -10,7 +11,7 @@ use std::io::Cursor;
 ///////////////////
 ///
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct BucketDetails {
     name: String,
     created: i64,
@@ -50,10 +51,11 @@ pub async fn create_bucket() -> String {
 pub async fn list_objects() -> String {
     let test_bucket_name = String::from("grouper-client-test-bucket");
     let client = S3Client::get_client().await.unwrap();
-    let objects = S3Client::list_objects(&client, &test_bucket_name)
+    let _objects = S3Client::list_objects(&client, &test_bucket_name)
         .await
         .unwrap();
-    println!("{:?}", objects);
+    // .contents();
+
     "'List object' reached!".into()
 }
 
@@ -63,29 +65,36 @@ pub struct GetResponse {
 }
 
 #[tauri::command]
-pub async fn get_object() -> Result<Vec<String>, ()> {
+pub async fn get_object() -> Result<String, ()> {
     let test_bucket_name = String::from("grouper-client-test-bucket");
     let client = S3Client::get_client().await.unwrap();
+
     let object = S3Client::download_object(&client, &test_bucket_name, "test-bcs.csv")
         .await
         .unwrap();
-    let stream = object.body.collect().await.unwrap().into_bytes();
+    let body = object.body.collect().await.unwrap();
+    let stream = body.into_bytes();
     let cursor = Cursor::new(stream);
 
     let mut reader = ReaderBuilder::new().has_headers(true).from_reader(cursor);
 
-    let mut results = vec![];
-    for result in reader.records() {
-        let record = result.expect("failed to read record");
-        let slice = String::from(record.as_slice());
-        results.push(slice);
-    }
+    let mut collection: Vec<Student> = Vec::new();
 
-    Ok(results)
-    // let json = String::from_utf8_lossy(&stream);
-    // let response = GetResponse {
-    //     res: json.to_string(),
-    // };
-    // let serialized = serde_json::to_string(&response).unwrap();
-    // Ok(serialized)
+    for row in reader.records() {
+        let r = row.expect("Unable to parse string record");
+        let mut student = Student::from(Template::default());
+        match r.get(42).unwrap().parse::<f32>() {
+            Ok(float) => student.set_avg(float),
+            Err(_) => student.set_avg(0.0),
+        }
+        student.set_email(r.get(2).unwrap().to_string());
+        student.set_name(r.get(0).unwrap().to_string());
+
+        if student.get_avg() > 0.0 {
+            collection.push(student);
+        }
+    }
+    let grouped = assign_groups(&collection);
+    let json = serde_json::to_string(&collection).unwrap();
+    Ok(json)
 }
