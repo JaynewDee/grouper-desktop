@@ -11,10 +11,6 @@ export const TestContent: React.FC<any> = ({
 }) => {
   const [students, setStudents] = useState<any[]>([]);
 
-  const handleGreet = async () => {
-    const res = await API.greet();
-  };
-
   const handleShow = async () => {
     const buckets = await API.showBuckets();
     const json = buckets.map((buck: string) => JSON.parse(buck));
@@ -40,11 +36,12 @@ export const TestContent: React.FC<any> = ({
   return (
     <div className="test-content-box">
       <h3 style={{ marginTop: "9rem", textAlign: "center" }}>TEST</h3>
-      <button onClick={handleGreet}>Greet</button>
-      <button onClick={handleShow}>ShowBuckets</button>
-      <button onClick={handleCreate}>Create Bucket</button>
-      <button onClick={handleListObjects}>List Objects</button>
-      <button onClick={handleGetObject}>Get Object</button>
+      <div className="btn-box">
+        <button onClick={handleShow}>ShowBuckets</button>
+        <button onClick={handleCreate}>Create Bucket</button>
+        <button onClick={handleListObjects}>List Objects</button>
+        <button onClick={handleGetObject}>Fetch CSV</button>
+      </div>
       {students && students.map((stud: any) => <StudentCard data={stud} />)}
     </div>
   );

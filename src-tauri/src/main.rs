@@ -7,11 +7,10 @@ extern crate tempdir;
 mod ffi;
 mod s3;
 
-use ffi::{create_bucket, get_object, greet, list_buckets, list_objects};
+use ffi::{create_bucket, get_object, list_buckets, list_objects};
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            greet,
             list_buckets,
             create_bucket,
             list_objects,

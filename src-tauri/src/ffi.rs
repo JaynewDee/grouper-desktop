@@ -2,6 +2,7 @@ use super::s3::S3Client;
 use serde::Serialize;
 
 use csv::ReaderBuilder;
+use src_tauri::files::FileHandler;
 use src_tauri::parse::{assign_groups, Student, Template};
 use std::io::Cursor;
 
@@ -15,11 +16,6 @@ use std::io::Cursor;
 struct BucketDetails {
     name: String,
     created: i64,
-}
-
-#[tauri::command]
-pub fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", &name)
 }
 
 #[tauri::command]
@@ -79,22 +75,27 @@ pub async fn get_object() -> Result<String, ()> {
     let mut reader = ReaderBuilder::new().has_headers(true).from_reader(cursor);
 
     let mut collection: Vec<Student> = Vec::new();
+    let mut serializable: Vec<Student> = Vec::new();
 
-    for row in reader.records() {
+    for (idx, row) in reader.records().enumerate() {
         let r = row.expect("Unable to parse string record");
         let mut student = Student::from(Template::default());
         match r.get(42).unwrap().parse::<f32>() {
             Ok(float) => student.set_avg(float),
             Err(_) => student.set_avg(0.0),
         }
+        student.set_id(idx as u32);
         student.set_email(r.get(2).unwrap().to_string());
         student.set_name(r.get(0).unwrap().to_string());
 
         if student.get_avg() > 0.0 {
-            collection.push(student);
+            collection.push(student.clone());
+            serializable.push(student.clone());
         }
     }
-    let grouped = assign_groups(&collection);
-    let json = serde_json::to_string(&collection).unwrap();
+    let handler = FileHandler::new();
+    handler.write_json(collection).unwrap();
+    // let _grouped = assign_groups(&collection);
+    let json = serde_json::to_string(&serializable).unwrap();
     Ok(json)
 }

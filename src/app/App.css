@@ -76,8 +76,12 @@ h1 {
   width: 100%;
   overflow: auto;
 }
-
-.test-content-box > button {
+.btn-box {
+  display: flex;
+  flex-flow: column nowrap;
+  margin-bottom: 3rem;
+}
+.btn-box > button {
   width: 33%;
   margin: auto;
 }
@@ -126,10 +130,10 @@ button:hover {
 
 .student-card {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: flex-start;
   border-bottom: 1px solid white;
-  margin: 1rem 3rem;
+  margin: 1rem;
 }
 
 .student-field-header {
@@ -137,6 +141,16 @@ button:hover {
 }
 .student-field {
   overflow: auto;
-  width: 20vw;
+  width: 17vw;
   color: cyan;
+}
+
+.arrow-btn {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
