@@ -1,8 +1,8 @@
 pub mod files {
-
     use serde::Deserialize;
-    use std::{collections::BTreeMap, env, fs::File, io::Write};
-    use tempdir::TempDir;
+    use std::net::TcpStream;
+    use std::path::Path;
+    use std::{env, fs::File, io::Write};
 
     use crate::parse::Student;
 
@@ -17,22 +17,48 @@ pub mod files {
                 temp_path: env::temp_dir().to_string_lossy().into_owned(),
             }
         }
-        pub fn write_json(&self, data: Vec<Student>) -> Result<(), Box<dyn std::error::Error>> {
-            let write_path = format!("{}{}", self.get_temp(), "grouper-students.json");
-            println!("{:?}", write_path);
+
+        pub fn write_json(&self, data: Vec<Student>) -> Result<String, Box<dyn std::error::Error>> {
+            let write_path = format!("{}{}", self.get_temp_path(), "grouper-students.json");
             let mut file = File::create(&write_path)?;
+
             let json = serde_json::to_string(&data)?;
             file.write_all(json.as_bytes())?;
 
-            Ok(())
+            Ok(format!(
+                "SUCCESS writing JSON to temp directory ::: @ ::: {}",
+                write_path
+            ))
         }
-        pub fn get_temp(&self) -> String {
+
+        fn get_temp_path(&self) -> String {
             self.temp_path.clone()
         }
+
+        pub fn network_available() -> bool {
+            match TcpStream::connect("8.8.8.8:53") {
+                Ok(_) => true,
+                Err(_) => false,
+            }
+        }
+
+        pub fn temp_data_available(&self) -> bool {
+            let path = format!("{}{}", self.get_temp_path(), "\\grouper-students.json");
+            let file_path = Path::new(&path);
+            if file_path.exists() {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        pub fn upload_from_csv() {}
     }
 }
 
 pub mod parse {
+    use std::collections::BTreeMap;
+
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Serialize, Deserialize)]
@@ -85,6 +111,7 @@ pub mod parse {
             }
         }
     }
+
     impl From<Template> for Student {
         fn from(value: Template) -> Self {
             match value {
@@ -116,6 +143,7 @@ pub mod parse {
         group: u16,
         email: String,
     }
+
     impl Default for Template {
         fn default() -> Self {
             Template {
@@ -128,9 +156,11 @@ pub mod parse {
         }
     }
 
-    pub fn assign_groups(students: &Vec<Student>) {
-        for student in students.iter() {
-            println!("{:?}", student);
+    pub struct GroupsMap(BTreeMap<f32, Vec<Student>>);
+
+    impl GroupsMap {
+        pub fn new() -> GroupsMap {
+            GroupsMap(BTreeMap::new())
         }
     }
 }

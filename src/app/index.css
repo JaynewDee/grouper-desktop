@@ -22,3 +22,22 @@
     background-color: #0f0f0f98;
   }
 }
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: white;
+  }
+}
+
+@media screen and (min-width: 1080px) {
+  :root {
+    font-size: 24px;
+  }
+  .student-field-set {
+    font-size: 1.33rem;
+  }
+
+  .student-card > h2 {
+    font-size: 2.33rem;
+  }
+}

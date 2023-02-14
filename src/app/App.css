@@ -79,11 +79,12 @@ h1 {
 .btn-box {
   display: flex;
   flex-flow: column nowrap;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
 }
 .btn-box > button {
   width: 33%;
   margin: auto;
+  font-size: 1rem;
 }
 
 .bucket-list {
@@ -116,6 +117,7 @@ button:hover {
 
 .upload-btn {
   letter-spacing: 0.11rem;
+  font-size: 1rem;
 }
 
 .expander-btn {
@@ -125,32 +127,41 @@ button:hover {
   font-size: 1rem;
 }
 
-.expander-btn > * {
-}
-
 .student-card {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   border-bottom: 1px solid white;
-  margin: 1rem;
+  margin: 1rem 0;
+  padding-right: 1rem;
+}
+.student-card > h2 {
+  margin: 0 1rem 1.66rem auto;
 }
 
+.student-field-set {
+  text-align: right;
+  margin: 0 0.66rem;
+}
 .student-field-header {
   text-decoration: underline;
+  margin: 0;
 }
 .student-field {
   overflow: auto;
-  width: 17vw;
+
   color: cyan;
+  word-break: break-all;
+  font-size: 1.11rem;
 }
 
 .arrow-btn {
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  width: 1.66rem;
+  height: 1.66rem;
   border: 1px solid white;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 1rem;
 }

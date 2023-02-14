@@ -24,3 +24,5 @@ export const getFields = (studentsArr: StudentType[]) =>
       {}
     )
   );
+
+export const splitName = (name: string) => name.split(", ");

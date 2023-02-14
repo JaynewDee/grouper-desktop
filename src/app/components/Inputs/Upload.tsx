@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { Arrow } from "../Icons";
 
 const Upload = () => {
@@ -25,12 +25,19 @@ const Upload = () => {
 
   const toggleTray = () => setContainerState((prev) => !prev);
 
+  const handleFileInput = (e: any) => {};
+
   return (
     <div
       className="file-upload-container"
       style={containerState ? styleExpanded : styleCollapsed}
     >
-      <input ref={clickRef} type="file"></input>
+      <input
+        ref={clickRef}
+        onChange={handleFileInput}
+        accept=".csv"
+        type="file"
+      ></input>
       <button className="upload-btn" onClick={proxyToRef}>
         Upload
       </button>

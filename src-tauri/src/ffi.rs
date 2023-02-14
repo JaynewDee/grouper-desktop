@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use csv::ReaderBuilder;
 use src_tauri::files::FileHandler;
-use src_tauri::parse::{assign_groups, Student, Template};
+use src_tauri::parse::{Student, Template};
 use std::io::Cursor;
 
 ///
@@ -80,22 +80,31 @@ pub async fn get_object() -> Result<String, ()> {
     for (idx, row) in reader.records().enumerate() {
         let r = row.expect("Unable to parse string record");
         let mut student = Student::from(Template::default());
+
+        student.set_id(idx as u32);
+        student.set_name(r.get(0).unwrap().to_string());
+        student.set_email(r.get(2).unwrap().to_string());
+
         match r.get(42).unwrap().parse::<f32>() {
             Ok(float) => student.set_avg(float),
             Err(_) => student.set_avg(0.0),
         }
-        student.set_id(idx as u32);
-        student.set_email(r.get(2).unwrap().to_string());
-        student.set_name(r.get(0).unwrap().to_string());
 
         if student.get_avg() > 0.0 {
             collection.push(student.clone());
-            serializable.push(student.clone());
+            serializable.push(student);
         }
     }
+
     let handler = FileHandler::new();
+    if let true = handler.temp_data_available() {
+        // TODO
+        // read temp file and return serialized data
+    } else {
+        // Write and return
+    }
     handler.write_json(collection).unwrap();
-    // let _grouped = assign_groups(&collection);
     let json = serde_json::to_string(&serializable).unwrap();
+
     Ok(json)
 }
