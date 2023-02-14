@@ -18,7 +18,7 @@ function App() {
   return (
     <>
       <Header />
-      <Upload setStudentData={setStudents} />
+      <Upload setStudentData={setStudents} setFileOptions={setAvailableFiles} />
       <Content
         studentData={students}
         setStudentData={setStudents}

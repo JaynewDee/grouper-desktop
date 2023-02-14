@@ -25,6 +25,7 @@ export const Content: React.FC<any> = ({
     const json = await API.getObject(e.target.textContent);
     const studentData = JSON.parse(json);
     setStudentData(studentData);
+    toggleFileDisplay();
   };
   return (
     <div className="content-box">
@@ -32,6 +33,8 @@ export const Content: React.FC<any> = ({
         <button onClick={toggleFileDisplay}>CLASSES</button>
         {optionsDisplay ? (
           <div className="file-options-container">
+            <hr className="shim-vertical" />
+
             {fileOptions.map((opt, idx) => (
               <p onClick={handleGetFile} key={idx} className="file-option">
                 {opt}
@@ -42,7 +45,7 @@ export const Content: React.FC<any> = ({
           <></>
         )}
       </div>
-      <hr style={{ width: "50%", borderRadius: "50%" }} />
+      <hr style={{ width: "50%", borderRadius: "50%", marginBottom: "3rem" }} />
       {studentData &&
         studentData.map((stud: any, idx: number) => (
           <StudentCard data={stud} />

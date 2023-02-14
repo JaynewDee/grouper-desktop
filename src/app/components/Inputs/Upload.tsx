@@ -3,7 +3,13 @@ import { Arrow } from "../Icons";
 import { API } from "../../api";
 import { fileToString } from "../../utils/parse";
 
-const Upload = ({ setStudentData }: { setStudentData: any }) => {
+const Upload = ({
+  setStudentData,
+  setFileOptions
+}: {
+  setStudentData: any;
+  setFileOptions: any;
+}) => {
   const [containerState, setContainerState] = useState(true);
   const [nameField, setNameField] = useState("");
   const [errorState, setErrorState] = useState("");
@@ -52,6 +58,8 @@ const Upload = ({ setStudentData }: { setStudentData: any }) => {
       const res = await API.uploadObject(jsonString, nameField);
       const data = JSON.parse(res);
       setStudentData(data);
+      const filenames = await API.listObjects();
+      setFileOptions(filenames);
       setNameField("");
     }
   };
