@@ -1,10 +1,12 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Arrow } from "../Icons";
+import { API } from "../../api";
+import { fileToString } from "../../utils/parse";
 
-const Upload = () => {
-  // State `false` means collapsed
+const Upload = ({ setStudentData }: { setStudentData: any }) => {
   const [containerState, setContainerState] = useState(true);
-
+  const [nameField, setNameField] = useState("");
+  const [errorState, setErrorState] = useState("");
   const clickRef = useRef<HTMLInputElement | null>(null);
   const proxyToRef = () => {
     clickRef.current?.click();
@@ -25,29 +27,64 @@ const Upload = () => {
 
   const toggleTray = () => setContainerState((prev) => !prev);
 
-  const handleFileInput = (e: any) => {};
+  const handleFileNameChange = (e: any) => setNameField(e.target.value);
+
+  const handleFileSubmit = async (e: any) => {
+    if (!clickRef.current) {
+      DisplayError("You must select a file to upload.");
+      return;
+    }
+    if (nameField.length < 3) {
+      DisplayError("The name for your file must be at least 3 characters long");
+      return;
+    }
+    if (clickRef.current) {
+      const file = clickRef.current.files![0];
+      const jsonString = await fileToString(file);
+      const res = await API.uploadObject(jsonString, nameField);
+      const data = JSON.parse(res);
+      setStudentData(data);
+      setNameField("");
+    }
+  };
+
+  const DisplayError = (text: string) => {
+    setErrorState(text);
+    setTimeout(() => {
+      setErrorState("");
+    }, 3000);
+  };
 
   return (
-    <div
-      className="file-upload-container"
-      style={containerState ? styleExpanded : styleCollapsed}
-    >
-      <input
-        ref={clickRef}
-        onChange={handleFileInput}
-        accept=".csv"
-        type="file"
-      ></input>
-      <button className="upload-btn" onClick={proxyToRef}>
-        Upload
-      </button>
-      <button
-        onClick={toggleTray}
-        className="expander-btn"
-        style={containerState ? pointLeft : pointRight}
+    <div className="upload-inputs">
+      <div
+        className="file-upload-container"
+        style={containerState ? styleExpanded : styleCollapsed}
       >
-        {Arrow({})}
-      </button>
+        <input ref={clickRef} accept=".csv" type="file"></input>
+        <button className="upload-btn" onClick={proxyToRef}>
+          Upload
+        </button>
+        <button
+          onClick={toggleTray}
+          className="expander-btn"
+          style={containerState ? pointLeft : pointRight}
+        >
+          {Arrow({})}
+        </button>
+      </div>
+      <div
+        className="file-submit"
+        style={containerState ? styleExpanded : styleCollapsed}
+      >
+        <input type="text" value={nameField} onChange={handleFileNameChange} />
+        <button onClick={handleFileSubmit}>SUBMIT</button>
+      </div>
+      {errorState && (
+        <div style={{ marginTop: "9rem", position: "absolute", width: "15%" }}>
+          {errorState}
+        </div>
+      )}
     </div>
   );
 };

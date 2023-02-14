@@ -51,15 +51,12 @@ pub mod files {
                 return false;
             }
         }
-
-        pub fn upload_from_csv() {}
     }
 }
 
 pub mod parse {
-    use std::collections::BTreeMap;
-
     use serde::{Deserialize, Serialize};
+    use std::collections::BTreeMap;
 
     #[derive(Debug, Serialize, Deserialize)]
     pub struct Student {

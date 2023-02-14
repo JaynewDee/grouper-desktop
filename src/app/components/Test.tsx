@@ -1,16 +1,13 @@
-import { useState } from "react";
 import { API } from "../api";
-import { getFields } from "../utils/parse";
-import csv from "csvtojson";
 import StudentCard from "./Students/StudentCard";
 
 export const TestContent: React.FC<any> = ({
-  children
+  studentData,
+  setStudentData
 }: {
-  children: JSX.Element | JSX.Element[];
+  studentData: any;
+  setStudentData: any;
 }) => {
-  const [students, setStudents] = useState<any[]>([]);
-
   const handleShow = async () => {
     const buckets = await API.showBuckets();
     const json = buckets.map((buck: string) => JSON.parse(buck));
@@ -22,14 +19,14 @@ export const TestContent: React.FC<any> = ({
   };
 
   const handleGetObject = async () => {
-    const res = await API.getObject();
+    const res = await API.getObject("test-bcs.csv");
     const studentObjects = JSON.parse(res);
-    setStudents(studentObjects);
+    setStudentData(studentObjects);
     console.log(studentObjects);
   };
 
   const expandAll = () => {
-    setStudents((prev) => [...prev.map((stud) => ({ ...stud }))]);
+    setStudentData((prev: any) => [...prev.map((stud: any) => ({ ...stud }))]);
   };
 
   return (
@@ -41,7 +38,8 @@ export const TestContent: React.FC<any> = ({
         <button onClick={handleGetObject}>Fetch CSV</button>
       </div>
       <hr style={{ width: "50%", borderRadius: "50%" }} />
-      {students && students.map((stud: any) => <StudentCard data={stud} />)}
+      {studentData &&
+        studentData.map((stud: any) => <StudentCard data={stud} />)}
     </div>
   );
 };

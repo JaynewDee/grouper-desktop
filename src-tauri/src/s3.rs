@@ -1,12 +1,17 @@
+use aws_smithy_http::body::SdkBody;
+
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::{
     error::{
         CreateBucketError, DeleteBucketError, GetBucketLocationError, GetObjectError,
-        ListObjectsError,
+        ListObjectsError, PutObjectError,
     },
     model::CreateBucketConfiguration,
-    output::{CreateBucketOutput, GetObjectOutput, ListBucketsOutput, ListObjectsV2Output},
-    types::SdkError,
+    output::{
+        CreateBucketOutput, GetObjectOutput, ListBucketsOutput, ListObjectsV2Output,
+        PutObjectOutput,
+    },
+    types::{ByteStream, SdkError},
     Client,
 };
 
@@ -78,6 +83,22 @@ impl S3Client {
             .bucket(bucket_name)
             .key(key)
             .response_content_type("text/csv")
+            .send()
+            .await
+    }
+
+    pub async fn upload_object(
+        client: &Client,
+        bucket_name: &str,
+        json_string: &str,
+        obj_name: &str,
+    ) -> Result<PutObjectOutput, SdkError<PutObjectError>> {
+        let stream = ByteStream::new(SdkBody::from(json_string));
+        client
+            .put_object()
+            .bucket(bucket_name)
+            .key(obj_name)
+            .body(stream)
             .send()
             .await
     }

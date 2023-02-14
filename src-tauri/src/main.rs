@@ -7,14 +7,15 @@ extern crate tempdir;
 mod ffi;
 mod s3;
 
-use ffi::{create_bucket, get_object, list_buckets, list_objects};
+use ffi::{create_bucket, get_object, list_buckets, list_objects, upload_csv_object};
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             list_buckets,
             create_bucket,
             list_objects,
-            get_object
+            get_object,
+            upload_csv_object
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

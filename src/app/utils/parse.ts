@@ -26,3 +26,14 @@ export const getFields = (studentsArr: StudentType[]) =>
   );
 
 export const splitName = (name: string) => name.split(", ");
+
+export const fileToString = (file: File): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+};

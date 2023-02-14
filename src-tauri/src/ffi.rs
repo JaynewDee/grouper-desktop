@@ -61,11 +61,11 @@ pub struct GetResponse {
 }
 
 #[tauri::command]
-pub async fn get_object() -> Result<String, ()> {
+pub async fn get_object(obj_name: &str) -> Result<String, ()> {
     let test_bucket_name = String::from("grouper-client-test-bucket");
     let client = S3Client::get_client().await.unwrap();
 
-    let object = S3Client::download_object(&client, &test_bucket_name, "test-bcs.csv")
+    let object = S3Client::download_object(&client, &test_bucket_name, obj_name)
         .await
         .unwrap();
     let body = object.body.collect().await.unwrap();
@@ -97,14 +97,22 @@ pub async fn get_object() -> Result<String, ()> {
     }
 
     let handler = FileHandler::new();
-    if let true = handler.temp_data_available() {
-        // TODO
-        // read temp file and return serialized data
-    } else {
-        // Write and return
-    }
+
     handler.write_json(collection).unwrap();
     let json = serde_json::to_string(&serializable).unwrap();
-
+    println!("{}", json);
     Ok(json)
+}
+
+#[tauri::command]
+pub async fn upload_csv_object(csv_as_json: &str, obj_name: &str) -> Result<String, ()> {
+    let test_bucket_name = String::from("grouper-client-test-bucket");
+    let client = S3Client::get_client().await?;
+
+    let object = S3Client::upload_object(&client, &test_bucket_name, csv_as_json, obj_name)
+        .await
+        .unwrap();
+    println!("{:?}", object);
+    let student_data = get_object(obj_name).await?;
+    Ok(student_data)
 }

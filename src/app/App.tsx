@@ -7,11 +7,13 @@ import Upload from "./components/Inputs/Upload";
 import { TestContent } from "./components/Test";
 
 function App() {
+  const [students, setStudents] = useState<any[]>([]);
+
   return (
     <>
       <Header />
-      <Upload />
-      <TestContent />
+      <Upload setStudentData={setStudents} />
+      <TestContent studentData={students} setStudentData={setStudents} />
     </>
   );
 }
