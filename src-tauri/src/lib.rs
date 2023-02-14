@@ -6,6 +6,12 @@ pub mod files {
 
     use crate::parse::Student;
 
+    //
+    ////////////////////////
+    // Handles os-based i/o
+    ////////////////////////
+    //
+
     #[derive(Deserialize)]
     pub struct FileHandler {
         temp_path: String,

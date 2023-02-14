@@ -7,6 +7,7 @@ const Upload = ({ setStudentData }: { setStudentData: any }) => {
   const [containerState, setContainerState] = useState(true);
   const [nameField, setNameField] = useState("");
   const [errorState, setErrorState] = useState("");
+  const [buttonTxt, setButtonTxt] = useState("Upload");
   const clickRef = useRef<HTMLInputElement | null>(null);
   const proxyToRef = () => {
     clickRef.current?.click();
@@ -55,6 +56,12 @@ const Upload = ({ setStudentData }: { setStudentData: any }) => {
     }, 3000);
   };
 
+  const handleMouseEnter = (e: any) => {
+    setButtonTxt("Browse");
+  };
+  const handleMouseLeave = (e: any) => {
+    setButtonTxt("Upload");
+  };
   return (
     <div className="upload-inputs">
       <div
@@ -62,8 +69,13 @@ const Upload = ({ setStudentData }: { setStudentData: any }) => {
         style={containerState ? styleExpanded : styleCollapsed}
       >
         <input ref={clickRef} accept=".csv" type="file"></input>
-        <button className="upload-btn" onClick={proxyToRef}>
-          Upload
+        <button
+          className="upload-btn"
+          onClick={proxyToRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {buttonTxt}
         </button>
         <button
           onClick={toggleTray}
