@@ -58,7 +58,7 @@ impl S3Client {
     pub async fn list_objects(
         client: &Client,
         bucket_name: &str,
-    ) -> Result<ListObjectsV2Output, ListObjectsError> {
+    ) -> Result<Vec<String>, ListObjectsError> {
         let objects = client
             .list_objects_v2()
             .bucket(bucket_name)
@@ -66,11 +66,13 @@ impl S3Client {
             .await
             .unwrap();
         println!("Objects in bucket:");
+        let mut keys: Vec<String> = vec![];
         for obj in objects.contents().unwrap_or_default() {
             println!("{:?}", obj.key().unwrap());
+            keys.push(obj.key().unwrap().to_owned())
         }
 
-        Ok(objects)
+        Ok(keys)
     }
 
     pub async fn download_object(

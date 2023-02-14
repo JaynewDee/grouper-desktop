@@ -5,8 +5,8 @@ export const Fields = (data: any) => {
 
   const fields = ["Student", "GPA", "Group", "Email"];
 
-  const jsx = fields.map((field) => (
-    <div className="student-field-set">
+  const jsx = fields.map((field, idx) => (
+    <div className="student-field-set" key={idx}>
       <h4 className="student-field-header">{field}</h4>
       <p className="student-field">
         {field === "Student" ? (

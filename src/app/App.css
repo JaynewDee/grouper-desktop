@@ -68,9 +68,10 @@ h1 {
 .unlocked,
 .locked {
   color: var(--tertiary);
+  font-size: 90%;
 }
 
-.test-content-box {
+.content-box {
   display: flex;
   flex-flow: column nowrap;
   width: 100%;
@@ -80,16 +81,28 @@ h1 {
   display: flex;
   flex-flow: column nowrap;
   margin-bottom: 1rem;
+  margin-top: 12rem;
 }
 .btn-box > button {
   width: 33%;
   margin: auto;
   font-size: 1rem;
 }
+.file-options-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  max-height: 12rem;
+  width: 33%;
+  margin: 0 auto;
+  overflow: auto;
+  box-shadow: inset 0 0 2px 2px rgba(20, 20, 20, 0.7);
+  padding: 4rem 0 1rem 1rem;
+}
 
-.bucket-list {
-  width: 66%;
-  margin: 3rem auto;
+.file-option:hover {
+  cursor: pointer;
+  color: cyan;
 }
 input[type="file"] {
   opacity: 0; /* make transparent */

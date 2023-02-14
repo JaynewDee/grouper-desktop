@@ -44,15 +44,14 @@ pub async fn create_bucket() -> String {
 }
 
 #[tauri::command]
-pub async fn list_objects() -> String {
+pub async fn list_objects() -> Result<Vec<String>, ()> {
     let test_bucket_name = String::from("grouper-client-test-bucket");
     let client = S3Client::get_client().await.unwrap();
-    let _objects = S3Client::list_objects(&client, &test_bucket_name)
+    let objects = S3Client::list_objects(&client, &test_bucket_name)
         .await
         .unwrap();
-    // .contents();
 
-    "'List object' reached!".into()
+    Ok(objects)
 }
 
 #[derive(Debug, Serialize)]

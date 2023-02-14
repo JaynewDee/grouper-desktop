@@ -9,8 +9,9 @@ export const Help = TbHelp;
 
 export const Arrow = BiRightArrowAlt;
 
-export const ExpandArrow = BiRightArrowAlt({ size: "1.33rem" });
-export const CollapseArrow = BiRightArrowAlt({
-  style: { transform: "rotate(90deg)" },
-  size: "1.33rem"
-});
+export const ExpandArrow = () => BiRightArrowAlt({ size: "1.33rem" });
+export const CollapseArrow = () =>
+  BiRightArrowAlt({
+    style: { transform: "rotate(90deg)" },
+    size: "1.33rem"
+  });

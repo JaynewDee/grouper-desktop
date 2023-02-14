@@ -11,13 +11,13 @@ const Header = () => {
     ? Unlocked({
         color: "white",
         className: "unlocked",
-        size: ".93rem",
+        size: ".86rem",
         onClick: toggleLock
       })
     : Locked({
         color: "white",
         className: "locked",
-        size: ".93rem",
+        size: ".86rem",
         onClick: toggleLock
       });
 

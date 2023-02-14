@@ -30,6 +30,13 @@ const Upload = ({ setStudentData }: { setStudentData: any }) => {
 
   const handleFileNameChange = (e: any) => setNameField(e.target.value);
 
+  const handleFileInputChange = (e: any) => {
+    const suggested = clickRef.current!.files![0]["name"];
+    if (suggested) {
+      setNameField(suggested.split(".")[0]);
+    }
+  };
+
   const handleFileSubmit = async (e: any) => {
     if (!clickRef.current) {
       DisplayError("You must select a file to upload.");
@@ -62,13 +69,19 @@ const Upload = ({ setStudentData }: { setStudentData: any }) => {
   const handleMouseLeave = (e: any) => {
     setButtonTxt("Upload");
   };
+
   return (
     <div className="upload-inputs">
       <div
         className="file-upload-container"
         style={containerState ? styleExpanded : styleCollapsed}
       >
-        <input ref={clickRef} accept=".csv" type="file"></input>
+        <input
+          ref={clickRef}
+          onChange={handleFileInputChange}
+          accept=".csv"
+          type="file"
+        ></input>
         <button
           className="upload-btn"
           onClick={proxyToRef}

@@ -17,8 +17,12 @@ const StudentCard = ({ data }: { data: any }) => {
       className="student-card"
       style={cardState === "collapsed" ? { justifyContent: "flex-start" } : {}}
     >
-      <button onClick={toggleCardState} className="arrow-btn">
-        {cardState === "expanded" ? CollapseArrow : ExpandArrow}
+      <button onClick={toggleCardState} className="arrow-btn" key={data.id}>
+        {cardState === "expanded" ? (
+          <CollapseArrow key={data.name} />
+        ) : (
+          <ExpandArrow key={data.name} />
+        )}
       </button>
       {cardState === "expanded" ? <>{Fields(data)}</> : <h2>{data.name}</h2>}
     </div>
