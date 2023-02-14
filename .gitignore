@@ -2,3 +2,4 @@ build
 .vscode
 init-vite-tauri*
 start-dev*
+vscode*
