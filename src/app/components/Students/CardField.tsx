@@ -1,6 +1,7 @@
 import { splitName } from "../../utils/parse";
+import { StudentType } from "./StudentCard";
 
-export const Fields = (data: any) => {
+export const Fields = (data: StudentType) => {
   const [last, first] = splitName(data.name);
 
   const fields = ["Student", "GPA", "Group", "Email"];

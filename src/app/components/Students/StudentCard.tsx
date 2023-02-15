@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import { ExpandArrow, CollapseArrow } from "../Icons";
 import { Fields } from "./CardField";
 
-const StudentCard = ({ data }: { data: any }) => {
+export interface StudentType {
+  id: number;
+  name: string;
+  avg: number;
+  group: number;
+  email: string;
+}
+
+const StudentCard = ({ data }: { data: StudentType }) => {
   const [cardState, setCardState] = useState("collapsed");
 
   const toggleCardState = () => {

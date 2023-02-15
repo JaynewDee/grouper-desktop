@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { ChangeEvent, MouseEvent, useRef, useState } from "react";
 import { Arrow } from "../Icons";
 import { API } from "../../api";
 import { fileToString } from "../../utils/parse";
@@ -10,40 +10,47 @@ const Upload = ({
   setStudentData: any;
   setFileOptions: any;
 }) => {
+  // STATE
   const [containerState, setContainerState] = useState(true);
   const [nameField, setNameField] = useState("");
   const [errorState, setErrorState] = useState("");
   const [buttonTxt, setButtonTxt] = useState("Upload");
+  // REF
   const clickRef = useRef<HTMLInputElement | null>(null);
   const proxyToRef = () => {
     clickRef.current?.click();
   };
+  // STYLE STATES
+  const transforms = {
+    collapsed: {
+      transform: "translateX(-70%)"
+    },
+    expanded: {
+      transform: "translateX(0%)"
+    },
+    pointLeft: {
+      transform: "rotate(-180deg)"
+    },
+    pointRight: {
+      transform: "rotate(0deg)"
+    }
+  };
+  const { collapsed, expanded, pointLeft, pointRight } = transforms;
 
-  const styleCollapsed = {
-    transform: "translateX(-70%)"
-  };
-  const styleExpanded = {
-    transform: "translateX(0%)"
-  };
-  const pointLeft = {
-    transform: "rotate(-180deg)"
-  };
-  const pointRight = {
-    transform: "rotate(0deg)"
-  };
-
+  // EVENT HANDLERS
   const toggleTray = () => setContainerState((prev) => !prev);
 
-  const handleFileNameChange = (e: any) => setNameField(e.target.value);
+  const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setNameField(e.target.value);
 
-  const handleFileInputChange = (e: any) => {
-    const suggested = clickRef.current!.files![0]["name"];
+  const handleFileInputChange = (_: ChangeEvent<HTMLInputElement>) => {
+    const suggested = clickRef.current!.files![0]["name"] || "";
     if (suggested) {
       setNameField(suggested.split(".")[0]);
     }
   };
 
-  const handleFileSubmit = async (e: any) => {
+  const handleFileSubmit = async (_: MouseEvent<HTMLButtonElement>) => {
     if (!clickRef.current) {
       DisplayError("You must select a file to upload.");
       return;
@@ -71,10 +78,10 @@ const Upload = ({
     }, 3000);
   };
 
-  const handleMouseEnter = (e: any) => {
+  const handleMouseEnter = (_: MouseEvent<HTMLButtonElement>) => {
     setButtonTxt("Browse");
   };
-  const handleMouseLeave = (e: any) => {
+  const handleMouseLeave = (_: MouseEvent<HTMLButtonElement>) => {
     setButtonTxt("Upload");
   };
 
@@ -82,7 +89,7 @@ const Upload = ({
     <div className="upload-inputs">
       <div
         className="file-upload-container"
-        style={containerState ? styleExpanded : styleCollapsed}
+        style={containerState ? expanded : collapsed}
       >
         <input
           ref={clickRef}
@@ -108,7 +115,7 @@ const Upload = ({
       </div>
       <div
         className="file-submit"
-        style={containerState ? styleExpanded : styleCollapsed}
+        style={containerState ? expanded : collapsed}
       >
         <input type="text" value={nameField} onChange={handleFileNameChange} />
         <button onClick={handleFileSubmit}>SUBMIT</button>
