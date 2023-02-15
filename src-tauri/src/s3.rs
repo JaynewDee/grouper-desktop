@@ -7,10 +7,7 @@ use aws_sdk_s3::{
         ListObjectsError, PutObjectError,
     },
     model::CreateBucketConfiguration,
-    output::{
-        CreateBucketOutput, GetObjectOutput, ListBucketsOutput, ListObjectsV2Output,
-        PutObjectOutput,
-    },
+    output::{CreateBucketOutput, GetObjectOutput, ListBucketsOutput, PutObjectOutput},
     types::{ByteStream, SdkError},
     Client,
 };
