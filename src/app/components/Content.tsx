@@ -36,7 +36,6 @@ export const Content: React.FC<ContentProps> = ({
         <button onClick={toggleFileDisplay}>CLASSES</button>
         {optionsDisplay && (
           <div className="file-options-container">
-            <hr className="shim-vertical" />
             {fileOptions.map((opt, idx) => (
               <p onClick={handleGetFile} key={idx} className="file-option">
                 {opt}
