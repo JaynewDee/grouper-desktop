@@ -68,18 +68,19 @@ h1 {
 .unlocked,
 .locked {
   color: var(--tertiary);
+  font-size: 90%;
 }
 
-.test-content-box {
+.content-box {
   display: flex;
   flex-flow: column nowrap;
   width: 100%;
-  overflow: auto;
 }
 .btn-box {
   display: flex;
   flex-flow: column nowrap;
   margin-bottom: 1rem;
+  margin-top: 15rem;
 }
 .btn-box > button {
   width: 33%;
@@ -87,9 +88,27 @@ h1 {
   font-size: 1rem;
 }
 
-.bucket-list {
-  width: 66%;
-  margin: 3rem auto;
+/* .shim-vertical {
+  margin-bottom: 15rem;
+} */
+
+.file-options-container {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  width: 33%;
+  margin: auto;
+  box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
+}
+.file-option {
+  margin: 0.33rem 1rem;
+}
+.file-option:hover {
+  cursor: pointer;
+  color: cyan;
 }
 input[type="file"] {
   opacity: 0; /* make transparent */
@@ -101,6 +120,10 @@ input[type="file"]:focus + label {
   outline: 2px solid; /* example focus style */
 }
 
+.upload-inputs {
+  display: flex;
+  justify-content: column nowrap;
+}
 .file-upload-container {
   display: flex;
   position: fixed;
@@ -108,6 +131,12 @@ input[type="file"]:focus + label {
   height: 2rem;
   font-size: 2rem;
   top: 4rem;
+}
+
+.file-submit {
+  position: absolute;
+  top: 6rem;
+  transition: all 1s;
 }
 
 button:hover {
@@ -127,21 +156,35 @@ button:hover {
   font-size: 1rem;
 }
 
-.student-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.card-expanded,
+.card-collapsed {
   border-bottom: 1px solid white;
   margin: 1rem 0;
-  padding-right: 1rem;
+  display: flex;
+  justify-content: space-between;
 }
-.student-card > h2 {
-  margin: 0 1rem 1.66rem auto;
+
+.card-collapsed > h2 {
+  margin: 0 3rem 1.66rem auto;
+}
+.card-collapsed:hover,
+.card-expanded:hover {
+  cursor: pointer;
+}
+.card-collapsed:hover {
+  color: cyan;
+}
+.card-collapsed:hover > .arrow-btn,
+.card-expanded:hover > .arrow-btn {
+  color: cyan;
+
+  border-color: rgba(236, 99, 236, 0.333);
 }
 
 .student-field-set {
   text-align: right;
-  margin: 0 0.66rem;
+  margin-right: 3rem;
+  margin-bottom: 1rem;
 }
 .student-field-header {
   text-decoration: underline;
@@ -149,7 +192,6 @@ button:hover {
 }
 .student-field {
   overflow: auto;
-
   color: cyan;
   word-break: break-all;
   font-size: 1.11rem;
@@ -163,5 +205,10 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 1rem;
+  margin: 0 1rem 0 3rem;
+}
+
+.hover-tooltip {
+  position: relative;
+  top: 0;
 }

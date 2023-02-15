@@ -1,53 +1,130 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, MouseEvent, useRef, useState } from "react";
 import { Arrow } from "../Icons";
+import { API } from "../../api";
+import { fileToString } from "../../utils/parse";
 
-const Upload = () => {
-  // State `false` means collapsed
+const Upload = ({
+  setStudentData,
+  setFileOptions
+}: {
+  setStudentData: any;
+  setFileOptions: any;
+}) => {
+  // STATE
   const [containerState, setContainerState] = useState(true);
-
+  const [nameField, setNameField] = useState("");
+  const [errorState, setErrorState] = useState("");
+  const [buttonTxt, setButtonTxt] = useState("Upload");
+  // REF
   const clickRef = useRef<HTMLInputElement | null>(null);
   const proxyToRef = () => {
     clickRef.current?.click();
   };
+  // STYLE STATES
+  const transforms = {
+    collapsed: {
+      transform: "translateX(-70%)"
+    },
+    expanded: {
+      transform: "translateX(0%)"
+    },
+    pointLeft: {
+      transform: "rotate(-180deg)"
+    },
+    pointRight: {
+      transform: "rotate(0deg)"
+    }
+  };
+  const { collapsed, expanded, pointLeft, pointRight } = transforms;
 
-  const styleCollapsed = {
-    transform: "translateX(-70%)"
-  };
-  const styleExpanded = {
-    transform: "translateX(0%)"
-  };
-  const pointLeft = {
-    transform: "rotate(-180deg)"
-  };
-  const pointRight = {
-    transform: "rotate(0deg)"
-  };
-
+  // EVENT HANDLERS
   const toggleTray = () => setContainerState((prev) => !prev);
 
-  const handleFileInput = (e: any) => {};
+  const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setNameField(e.target.value);
+
+  const handleFileInputChange = (_: ChangeEvent<HTMLInputElement>) => {
+    const suggested = clickRef.current!.files![0]["name"] || "";
+    if (suggested) {
+      setNameField(suggested.split(".")[0]);
+    }
+  };
+
+  const handleFileSubmit = async (_: MouseEvent<HTMLButtonElement>) => {
+    if (!clickRef.current) {
+      DisplayError("You must select a file to upload.");
+      return;
+    }
+    if (nameField.length < 3) {
+      DisplayError("The name for your file must be at least 3 characters long");
+      return;
+    }
+    if (clickRef.current) {
+      const file = clickRef.current.files![0];
+      const jsonString = await fileToString(file);
+      const res = await API.uploadObject(jsonString, nameField);
+      const data = JSON.parse(res);
+      setStudentData(data);
+      const filenames = await API.listObjects();
+      setFileOptions(filenames);
+      setNameField("");
+    }
+  };
+
+  const DisplayError = (text: string) => {
+    setErrorState(text);
+    setTimeout(() => {
+      setErrorState("");
+    }, 3000);
+  };
+
+  const handleMouseEnter = (_: MouseEvent<HTMLButtonElement>) => {
+    setButtonTxt("Browse");
+  };
+  const handleMouseLeave = (_: MouseEvent<HTMLButtonElement>) => {
+    setButtonTxt("Upload");
+  };
 
   return (
-    <div
-      className="file-upload-container"
-      style={containerState ? styleExpanded : styleCollapsed}
-    >
-      <input
-        ref={clickRef}
-        onChange={handleFileInput}
-        accept=".csv"
-        type="file"
-      ></input>
-      <button className="upload-btn" onClick={proxyToRef}>
-        Upload
-      </button>
-      <button
-        onClick={toggleTray}
-        className="expander-btn"
-        style={containerState ? pointLeft : pointRight}
+    <div className="upload-inputs">
+      <div
+        className="file-upload-container"
+        style={containerState ? expanded : collapsed}
       >
-        {Arrow({})}
-      </button>
+        <input
+          ref={clickRef}
+          onChange={handleFileInputChange}
+          accept=".csv"
+          type="file"
+        ></input>
+        <button
+          className="upload-btn"
+          onClick={proxyToRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {buttonTxt}
+        </button>
+        <button
+          onClick={toggleTray}
+          className="expander-btn"
+          style={containerState ? pointLeft : pointRight}
+        >
+          {Arrow({})}
+        </button>
+      </div>
+      <div
+        className="file-submit"
+        style={containerState ? expanded : collapsed}
+      >
+        <input type="text" value={nameField} onChange={handleFileNameChange} />
+        <button onClick={handleFileSubmit}>SUBMIT</button>
+      </div>
+      {errorState && (
+        <div style={{ marginTop: "9rem", position: "absolute", width: "15%" }}>
+          {errorState}
+        </div>
+      )}
     </div>
   );
 };

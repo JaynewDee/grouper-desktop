@@ -1,12 +1,14 @@
+use aws_smithy_http::body::SdkBody;
+
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::{
     error::{
         CreateBucketError, DeleteBucketError, GetBucketLocationError, GetObjectError,
-        ListObjectsError,
+        ListObjectsError, PutObjectError,
     },
     model::CreateBucketConfiguration,
-    output::{CreateBucketOutput, GetObjectOutput, ListBucketsOutput, ListObjectsV2Output},
-    types::SdkError,
+    output::{CreateBucketOutput, GetObjectOutput, ListBucketsOutput, PutObjectOutput},
+    types::{ByteStream, SdkError},
     Client,
 };
 
@@ -53,7 +55,7 @@ impl S3Client {
     pub async fn list_objects(
         client: &Client,
         bucket_name: &str,
-    ) -> Result<ListObjectsV2Output, ListObjectsError> {
+    ) -> Result<Vec<String>, ListObjectsError> {
         let objects = client
             .list_objects_v2()
             .bucket(bucket_name)
@@ -61,11 +63,13 @@ impl S3Client {
             .await
             .unwrap();
         println!("Objects in bucket:");
+        let mut keys: Vec<String> = vec![];
         for obj in objects.contents().unwrap_or_default() {
             println!("{:?}", obj.key().unwrap());
+            keys.push(obj.key().unwrap().to_owned())
         }
 
-        Ok(objects)
+        Ok(keys)
     }
 
     pub async fn download_object(
@@ -78,6 +82,22 @@ impl S3Client {
             .bucket(bucket_name)
             .key(key)
             .response_content_type("text/csv")
+            .send()
+            .await
+    }
+
+    pub async fn upload_object(
+        client: &Client,
+        bucket_name: &str,
+        json_string: &str,
+        obj_name: &str,
+    ) -> Result<PutObjectOutput, SdkError<PutObjectError>> {
+        let stream = ByteStream::new(SdkBody::from(json_string));
+        client
+            .put_object()
+            .bucket(bucket_name)
+            .key(obj_name)
+            .body(stream)
             .send()
             .await
     }

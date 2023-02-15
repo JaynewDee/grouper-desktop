@@ -4,6 +4,7 @@ import { Unlocked, Locked, Settings, Help } from "../Icons";
 const Header = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [scrollState, setScrollState] = useState("top");
+
   const toggleLock = () => {
     setLoggedIn((prev) => !prev);
   };
@@ -11,13 +12,13 @@ const Header = () => {
     ? Unlocked({
         color: "white",
         className: "unlocked",
-        size: ".93rem",
+        size: ".86rem",
         onClick: toggleLock
       })
     : Locked({
         color: "white",
         className: "locked",
-        size: ".93rem",
+        size: ".86rem",
         onClick: toggleLock
       });
 

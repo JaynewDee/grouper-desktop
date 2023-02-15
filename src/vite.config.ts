@@ -10,6 +10,9 @@ export default defineConfig({
     strictPort: true,
     port: 1420
   },
+  preview: {
+    port: 1420
+  },
   // to make use of `TAURI_PLATFORM`, `TAURI_ARCH`, `TAURI_FAMILY`,
   // `TAURI_PLATFORM_VERSION`, `TAURI_PLATFORM_TYPE` and `TAURI_DEBUG`
   // env variables
