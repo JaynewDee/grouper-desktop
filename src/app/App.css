@@ -22,6 +22,11 @@ input {
   border-radius: 3px;
 }
 
+button:hover {
+  cursor: pointer;
+  outline: 1px solid white;
+}
+
 body {
   margin: 0;
   max-width: 100vw;
@@ -86,6 +91,7 @@ h1 {
 }
 
 input[type="file"] {
+  width: 0;
   opacity: 0; /* make transparent */
   z-index: -1; /* move under anything else */
   position: absolute; /* don't let it take up space */
@@ -119,14 +125,11 @@ input[type="file"]:focus + label {
 .file-submit > input,
 .file-submit > button {
   font-size: 1rem;
-}
-button:hover {
-  cursor: pointer;
-  outline: 1px solid white;
+  letter-spacing: 0.06rem;
 }
 
 .upload-btn {
-  letter-spacing: 0.11rem;
+  letter-spacing: 0.06rem;
   font-size: 1rem;
 }
 
@@ -151,7 +154,7 @@ button:hover {
   z-index: 1;
 }
 
-.class-options-container {
+.class-options-expanded {
   position: relative;
   display: flex;
   flex-flow: column nowrap;
@@ -159,9 +162,26 @@ button:hover {
   align-items: center;
   overflow: auto;
   width: 33%;
+  height: 10vh;
   margin: auto;
+  padding: 1rem 0;
   box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
-  transform: translateY(0%);
+  transform: translateY(-0vh);
+  transition: all 1s;
+}
+.class-options-collapsed {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 33%;
+  margin: auto;
+  padding: 1rem 0;
+  box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
+  transform: translateY(-25vh);
+  height: 0;
   transition: all 1s;
 }
 .class-option {

@@ -45,7 +45,7 @@ pub async fn create_bucket() -> String {
 
 #[tauri::command]
 pub async fn list_objects() -> Result<Vec<String>, ()> {
-    let test_bucket_name = String::from("grouper-client-test-bucket");
+    let test_bucket_name = "grouper-client-test-bucket";
     let client = S3Client::get_client().await.unwrap();
     let objects = S3Client::list_objects(&client, &test_bucket_name)
         .await
@@ -54,14 +54,18 @@ pub async fn list_objects() -> Result<Vec<String>, ()> {
     Ok(objects)
 }
 
-#[derive(Debug, Serialize)]
-pub struct GetResponse {
-    res: String,
+#[tauri::command]
+pub async fn get_file_list() -> Result<Vec<String>, ()> {
+    let handler = FileHandler::new();
+    let file_list = handler
+        .read_directory()
+        .expect("Error retrieving file list");
+    Ok(file_list)
 }
 
 #[tauri::command]
 pub async fn get_object(obj_name: &str) -> Result<String, ()> {
-    let test_bucket_name = String::from("grouper-client-test-bucket");
+    let test_bucket_name = "grouper-client-test-bucket";
     let client = S3Client::get_client().await.unwrap();
 
     let object = S3Client::download_object(&client, &test_bucket_name, obj_name)
@@ -73,7 +77,6 @@ pub async fn get_object(obj_name: &str) -> Result<String, ()> {
 
     let mut reader = ReaderBuilder::new().has_headers(true).from_reader(cursor);
 
-    let mut collection: Vec<Student> = Vec::new();
     let mut serializable: Vec<Student> = Vec::new();
 
     for (idx, row) in reader.records().enumerate() {
@@ -90,26 +93,76 @@ pub async fn get_object(obj_name: &str) -> Result<String, ()> {
         }
 
         if student.get_avg() > 0.0 {
-            collection.push(student.clone());
             serializable.push(student);
         }
     }
 
-    let handler = FileHandler::new();
-
-    handler.write_json(collection).unwrap();
     let json = serde_json::to_string(&serializable).unwrap();
 
     Ok(json)
 }
 
 #[tauri::command]
-pub async fn upload_csv_object(csv_as_json: &str, obj_name: &str) -> Result<String, ()> {
-    let test_bucket_name = String::from("grouper-client-test-bucket");
+pub async fn upload_csv_object(
+    csv_as_json: &str,
+    obj_name: &str,
+    logged_in: bool,
+) -> Result<String, ()> {
+    let handler = FileHandler::new();
+    let stream = csv_as_json.as_bytes();
+
+    let cursor = Cursor::new(stream);
+
+    let mut reader = ReaderBuilder::new().has_headers(true).from_reader(cursor);
+
+    let mut serializable: Vec<Student> = Vec::new();
+
+    for (idx, row) in reader.records().enumerate() {
+        let r = row.expect("Unable to parse string record");
+        let mut student = Student::from(Template::default());
+
+        student.set_id(idx as u32);
+        student.set_name(r.get(0).unwrap().to_string());
+        student.set_email(r.get(2).unwrap().to_string());
+
+        match r.get(42).unwrap().parse::<f32>() {
+            Ok(float) => student.set_avg(float),
+            Err(_) => student.set_avg(0.0),
+        }
+
+        if student.get_avg() > 0.0 {
+            serializable.push(student);
+        }
+    }
+
     let client = S3Client::get_client().await.unwrap();
 
-    match S3Client::upload_object(&client, &test_bucket_name, csv_as_json, obj_name).await {
-        Ok(_student_data) => Ok(get_object(&obj_name).await.unwrap()),
-        Err(_) => Ok("Encountered an Error while attempting to upload csv object.".into()),
+    let test_bucket_name = "grouper-client-test-bucket";
+    let json_string = serde_json::to_string(&serializable).unwrap();
+    if logged_in {
+        S3Client::upload_object(&client, &test_bucket_name, &json_string, obj_name)
+            .await
+            .expect("Error uploading object to S3.");
     }
+
+    handler
+        .write_json(serializable, obj_name)
+        .expect("Failure writing json to temp directory.");
+
+    let filename: String = format!("{}.json", obj_name);
+    let json = read_json(&filename).expect("Failed to read json file.");
+    Ok(json)
+}
+
+#[tauri::command]
+pub fn read_json(obj_name: &str) -> Result<String, ()> {
+    let handler = FileHandler::new();
+    let json = handler.read_and_return_json(obj_name).unwrap();
+    Ok(json)
+}
+
+#[tauri::command]
+pub async fn check_connection() -> Result<bool, ()> {
+    let has_connection = FileHandler::network_available();
+    Ok(has_connection)
 }

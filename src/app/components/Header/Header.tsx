@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { Unlocked, Locked, Settings, Help } from "../Icons";
 
-const Header = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [scrollState, setScrollState] = useState("top");
-
+interface HeaderProps {
+  isLoggedIn: boolean;
+  setLoggedIn: any;
+}
+const Header: React.FC<HeaderProps> = ({ isLoggedIn, setLoggedIn }) => {
   const toggleLock = () => {
-    setLoggedIn((prev) => !prev);
+    setLoggedIn((prev: boolean) => !prev);
   };
-  const Lock = loggedIn
+  const Lock = isLoggedIn
     ? Unlocked({
         color: "white",
         className: "unlocked",

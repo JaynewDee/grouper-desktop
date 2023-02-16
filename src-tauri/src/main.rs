@@ -2,12 +2,15 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-extern crate tempdir;
 
 mod ffi;
 mod s3;
 
-use ffi::{create_bucket, get_object, list_buckets, list_objects, upload_csv_object};
+use ffi::{
+    check_connection, create_bucket, get_file_list, get_object, list_buckets, list_objects,
+    read_json, upload_csv_object,
+};
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -15,7 +18,10 @@ fn main() {
             create_bucket,
             list_objects,
             get_object,
-            upload_csv_object
+            upload_csv_object,
+            get_file_list,
+            check_connection,
+            read_json
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

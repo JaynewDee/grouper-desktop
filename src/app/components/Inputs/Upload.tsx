@@ -5,16 +5,17 @@ import { fileToString } from "../../utils/parse";
 
 const Upload = ({
   setStudentData,
-  setFileOptions
+  setFileOptions,
+  isLoggedIn
 }: {
   setStudentData: any;
   setFileOptions: any;
+  isLoggedIn: boolean;
 }) => {
   // STATE
   const [containerState, setContainerState] = useState(true);
   const [nameField, setNameField] = useState("");
   const [errorState, setErrorState] = useState("");
-  const [buttonTxt, setButtonTxt] = useState("Upload");
   // REF
   const clickRef = useRef<HTMLInputElement | null>(null);
   const proxyToRef = () => {
@@ -23,7 +24,7 @@ const Upload = ({
   // STYLE STATES
   const transforms = Object.freeze({
     collapsed: {
-      transform: "translateX(-66%)"
+      transform: "translateX(-71%)"
     },
     expanded: {
       transform: "translateX(0%)"
@@ -39,12 +40,6 @@ const Upload = ({
 
   // EVENT HANDLERS
   const toggleTray = () => setContainerState((prev) => !prev);
-
-  const handleMouseEnter = (_: MouseEvent<HTMLButtonElement>) =>
-    setButtonTxt("Browse");
-
-  const handleMouseLeave = (_: MouseEvent<HTMLButtonElement>) =>
-    setButtonTxt("Upload");
 
   const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setNameField(e.target.value);
@@ -68,10 +63,10 @@ const Upload = ({
     if (clickRef.current) {
       const file = clickRef.current.files![0];
       const jsonString = await fileToString(file);
-      const res = await API.uploadObject(jsonString, nameField);
+      const res = await API.uploadObject(jsonString, nameField, isLoggedIn);
       const data = JSON.parse(res);
       setStudentData(data);
-      const filenames = await API.listObjects();
+      const filenames = await API.getFileList();
       setFileOptions(filenames);
       setNameField("");
     }
@@ -96,13 +91,8 @@ const Upload = ({
           accept=".csv"
           type="file"
         ></input>
-        <button
-          className="upload-btn"
-          onClick={proxyToRef}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {buttonTxt}
+        <button className="upload-btn" onClick={proxyToRef}>
+          BROWSE
         </button>
         <button
           onClick={toggleTray}
@@ -114,7 +104,7 @@ const Upload = ({
       </div>
       <div
         className="file-submit"
-        style={containerState ? expanded : { transform: "translateX(-71%)" }}
+        style={containerState ? expanded : { transform: "translateX(-69%)" }}
       >
         <input
           type="text"

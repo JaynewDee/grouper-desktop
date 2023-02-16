@@ -1,8 +1,13 @@
 pub mod files {
     use serde::Deserialize;
+    use std::io::Read;
     use std::net::TcpStream;
     use std::path::Path;
-    use std::{env, fs::File, io::Write};
+    use std::{
+        env,
+        fs::{create_dir, read_dir, File},
+        io::Write,
+    };
 
     use crate::parse::Student;
 
@@ -14,18 +19,52 @@ pub mod files {
 
     #[derive(Deserialize)]
     pub struct FileHandler {
-        temp_path: String,
+        pub temp_path: String,
     }
 
     impl FileHandler {
         pub fn new() -> FileHandler {
             FileHandler {
-                temp_path: env::temp_dir().to_string_lossy().into_owned(),
+                temp_path: format!(
+                    "{}grouper-data",
+                    env::temp_dir().to_string_lossy().into_owned()
+                ),
             }
         }
 
-        pub fn write_json(&self, data: Vec<Student>) -> Result<String, Box<dyn std::error::Error>> {
-            let write_path = format!("{}{}", self.get_temp_path(), "grouper-students.json");
+        pub fn init_base_dir(&self) -> std::io::Result<()> {
+            let path = format!("{}", self.get_temp_path());
+            create_dir(path)?;
+            Ok(())
+        }
+
+        pub fn read_and_return_json(
+            &self,
+            filename: &str,
+        ) -> Result<String, Box<dyn std::error::Error>> {
+            let temp_path = self.get_temp_path();
+            let full_path = format!("{}\\{}", &temp_path, &filename);
+            println!("{}", full_path);
+            let mut file = File::open(full_path).expect("Failed to read json file");
+            let mut file_contents = String::new();
+            file.read_to_string(&mut file_contents)
+                .expect("Failed to read json file.");
+
+            Ok(file_contents)
+        }
+
+        pub fn write_json(
+            &self,
+            data: Vec<Student>,
+            filename: &str,
+        ) -> Result<String, Box<dyn std::error::Error>> {
+            if let false = self.check_for_dir() {
+                println!("Creating base directory for Grouper Desktop user.");
+                self.init_base_dir().unwrap();
+            } else {
+                println!("Base directory found. Proceeding to write file.");
+            }
+            let write_path = format!("{}\\{}.json", self.get_temp_path(), filename);
             let mut file = File::create(&write_path)?;
 
             let json = serde_json::to_string(&data)?;
@@ -38,7 +77,27 @@ pub mod files {
         }
 
         fn get_temp_path(&self) -> String {
-            self.temp_path.clone()
+            format!("{}", self.temp_path.clone())
+        }
+
+        fn check_for_dir(&self) -> bool {
+            let temp = &self.get_temp_path();
+            let path = Path::new(temp);
+            path.is_dir()
+        }
+
+        pub fn read_directory(&self) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+            let path = self.get_temp_path();
+            let dir = read_dir(path).unwrap();
+
+            let mut file_list: Vec<String> = Vec::new();
+
+            for file in dir {
+                let file_name = file.unwrap().file_name();
+                println!("{:?}", file_name);
+                file_list.push(file_name.into_string().expect("Failed to parse file name."));
+            }
+            Ok(file_list)
         }
 
         pub fn network_available() -> bool {
