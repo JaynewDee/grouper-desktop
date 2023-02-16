@@ -143,7 +143,7 @@ input[type="file"]:focus + label {
 .classes-box {
   display: flex;
   flex-flow: column nowrap;
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
   margin-top: 15rem;
   overflow-y: hidden;
 }
@@ -162,7 +162,7 @@ input[type="file"]:focus + label {
   align-items: center;
   overflow: auto;
   width: 33%;
-  height: 10vh;
+  height: 21vh;
   margin: auto;
   padding: 1rem 0;
   box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);

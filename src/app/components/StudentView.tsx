@@ -18,6 +18,7 @@ export const StudentView: React.FC<ContentProps> = ({
     const objName = element.textContent + ".json";
     const json = await API.readJson(objName as string);
     const studentData = JSON.parse(json);
+    setStudentData([]);
     setStudentData(studentData);
     toggleOptionsDisplay();
   };
@@ -33,7 +34,10 @@ export const StudentView: React.FC<ContentProps> = ({
   };
 
   return (
-    <div className="content-box">
+    <div
+      className="content-box"
+      key={studentData.reduce((acc, { avg }) => (acc += avg), 0)}
+    >
       <Classes handlers={classHandlers} />
       <hr style={{ width: "50%", borderRadius: "50%", marginBottom: "3rem" }} />
       {studentData.length > 0 && (
@@ -44,11 +48,7 @@ export const StudentView: React.FC<ContentProps> = ({
         </div>
       )}
       {studentData &&
-        studentData.map((stud: StudentType) => (
-          <>
-            <StudentCard data={stud} />
-          </>
-        ))}
+        studentData.map((stud: StudentType) => <StudentCard data={stud} />)}
     </div>
   );
 };

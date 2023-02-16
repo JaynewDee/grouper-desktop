@@ -21,21 +21,22 @@ const StudentCard = ({ data }: { data: StudentType }) => {
     }
   };
 
+  const useAnimationDelay = (id: number) => ({
+    animationDelay: `${String(id / 10)}s`
+  });
+
   return (
     <div
-      key={data.id}
+      key={data.avg}
       className={cardState === "expanded" ? "card-expanded" : "card-collapsed"}
       onClick={toggleCardState}
-      style={
-        cardState === "collapsed"
-          ? {
-              justifyContent: "flex-start",
-              animationDelay: `${String(data.id / 10)}s`
-            }
-          : { animationDelay: `${String(data.id / 10)}s` }
-      }
+      style={useAnimationDelay(data.id)}
     >
-      <button onClick={toggleCardState} className="arrow-btn" key={data.id}>
+      <button
+        onClick={toggleCardState}
+        className="arrow-btn"
+        key={data.id * 100}
+      >
         {cardState === "expanded" ? (
           <CollapseArrow key={data.name} />
         ) : (

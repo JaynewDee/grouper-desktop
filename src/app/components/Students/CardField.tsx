@@ -6,7 +6,7 @@ export const Fields = (data: StudentType) => {
 
   const fields = ["Student", "GPA", "Group", "Email"];
 
-  const jsx = fields.map((field, idx) => (
+  return fields.map((field, idx) => (
     <div className="student-field-set" key={idx}>
       <h4 className="student-field-header">{field}</h4>
       <p className="student-field">
@@ -26,5 +26,4 @@ export const Fields = (data: StudentType) => {
       </p>
     </div>
   ));
-  return jsx;
 };
