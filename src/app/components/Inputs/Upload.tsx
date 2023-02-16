@@ -21,9 +21,9 @@ const Upload = ({
     clickRef.current?.click();
   };
   // STYLE STATES
-  const transforms = {
+  const transforms = Object.freeze({
     collapsed: {
-      transform: "translateX(-70%)"
+      transform: "translateX(-66%)"
     },
     expanded: {
       transform: "translateX(0%)"
@@ -34,11 +34,17 @@ const Upload = ({
     pointRight: {
       transform: "rotate(0deg)"
     }
-  };
+  });
   const { collapsed, expanded, pointLeft, pointRight } = transforms;
 
   // EVENT HANDLERS
   const toggleTray = () => setContainerState((prev) => !prev);
+
+  const handleMouseEnter = (_: MouseEvent<HTMLButtonElement>) =>
+    setButtonTxt("Browse");
+
+  const handleMouseLeave = (_: MouseEvent<HTMLButtonElement>) =>
+    setButtonTxt("Upload");
 
   const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setNameField(e.target.value);
@@ -78,13 +84,6 @@ const Upload = ({
     }, 3000);
   };
 
-  const handleMouseEnter = (_: MouseEvent<HTMLButtonElement>) => {
-    setButtonTxt("Browse");
-  };
-  const handleMouseLeave = (_: MouseEvent<HTMLButtonElement>) => {
-    setButtonTxt("Upload");
-  };
-
   return (
     <div className="upload-inputs">
       <div
@@ -115,10 +114,17 @@ const Upload = ({
       </div>
       <div
         className="file-submit"
-        style={containerState ? expanded : collapsed}
+        style={containerState ? expanded : { transform: "translateX(-71%)" }}
       >
-        <input type="text" value={nameField} onChange={handleFileNameChange} />
-        <button onClick={handleFileSubmit}>SUBMIT</button>
+        <input
+          type="text"
+          value={nameField}
+          placeholder="classroom name"
+          onChange={handleFileNameChange}
+        />
+        <button onClick={containerState ? handleFileSubmit : toggleTray}>
+          {containerState ? "SUBMIT" : "UPLOAD"}
+        </button>
       </div>
       {errorState && (
         <div style={{ marginTop: "9rem", position: "absolute", width: "15%" }}>

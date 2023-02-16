@@ -1,25 +1,15 @@
 import { Dispatch, MouseEvent, SetStateAction, useState } from "react";
 import { API } from "../api";
+import { Classes } from "./Students/Classroom";
 import StudentCard from "./Students/StudentCard";
 import { StudentType } from "./Students/StudentCard";
 
-interface ContentProps {
-  studentData: StudentType[];
-  setStudentData: Dispatch<SetStateAction<StudentType[]>>;
-  fileOptions: string[];
-}
 export const Content: React.FC<ContentProps> = ({
   studentData,
   setStudentData,
   fileOptions
 }) => {
   const [optionsDisplay, setOptionsDisplay] = useState(false);
-
-  const expandAll = () => {
-    setStudentData((prev: StudentType[]) => [
-      ...prev.map((stud: StudentType) => ({ ...stud }))
-    ]);
-  };
 
   const toggleFileDisplay = () => setOptionsDisplay((prev) => !prev);
 
@@ -30,23 +20,47 @@ export const Content: React.FC<ContentProps> = ({
     setStudentData(studentData);
     toggleFileDisplay();
   };
+  const clearStudentsDisplay = () => setStudentData([]);
+  // Packaged handlers for single-prop send
+  const classHandlers: ClassHandlers = {
+    toggleFileDisplay,
+    handleGetFile,
+    fileOptions,
+    optionsDisplay
+  };
+
   return (
     <div className="content-box">
-      <div className="btn-box">
-        <button onClick={toggleFileDisplay}>CLASSES</button>
-        {optionsDisplay && (
-          <div className="file-options-container">
-            {fileOptions.map((opt, idx) => (
-              <p onClick={handleGetFile} key={idx} className="file-option">
-                {opt}
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
+      <Classes handlers={classHandlers} displayState={optionsDisplay} />
       <hr style={{ width: "50%", borderRadius: "50%", marginBottom: "3rem" }} />
+      {studentData.length > 0 && (
+        <div className="toggle-display-box">
+          <button id="expand">Expand All</button>
+          <button id="collapse">Collapse All</button>
+          <button onClick={clearStudentsDisplay}>Clear</button>
+        </div>
+      )}
       {studentData &&
-        studentData.map((stud: StudentType) => <StudentCard data={stud} />)}
+        studentData.map((stud: StudentType) => (
+          <>
+            <StudentCard data={stud} />
+          </>
+        ))}
     </div>
   );
 };
+
+interface ContentProps {
+  studentData: StudentType[];
+  setStudentData: Dispatch<SetStateAction<StudentType[]>>;
+  fileOptions: string[];
+}
+
+export type GetFileEvent = (e: MouseEvent<any, any>) => Promise<void>;
+
+export interface ClassHandlers {
+  toggleFileDisplay: () => void;
+  handleGetFile: GetFileEvent;
+  fileOptions: string[];
+  optionsDisplay: boolean;
+}

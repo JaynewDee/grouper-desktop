@@ -13,11 +13,13 @@ function App() {
   const [availableFiles, setAvailableFiles] = useState<Files>([]);
 
   useEffect(() => {
-    API.listObjects()
-      .then((files) => setAvailableFiles(files))
-      .catch((err) => console.error(err));
+    if (availableFiles.length === 0) {
+      API.listObjects()
+        .then((files) => setAvailableFiles(files))
+        .catch((err) => console.error(err));
+    }
   }, []);
-
+  console.log(students);
   return (
     <>
       <Header />

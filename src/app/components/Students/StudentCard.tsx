@@ -14,9 +14,11 @@ const StudentCard = ({ data }: { data: StudentType }) => {
   const [cardState, setCardState] = useState("collapsed");
 
   const toggleCardState = () => {
-    cardState === "collapsed"
-      ? setCardState("expanded")
-      : setCardState("collapsed");
+    if (cardState === "collapsed") {
+      setCardState("expanded");
+    } else {
+      setCardState("collapsed");
+    }
   };
 
   return (
@@ -24,7 +26,14 @@ const StudentCard = ({ data }: { data: StudentType }) => {
       key={data.id}
       className={cardState === "expanded" ? "card-expanded" : "card-collapsed"}
       onClick={toggleCardState}
-      style={cardState === "collapsed" ? { justifyContent: "flex-start" } : {}}
+      style={
+        cardState === "collapsed"
+          ? {
+              justifyContent: "flex-start",
+              animationDelay: `${String(data.id / 10)}s`
+            }
+          : { animationDelay: `${String(data.id / 10)}s` }
+      }
     >
       <button onClick={toggleCardState} className="arrow-btn" key={data.id}>
         {cardState === "expanded" ? (

@@ -99,19 +99,17 @@ pub async fn get_object(obj_name: &str) -> Result<String, ()> {
 
     handler.write_json(collection).unwrap();
     let json = serde_json::to_string(&serializable).unwrap();
-    println!("{}", json);
+
     Ok(json)
 }
 
 #[tauri::command]
 pub async fn upload_csv_object(csv_as_json: &str, obj_name: &str) -> Result<String, ()> {
     let test_bucket_name = String::from("grouper-client-test-bucket");
-    let client = S3Client::get_client().await?;
+    let client = S3Client::get_client().await.unwrap();
 
-    let object = S3Client::upload_object(&client, &test_bucket_name, csv_as_json, obj_name)
-        .await
-        .unwrap();
-    println!("{:?}", object);
-    let student_data = get_object(obj_name).await?;
-    Ok(student_data)
+    match S3Client::upload_object(&client, &test_bucket_name, csv_as_json, obj_name).await {
+        Ok(_student_data) => Ok(get_object(&obj_name).await.unwrap()),
+        Err(_) => Ok("Encountered an Error while attempting to upload csv object.".into()),
+    }
 }
