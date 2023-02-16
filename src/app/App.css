@@ -202,20 +202,32 @@ input[type="file"]:focus + label {
 
 .card-expanded,
 .card-collapsed {
-  border-bottom: 1px solid white;
-  margin: 1rem 0;
   display: flex;
   justify-content: space-between;
   transform: translateX(-100%);
+  padding-top: 3rem;
   animation-duration: 0.66s;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
   animation-iteration-count: 1;
   animation-name: slide-in;
+  box-shadow: 0px 6px 10px 1px rgba(15, 15, 15, 0.626);
 }
 
-.card-collapsed > h2 {
+.card-collapsed > h2,
+.card-content-container > h2 {
+  text-align: right;
   margin: 0 3rem 1.66rem auto;
+}
+
+.card-content-container {
+  width: 100%;
+  margin-left: -3rem;
+}
+.fields-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
 }
 .card-collapsed:hover,
 .card-expanded:hover {
@@ -227,8 +239,6 @@ input[type="file"]:focus + label {
 .card-collapsed:hover > .arrow-btn,
 .card-expanded:hover > .arrow-btn {
   color: cyan;
-
-  border-color: rgba(236, 99, 236, 0.333);
 }
 
 .student-field-set {

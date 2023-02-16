@@ -43,7 +43,14 @@ const StudentCard = ({ data }: { data: StudentType }) => {
           <ExpandArrow key={data.name} />
         )}
       </button>
-      {cardState === "expanded" ? <>{Fields(data)}</> : <h2>{data.name}</h2>}
+      {cardState === "expanded" ? (
+        <div className="card-content-container">
+          <h2>{data.name}</h2>
+          <div className="fields-container">{Fields(data)}</div>
+        </div>
+      ) : (
+        <h2>{data.name}</h2>
+      )}
     </div>
   );
 };

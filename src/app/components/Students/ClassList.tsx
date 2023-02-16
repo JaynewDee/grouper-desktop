@@ -1,4 +1,11 @@
-import { useEffect, useState, MouseEvent } from "react";
+import {
+  useEffect,
+  useState,
+  MouseEvent,
+  SetStateAction,
+  Dispatch
+} from "react";
+import { useHoverEvent } from "../../hooks/useHover";
 import { ClassHandlers, GetFileEvent } from "../StudentView";
 
 const Class = ({
@@ -11,21 +18,9 @@ const Class = ({
   id: number;
 }) => {
   // const [utilsDisplay, setUtilsDisplay] = useState(false);
-  //
-  // const handleMouseEnter = (e: MouseEvent<HTMLParagraphElement>) =>
-  //   setUtilsDisplay(true);
-  // const handleMouseLeave = (e: MouseEvent<HTMLParagraphElement>) =>
-  //   setUtilsDisplay(false);
-  //
 
   return (
-    <p
-      onClick={handleGetFile}
-      // onMouseEnter={handleMouseEnter}
-      // onMouseLeave={handleMouseLeave}
-      key={id}
-      className="class-option"
-    >
+    <p onClick={handleGetFile} key={id} className="class-option">
       {opt}
     </p>
   );
@@ -45,16 +40,16 @@ export const Classes = ({
   //
   //
   return (
-    <div className="classes-box">
+    <div className="classes-box" key={fileOptions.length}>
       <button onClick={toggleOptionsDisplay}>CLASSES</button>
       <div
         className={
           listState ? "class-options-expanded" : "class-options-collapsed"
         }
       >
-        {fileOptions.map((opt: string, idx: number) =>
-          Class({ handleGetFile, opt, id: idx })
-        )}
+        {fileOptions.map((opt: string, idx: number) => (
+          <Class handleGetFile={handleGetFile} opt={opt} id={idx} key={idx} />
+        ))}
       </div>
     </div>
   );
