@@ -84,3 +84,9 @@
   align-items: center;
   margin-bottom: 3rem;
 }
+
+.divider-md {
+  width: 50%;
+  border-radius: 50%;
+  margin: 0 auto 3rem;
+}

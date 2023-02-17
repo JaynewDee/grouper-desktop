@@ -1,4 +1,12 @@
-import { FC, useEffect, useState, memo, Dispatch, SetStateAction } from "react";
+import {
+  FC,
+  useEffect,
+  useState,
+  memo,
+  Dispatch,
+  SetStateAction,
+  useMemo
+} from "react";
 import "./App.css";
 import { API } from "./api";
 import Header from "./components/Header/Header";
@@ -10,11 +18,12 @@ type Files = string[] | [];
 
 const App: FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+
   const [students, setStudentData] = useState<StudentType[]>([]);
 
   const [availableFiles, setAvailableFiles] = useState<Files>([]);
-  console.log(availableFiles);
-  useEffect(() => {
+
+  useMemo(() => {
     if (availableFiles.length === 0) {
       API.getFileList()
         .then((files) => setAvailableFiles(files))

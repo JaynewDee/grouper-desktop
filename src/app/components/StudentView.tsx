@@ -2,13 +2,13 @@ import {
   Dispatch,
   MouseEvent,
   SetStateAction,
-  useMemo,
   useState,
   FC,
   MutableRefObject
 } from "react";
 import { API } from "../api";
 import { Classes } from "./ClassList";
+import DisplayControls from "./Students/DisplayControls";
 import StudentCard from "./Students/StudentCard";
 import { StudentType } from "./Students/StudentCard";
 
@@ -19,8 +19,10 @@ export const StudentView: FC<ContentProps> = ({
   setAvailableFiles
 }) => {
   const [toggleAll, setToggleAll] = useState("");
+
   const expandAll = () => setToggleAll("all");
   const collapseAll = () => setToggleAll("none");
+  const clearStudentsDisplay = () => setStudentData([]);
 
   const handleGetFile = async (e: MouseEvent<any, any>) => {
     const element = e.target as HTMLElement;
@@ -41,8 +43,8 @@ export const StudentView: FC<ContentProps> = ({
     setAvailableFiles((prev) =>
       prev.filter((itemName) => itemName !== objName)
     );
+    setStudentData([]);
   };
-  const clearStudentsDisplay = () => setStudentData([]);
 
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);
   // Packaged handlers for single-prop send
@@ -52,31 +54,21 @@ export const StudentView: FC<ContentProps> = ({
     fileOptions: stripExt(fileOptions)
   };
 
+  const controls: DisplayControllers = {
+    expandAll,
+    collapseAll,
+    clearStudentsDisplay
+  };
+
   return (
     <div
       className="content-box"
       key={studentData.reduce((acc, { avg }) => (acc += avg), 0)}
     >
       <Classes handlers={classHandlers} />
-      <hr
-        style={{
-          width: "50%",
-          borderRadius: "50%",
-          marginBottom: "3rem",
-          marginTop: "0"
-        }}
-      />
-      {studentData.length > 0 && (
-        <div className="toggle-display-box">
-          <button id="expand" onClick={expandAll}>
-            Expand All
-          </button>
-          <button id="collapse" onClick={collapseAll}>
-            Collapse All
-          </button>
-          <button onClick={clearStudentsDisplay}>Clear</button>
-        </div>
-      )}
+
+      {studentData.length > 0 && <DisplayControls controls={controls} />}
+
       {studentData &&
         studentData.map((stud: StudentType) => (
           <StudentCard toggleState={toggleAll} data={stud} key={stud.id} />
@@ -99,8 +91,17 @@ export type DeleteFileEvent = (
   e: MouseEvent<any, any>,
   clickRef: MutableRefObject<HTMLInputElement | null>
 ) => Promise<void>;
+
 export interface ClassHandlers {
   handleGetFile: GetFileEvent;
   handleDeleteFile: DeleteFileEvent;
   fileOptions: string[];
+}
+
+type SimpleSetter = () => void;
+
+export interface DisplayControllers {
+  expandAll: SimpleSetter;
+  collapseAll: SimpleSetter;
+  clearStudentsDisplay: SimpleSetter;
 }

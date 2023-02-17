@@ -9,7 +9,7 @@
   animation-fill-mode: forwards;
   animation-iteration-count: 1;
   animation-name: slide-in;
-  box-shadow: 0px 6px 10px 1px rgba(15, 15, 15, 0.626);
+  box-shadow: 0 3px 12px 1px rgba(20, 20, 20, 0.7);
 }
 
 .card-collapsed > h2,
@@ -20,7 +20,7 @@
 
 .card-content-container {
   width: 100%;
-  margin-left: -3rem;
+  margin-left: -6rem;
 }
 .fields-container {
   display: flex;
@@ -39,8 +39,11 @@
   color: cyan;
 }
 
+.fields-container {
+  width: 115%;
+}
 .student-field-set {
-  text-align: right;
+  text-align: left;
   margin-bottom: 1rem;
 }
 .student-field-set:last-child {

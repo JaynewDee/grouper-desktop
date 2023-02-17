@@ -16,19 +16,16 @@ const Class: FC<ClassProps> = ({
   opt,
   id
 }) => {
-  const handleOptionClick = (e: any) => {
-    handleGetFile(e);
-  };
   const [hoverState, setHoverState] = useState(false);
 
   const clickRef = useRef<HTMLInputElement | null>(null);
 
-  const handleMouseEnter = (e: any) => {
-    setHoverState(true);
-  };
-  const handleMouseLeave = (e: any) => {
-    setHoverState(false);
-  };
+  const handleOptionClick = (e: any) => handleGetFile(e);
+
+  const handleMouseEnter = (_: any) => setHoverState(true);
+
+  const handleMouseLeave = (_: any) => setHoverState(false);
+
   return (
     <div
       className="class-option-container"
@@ -64,26 +61,33 @@ export const Classes: FC<ClassesProps> = memo(
     useMemo(() => setListState((prev) => !prev), [fileOptions]);
     //
     return (
-      <div className="classes-box" key={fileOptions.length}>
-        <button onClick={() => setListState((prev) => !prev)}>
-          CLASSROOMS
-        </button>
-        <div
-          className={
-            listState ? "class-options-expanded" : "class-options-collapsed"
-          }
-        >
-          {fileOptions.map((opt: string, idx: number) => (
-            <Class
-              handleGetFile={handleGetFile}
-              handleDeleteFile={handleDeleteFile}
-              opt={opt}
-              id={idx}
-              key={idx}
-            />
-          ))}
+      <>
+        <div className="classes-box" key={fileOptions.length}>
+          <button onClick={() => setListState((prev) => !prev)}>
+            CLASSROOMS
+          </button>
+          <div
+            className={
+              listState ? "class-options-expanded" : "class-options-collapsed"
+            }
+          >
+            {fileOptions.length ? (
+              fileOptions.map((opt: string, idx: number) => (
+                <Class
+                  handleGetFile={handleGetFile}
+                  handleDeleteFile={handleDeleteFile}
+                  opt={opt}
+                  id={idx}
+                  key={idx}
+                />
+              ))
+            ) : (
+              <p>Upload a file to build your first classroom!</p>
+            )}
+          </div>
         </div>
-      </div>
+        <hr className="divider-md" />
+      </>
     );
   }
 );
