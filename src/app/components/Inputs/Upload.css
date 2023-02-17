@@ -1,0 +1,50 @@
+input[type="file"] {
+  width: 0;
+  opacity: 0; /* make transparent */
+  z-index: -1; /* move under anything else */
+  position: absolute; /* don't let it take up space */
+}
+
+input[type="file"]:focus + label {
+  outline: 2px solid; /* example focus style */
+}
+
+.upload-inputs {
+  display: flex;
+  justify-content: column nowrap;
+}
+
+.file-upload-container {
+  display: flex;
+  position: fixed;
+  transition: all 0.33s;
+  height: 2rem;
+  font-size: 2rem;
+  z-index: 3;
+  top: 4rem;
+}
+
+.file-submit {
+  position: fixed;
+  top: 6rem;
+  transition: all 1s;
+  z-index: 3;
+}
+
+.file-submit > input,
+.file-submit > button {
+  font-size: 1rem;
+  letter-spacing: 0.06rem;
+}
+
+.upload-btn {
+  letter-spacing: 0.06rem;
+  font-size: 1rem;
+}
+
+.expander-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}

@@ -6,7 +6,7 @@ pub mod files {
     use std::path::Path;
     use std::{
         env,
-        fs::{create_dir, read_dir, File},
+        fs::{create_dir, read_dir, remove_file, File},
         io::Write,
     };
     //
@@ -42,8 +42,8 @@ pub mod files {
         ) -> Result<String, Box<dyn std::error::Error>> {
             let temp_path = self.get_temp_path();
             let full_path = format!("{}\\{}", &temp_path, &filename);
-            println!("{}", full_path);
             let mut file = File::open(full_path).expect("Failed to read json file");
+
             let mut file_contents = String::new();
             file.read_to_string(&mut file_contents)
                 .expect("Failed to read json file.");
@@ -73,7 +73,14 @@ pub mod files {
                 write_path
             ))
         }
-
+        pub fn delete_file(&self, filename: &str) -> Result<String, Box<dyn std::error::Error>> {
+            let path = self.get_temp_path();
+            let full_path = format!("{}\\{}", &path, &filename);
+            match remove_file(&full_path) {
+                Ok(_) => Ok(format!("File deleted successfully.")),
+                Err(e) => Err(format!("Error deleting file: {}", e).into()),
+            }
+        }
         fn get_temp_path(&self) -> String {
             format!("{}", self.temp_path.clone())
         }
@@ -119,7 +126,6 @@ pub mod files {
 
 pub mod models {
     use serde::{Deserialize, Serialize};
-    use std::collections::BTreeMap;
 
     #[derive(Debug, Serialize, Deserialize)]
     pub struct Student {
@@ -215,40 +221,16 @@ pub mod models {
             }
         }
     }
+}
 
-    pub struct GroupsMap(BTreeMap<f32, Vec<Student>>);
+pub mod grouper {
+    use crate::models::Student;
+    use std::collections::BTreeMap;
+    pub struct GroupsMap(BTreeMap<u16, Vec<Student>>);
 
     impl GroupsMap {
         pub fn new() -> GroupsMap {
             GroupsMap(BTreeMap::new())
-        }
-    }
-}
-
-pub mod encryption {
-    // use chacha20poly1305::{
-    //     aead::{rand_core::RngCore, Aead, OsRng},
-    //     ChaCha20Poly1305, KeyInit, XChaCha20Poly1305,
-    // };
-    pub struct Cipher {}
-
-    impl Cipher {
-        fn _encrypt_file(
-            &self,
-            _obj_name: &str,
-            _json_data: String,
-        ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-            // let mut nonce = [0u8; 24];
-            // OsRng.fill_bytes(&mut key);
-            // OsRng.fill_bytes(&mut nonce);
-
-            // let cipher = XChaCha20Poly1305::new();
-
-            // let encrypted_file = cipher
-            //     .encrypt(&nonce.into(), json_data.as_ref())
-            //     .expect("Error during file encryption.");
-            // Ok(encrypted_file)
-            Ok([0].to_vec())
         }
     }
 }

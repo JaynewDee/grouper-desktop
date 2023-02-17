@@ -1,14 +1,27 @@
-import { Dispatch, MouseEvent, SetStateAction, useMemo, useState } from "react";
+import {
+  Dispatch,
+  MouseEvent,
+  SetStateAction,
+  useMemo,
+  useState,
+  FC,
+  MutableRefObject
+} from "react";
 import { API } from "../api";
-import { Classes } from "./Students/ClassList";
+import { Classes } from "./ClassList";
 import StudentCard from "./Students/StudentCard";
 import { StudentType } from "./Students/StudentCard";
 
-export const StudentView: React.FC<ContentProps> = ({
+export const StudentView: FC<ContentProps> = ({
   studentData,
   setStudentData,
-  fileOptions
+  fileOptions,
+  setAvailableFiles
 }) => {
+  const [toggleAll, setToggleAll] = useState("");
+  const expandAll = () => setToggleAll("all");
+  const collapseAll = () => setToggleAll("none");
+
   const handleGetFile = async (e: MouseEvent<any, any>) => {
     const element = e.target as HTMLElement;
     const objName = element.textContent + ".json";
@@ -16,11 +29,26 @@ export const StudentView: React.FC<ContentProps> = ({
     const studentData = JSON.parse(json);
     setStudentData(studentData);
   };
+
+  const handleDeleteFile: DeleteFileEvent = async (
+    _: MouseEvent<any, any>,
+    clickRef: MutableRefObject<HTMLInputElement | null>
+  ) => {
+    const element = clickRef.current as HTMLInputElement;
+    const text = element.textContent;
+    const objName = text + ".json";
+    await API.deleteFile(objName);
+    setAvailableFiles((prev) =>
+      prev.filter((itemName) => itemName !== objName)
+    );
+  };
   const clearStudentsDisplay = () => setStudentData([]);
+
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);
   // Packaged handlers for single-prop send
   const classHandlers: ClassHandlers = {
     handleGetFile,
+    handleDeleteFile,
     fileOptions: stripExt(fileOptions)
   };
 
@@ -40,28 +68,39 @@ export const StudentView: React.FC<ContentProps> = ({
       />
       {studentData.length > 0 && (
         <div className="toggle-display-box">
-          <button id="expand">Expand All</button>
-          <button id="collapse">Collapse All</button>
+          <button id="expand" onClick={expandAll}>
+            Expand All
+          </button>
+          <button id="collapse" onClick={collapseAll}>
+            Collapse All
+          </button>
           <button onClick={clearStudentsDisplay}>Clear</button>
         </div>
       )}
       {studentData &&
         studentData.map((stud: StudentType) => (
-          <StudentCard data={stud} key={stud.id} />
+          <StudentCard toggleState={toggleAll} data={stud} key={stud.id} />
         ))}
     </div>
   );
 };
 
+export type SetStudentState = Dispatch<SetStateAction<StudentType[]>>;
+
 interface ContentProps {
   studentData: StudentType[];
-  setStudentData: Dispatch<SetStateAction<StudentType[]>>;
+  setStudentData: SetStudentState;
   fileOptions: string[];
+  setAvailableFiles: Dispatch<SetStateAction<string[] | []>>;
 }
 
 export type GetFileEvent = (e: MouseEvent<any, any>) => Promise<void>;
-
+export type DeleteFileEvent = (
+  e: MouseEvent<any, any>,
+  clickRef: MutableRefObject<HTMLInputElement | null>
+) => Promise<void>;
 export interface ClassHandlers {
   handleGetFile: GetFileEvent;
+  handleDeleteFile: DeleteFileEvent;
   fileOptions: string[];
 }

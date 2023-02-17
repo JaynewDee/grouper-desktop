@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from "react";
+import { FC, useEffect, useState, memo, Dispatch, SetStateAction } from "react";
 import "./App.css";
 import { API } from "./api";
 import Header from "./components/Header/Header";
@@ -8,11 +8,12 @@ import { StudentType } from "./components/Students/StudentCard";
 
 type Files = string[] | [];
 
-function App() {
+const App: FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [students, setStudents] = useState<StudentType[]>([]);
-  const [availableFiles, setAvailableFiles] = useState<Files>([]);
+  const [students, setStudentData] = useState<StudentType[]>([]);
 
+  const [availableFiles, setAvailableFiles] = useState<Files>([]);
+  console.log(availableFiles);
   useEffect(() => {
     if (availableFiles.length === 0) {
       API.getFileList()
@@ -25,16 +26,17 @@ function App() {
     <>
       <Header isLoggedIn={loggedIn} setLoggedIn={setLoggedIn} />
       <Upload
-        setStudentData={setStudents}
-        setFileOptions={setAvailableFiles}
+        setStudentData={setStudentData}
+        setAvailableFiles={setAvailableFiles}
         isLoggedIn={loggedIn}
       />
       <StudentView
         studentData={students}
-        setStudentData={setStudents}
+        setStudentData={setStudentData}
         fileOptions={availableFiles}
+        setAvailableFiles={setAvailableFiles}
       />
     </>
   );
-}
+};
 export default memo(App);

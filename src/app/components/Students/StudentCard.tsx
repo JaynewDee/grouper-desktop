@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpandArrow, CollapseArrow } from "../Icons";
 import { Fields } from "./CardField";
+import "./StudentCard.css";
 
 export interface StudentType {
   id: number;
@@ -10,9 +11,22 @@ export interface StudentType {
   email: string;
 }
 
-const StudentCard = ({ data }: { data: StudentType }) => {
+const StudentCard = ({
+  data,
+  toggleState
+}: {
+  data: StudentType;
+  toggleState: string;
+}) => {
   const [cardState, setCardState] = useState("collapsed");
 
+  useEffect(() => {
+    if (toggleState === "all") {
+      setCardState("expanded");
+    } else if (toggleState === "none") {
+      setCardState("collapsed");
+    } else return;
+  }, [toggleState]);
   const toggleCardState = () => {
     if (cardState === "collapsed") {
       setCardState("expanded");
@@ -38,14 +52,19 @@ const StudentCard = ({ data }: { data: StudentType }) => {
         key={data.id * 100}
       >
         {cardState === "expanded" ? (
-          <CollapseArrow key={data.name} />
-        ) : (
           <ExpandArrow key={data.name} />
+        ) : (
+          <CollapseArrow key={data.name} />
         )}
       </button>
       {cardState === "expanded" ? (
         <div className="card-content-container">
-          <h2>{data.name}</h2>
+          <h2
+            className="student-header"
+            style={{ marginLeft: "0", marginRight: "3rem" }}
+          >
+            {data.name}
+          </h2>
           <div className="fields-container">{Fields(data)}</div>
         </div>
       ) : (

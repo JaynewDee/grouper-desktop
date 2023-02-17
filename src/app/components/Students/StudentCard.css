@@ -1,0 +1,77 @@
+.card-expanded,
+.card-collapsed {
+  display: flex;
+  justify-content: space-between;
+  transform: translateX(-100%);
+  padding-top: 3rem;
+  animation-duration: 0.66s;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+  animation-name: slide-in;
+  box-shadow: 0px 6px 10px 1px rgba(15, 15, 15, 0.626);
+}
+
+.card-collapsed > h2,
+.card-content-container > h2 {
+  text-align: right;
+  margin: 0 3rem 1.66rem auto;
+}
+
+.card-content-container {
+  width: 100%;
+  margin-left: -3rem;
+}
+.fields-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+.card-collapsed:hover,
+.card-expanded:hover {
+  cursor: pointer;
+}
+.card-collapsed:hover {
+  color: cyan;
+}
+.card-collapsed:hover > .arrow-btn,
+.card-expanded:hover > .arrow-btn {
+  color: cyan;
+}
+
+.student-field-set {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+.student-field-set:last-child {
+  margin-right: 3rem;
+}
+.student-header {
+  text-decoration: overline;
+}
+.student-field-header {
+  text-decoration: underline;
+  margin: 0;
+}
+.student-field {
+  overflow: auto;
+  color: cyan;
+  word-break: break-all;
+  font-size: 1.11rem;
+}
+
+.arrow-btn {
+  border-radius: 50%;
+  width: 1.66rem;
+  height: 1.66rem;
+  border: 1px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 1rem 0 3rem;
+}
+
+.hover-tooltip {
+  position: relative;
+  top: 0;
+}

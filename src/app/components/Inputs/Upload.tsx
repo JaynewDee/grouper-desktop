@@ -1,16 +1,32 @@
-import { ChangeEvent, MouseEvent, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  MouseEvent,
+  SetStateAction,
+  useRef,
+  useState,
+  FC
+} from "react";
 import { Arrow } from "../Icons";
 import { API } from "../../api";
 import { fileToString } from "../../utils/parse";
+import "./Upload.css";
+import { SetStudentState } from "../StudentView";
 
-const Upload = ({
-  setStudentData,
-  setFileOptions,
-  isLoggedIn
-}: {
-  setStudentData: any;
-  setFileOptions: any;
+type SetFiles = Dispatch<SetStateAction<string[] | []>>;
+
+type InputChange = ChangeEvent<HTMLInputElement>;
+
+interface UploadProps {
+  setStudentData: SetStudentState;
+  setAvailableFiles: SetFiles;
   isLoggedIn: boolean;
+}
+
+const Upload: FC<UploadProps> = ({
+  setStudentData,
+  setAvailableFiles,
+  isLoggedIn
 }) => {
   // STATE
   const [containerState, setContainerState] = useState(true);
@@ -41,10 +57,9 @@ const Upload = ({
   // EVENT HANDLERS
   const toggleTray = () => setContainerState((prev) => !prev);
 
-  const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setNameField(e.target.value);
+  const handleFileNameChange = (e: InputChange) => setNameField(e.target.value);
 
-  const handleFileInputChange = (_: ChangeEvent<HTMLInputElement>) => {
+  const handleFileInputChange = (_: InputChange) => {
     const suggested = clickRef.current!.files![0]["name"] || "";
     if (suggested) {
       setNameField(suggested.split(".")[0]);
@@ -67,7 +82,7 @@ const Upload = ({
       const data = JSON.parse(res);
       setStudentData(data);
       const filenames = await API.getFileList();
-      setFileOptions(filenames);
+      setAvailableFiles(filenames);
       setNameField("");
     }
   };

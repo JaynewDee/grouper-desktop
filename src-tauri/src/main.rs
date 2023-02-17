@@ -7,8 +7,8 @@ mod ffi;
 mod s3;
 
 use ffi::{
-    check_connection, create_bucket, get_file_list, get_object, list_buckets, list_objects,
-    read_json, upload_csv_object,
+    check_connection, create_bucket, delete_one_file, get_file_list, get_object, list_buckets,
+    list_objects, read_json, upload_csv_object,
 };
 
 fn main() {
@@ -21,7 +21,8 @@ fn main() {
             upload_csv_object,
             get_file_list,
             check_connection,
-            read_json
+            read_json,
+            delete_one_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

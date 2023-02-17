@@ -4,6 +4,20 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --Lato: "Lato";
+  --Os: "Oswald";
+  --Ssp: "Source Sans Pro", sans-serif;
+  --bg: #202124;
+  --accent: #303030;
+  --tertiary: #fff;
+  --util: rgba(0, 0, 0, 0.87);
+  --alt: #3c4043;
+  --o-white: #e3e3e3;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: var(--Os);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,7 +45,7 @@
 
 @media screen and (min-width: 1080px) {
   :root {
-    font-size: 24px;
+    font-size: 19px;
   }
   .student-field-set {
     font-size: 1.33rem;

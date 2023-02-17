@@ -156,6 +156,7 @@ pub async fn upload_csv_object(
 
 #[tauri::command]
 pub fn read_json(obj_name: &str) -> Result<String, ()> {
+    println!("{}", obj_name);
     let handler = FileHandler::new();
     let json = handler.read_and_return_json(obj_name).unwrap();
     Ok(json)
@@ -165,4 +166,10 @@ pub fn read_json(obj_name: &str) -> Result<String, ()> {
 pub async fn check_connection() -> Result<bool, ()> {
     let has_connection = FileHandler::network_available();
     Ok(has_connection)
+}
+
+#[tauri::command]
+pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
+    let result_string = FileHandler::new().delete_file(obj_name).unwrap();
+    Ok(result_string)
 }

@@ -1,5 +1,6 @@
-import { splitName } from "../../utils/parse";
 import { StudentType } from "./StudentCard";
+
+const splitName = (fullName: string) => fullName.split(", ");
 
 export const Fields = (data: StudentType) => {
   const [last, first] = splitName(data.name);
