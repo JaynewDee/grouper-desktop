@@ -1,4 +1,4 @@
-import { Dispatch, MouseEvent, SetStateAction, useState } from "react";
+import { Dispatch, MouseEvent, SetStateAction, useMemo, useState } from "react";
 import { API } from "../api";
 import { Classes } from "./Students/ClassList";
 import StudentCard from "./Students/StudentCard";
@@ -9,28 +9,19 @@ export const StudentView: React.FC<ContentProps> = ({
   setStudentData,
   fileOptions
 }) => {
-  const [optionsDisplay, setOptionsDisplay] = useState(false);
-
-  const toggleOptionsDisplay = () => setOptionsDisplay((prev) => !prev);
-
   const handleGetFile = async (e: MouseEvent<any, any>) => {
     const element = e.target as HTMLElement;
     const objName = element.textContent + ".json";
     const json = await API.readJson(objName as string);
     const studentData = JSON.parse(json);
-    toggleOptionsDisplay();
-    setStudentData([]);
     setStudentData(studentData);
   };
-
   const clearStudentsDisplay = () => setStudentData([]);
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);
   // Packaged handlers for single-prop send
   const classHandlers: ClassHandlers = {
-    toggleOptionsDisplay,
     handleGetFile,
-    fileOptions: stripExt(fileOptions),
-    optionsDisplay
+    fileOptions: stripExt(fileOptions)
   };
 
   return (
@@ -71,8 +62,6 @@ interface ContentProps {
 export type GetFileEvent = (e: MouseEvent<any, any>) => Promise<void>;
 
 export interface ClassHandlers {
-  toggleOptionsDisplay: () => void;
   handleGetFile: GetFileEvent;
   fileOptions: string[];
-  optionsDisplay: boolean;
 }

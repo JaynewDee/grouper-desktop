@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use csv::ReaderBuilder;
 use src_tauri::files::FileHandler;
-use src_tauri::parse::{Student, Template};
+use src_tauri::models::{Student, Template};
 use std::io::Cursor;
 
 ///

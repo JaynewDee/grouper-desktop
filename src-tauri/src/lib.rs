@@ -1,4 +1,5 @@
 pub mod files {
+    use crate::models::Student;
     use serde::Deserialize;
     use std::io::Read;
     use std::net::TcpStream;
@@ -8,9 +9,6 @@ pub mod files {
         fs::{create_dir, read_dir, File},
         io::Write,
     };
-
-    use crate::parse::Student;
-
     //
     ////////////////////////
     // Handles os-based i/o
@@ -119,7 +117,7 @@ pub mod files {
     }
 }
 
-pub mod parse {
+pub mod models {
     use serde::{Deserialize, Serialize};
     use std::collections::BTreeMap;
 
@@ -223,6 +221,34 @@ pub mod parse {
     impl GroupsMap {
         pub fn new() -> GroupsMap {
             GroupsMap(BTreeMap::new())
+        }
+    }
+}
+
+pub mod encryption {
+    // use chacha20poly1305::{
+    //     aead::{rand_core::RngCore, Aead, OsRng},
+    //     ChaCha20Poly1305, KeyInit, XChaCha20Poly1305,
+    // };
+    pub struct Cipher {}
+
+    impl Cipher {
+        fn _encrypt_file(
+            &self,
+            _obj_name: &str,
+            _json_data: String,
+        ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+            // let mut nonce = [0u8; 24];
+            // OsRng.fill_bytes(&mut key);
+            // OsRng.fill_bytes(&mut nonce);
+
+            // let cipher = XChaCha20Poly1305::new();
+
+            // let encrypted_file = cipher
+            //     .encrypt(&nonce.into(), json_data.as_ref())
+            //     .expect("Error during file encryption.");
+            // Ok(encrypted_file)
+            Ok([0].to_vec())
         }
     }
 }

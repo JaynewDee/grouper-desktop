@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import "./App.css";
 import { API } from "./api";
 import Header from "./components/Header/Header";
@@ -37,5 +37,4 @@ function App() {
     </>
   );
 }
-
-export default App;
+export default memo(App);

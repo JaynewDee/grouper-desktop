@@ -1,56 +1,58 @@
-import {
-  useEffect,
-  useState,
-  MouseEvent,
-  SetStateAction,
-  Dispatch
-} from "react";
-import { useHoverEvent } from "../../hooks/useHover";
+import React, { useState, memo, useMemo } from "react";
 import { ClassHandlers, GetFileEvent } from "../StudentView";
 
 const Class = ({
   handleGetFile,
+  setListState,
   opt,
   id
 }: {
   handleGetFile: GetFileEvent;
+  setListState: any;
   opt: string;
   id: number;
 }) => {
-  // const [utilsDisplay, setUtilsDisplay] = useState(false);
-
+  const handleOptionClick = (e: any) => {
+    handleGetFile(e);
+  };
   return (
-    <p onClick={handleGetFile} key={id} className="class-option">
+    <p onClick={handleOptionClick} key={id} className="class-option">
       {opt}
     </p>
   );
 };
-
-export const Classes = ({
-  handlers: { toggleOptionsDisplay, optionsDisplay, handleGetFile, fileOptions }
-}: {
+type ClassProps = {
   handlers: ClassHandlers;
-}) => {
-  const [listState, setListState] = useState(false);
-  //
-  //
-  useEffect(() => {
-    setListState((prev) => !prev);
-  }, [optionsDisplay]);
-  //
-  //
-  return (
-    <div className="classes-box" key={fileOptions.length}>
-      <button onClick={toggleOptionsDisplay}>CLASSES</button>
-      <div
-        className={
-          listState ? "class-options-expanded" : "class-options-collapsed"
-        }
-      >
-        {fileOptions.map((opt: string, idx: number) => (
-          <Class handleGetFile={handleGetFile} opt={opt} id={idx} key={idx} />
-        ))}
-      </div>
-    </div>
-  );
 };
+
+export const Classes: React.FC<ClassProps> = memo(
+  ({ handlers: { handleGetFile, fileOptions } }) => {
+    const [listState, setListState] = useState(false);
+    //
+    //
+
+    useMemo(() => setListState((prev) => !prev), [fileOptions]);
+    //
+    //
+    return (
+      <div className="classes-box" key={fileOptions.length}>
+        <button onClick={() => setListState((prev) => !prev)}>CLASSES</button>
+        <div
+          className={
+            listState ? "class-options-expanded" : "class-options-collapsed"
+          }
+        >
+          {fileOptions.map((opt: string, idx: number) => (
+            <Class
+              setListState={setListState}
+              handleGetFile={handleGetFile}
+              opt={opt}
+              id={idx}
+              key={idx}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+);

@@ -158,22 +158,22 @@ input[type="file"]:focus + label {
   position: relative;
   display: flex;
   flex-flow: column nowrap;
-  justify-content: center;
   align-items: center;
   overflow: auto;
   width: 33%;
-  height: 21vh;
+  height: 18vh;
   margin: auto;
-  padding: 1rem 0;
+  padding: 0.66rem 0;
   box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
   transform: translateY(-0vh);
   transition: all 1s;
+  transition-delay: 0.1s;
 }
+
 .class-options-collapsed {
   position: relative;
   display: flex;
   flex-flow: column nowrap;
-  justify-content: center;
   align-items: center;
   overflow: hidden;
   width: 33%;
@@ -181,12 +181,15 @@ input[type="file"]:focus + label {
   padding: 1rem 0;
   box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
   transform: translateY(-25vh);
-  height: 0;
+  height: 0vh;
   transition: all 1s;
+  transition-delay: 0.1s;
 }
+
 .class-option {
-  margin: 0.33rem 1rem;
+  margin: 0.33rem auto;
 }
+
 .class-option:hover {
   cursor: pointer;
   color: cyan;
