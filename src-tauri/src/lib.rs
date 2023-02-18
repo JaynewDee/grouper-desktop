@@ -186,43 +186,7 @@ pub mod grouper {
     use std::collections::BTreeMap;
     // Main Handler - Balancer
 
-    pub struct Balancer {
-        students: Vec<Student>,
-        group_map: GroupsMap,
-        utils: Utils,
-    }
-
     type Students = Vec<Student>;
-
-    impl Balancer {
-        pub fn new(group_size: u16, students: Students) -> Balancer {
-            Balancer {
-                students,
-                group_map: GroupsMap::new(group_size),
-                utils: Utils::new(),
-            }
-        }
-        //
-        pub fn get_utils(&self) -> Utils {
-            self.utils
-        }
-        //
-        pub fn group_map_ref(&self) -> &GroupsMap {
-            &self.group_map
-        }
-        //
-        pub fn sort_students(&self) -> Students {
-            let mut students = self.students.clone();
-            students.sort_by(|a, b| a.avg.partial_cmp(&b.avg).unwrap());
-            students
-        }
-        pub fn partition(sorted: Students, remainder: u8) -> (Students, u8) {
-            (sorted, remainder)
-        }
-        pub fn get_outliers(sorted: Students, remainder: u8) -> Students {
-            sorted
-        }
-    }
 
     //
     // Collection Transformation State
@@ -251,32 +215,31 @@ pub mod grouper {
     #[derive(Clone, Copy)]
     pub struct Utils;
 
-    impl Utils {
-        pub fn new() -> Utils {
-            Utils
-        }
+    #[allow(dead_code)]
 
+    impl Utils {
+        //
         fn _rand_idx(vec_length: usize) -> usize {
             let mut rng = rand::thread_rng();
             rng.gen_range(0..vec_length)
         }
-
+        //
         fn mean(floats: &Vec<f32>) -> f32 {
             floats.iter().fold(0 as f32, |acc, n| acc + n) / floats.len() as f32
         }
-
+        //
         fn diffs(floats: &Vec<f32>, mean: &f32) -> Vec<f32> {
             floats.iter().fold(vec![], |mut acc: Vec<f32>, &val| {
                 acc.push((val - mean).abs());
                 acc
             })
         }
-
+        //
         fn square_all(floats: &Vec<f32>) -> Vec<f32> {
-            floats.iter().map(|float| float * float).collect()
+            floats.iter().map(|float| float.powi(2)).collect()
         }
-
-        pub fn std_dev(&self) -> f32 {
+        //
+        pub fn std_dev(_floats: Vec<f32>) -> f32 {
             let test_vector = vec![
                 // Each group's average as f32
                 79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
@@ -296,11 +259,40 @@ pub mod grouper {
 
             sd
         }
+        //
+        pub fn sort_students(vec_of_students: &Students) -> Students {
+            let mut students = vec_of_students.clone();
+            students.sort_by(|a, b| a.avg.partial_cmp(&b.avg).unwrap());
+            students
+        }
+        //
+        fn partition(sorted: Students, remainder: u8) -> (Students, Students) {
+            let copy = sorted.clone();
+            let outliers = Self::get_outliers(copy, remainder);
+            let pruned: Vec<Student> = sorted
+                .iter()
+                .filter(|student| !outliers.contains(student))
+                .cloned()
+                .collect();
+            (outliers, pruned)
+        }
+        //
+        fn get_outliers(mut sorted: Students, remainder: u8) -> Students {
+            let mut outliers = vec![];
+            for _ in 0..remainder {
+                outliers.push(sorted.remove(0));
+            }
+            outliers
+        }
+        //
+        fn num_groups(num_students: u16, group_size: u16) -> u16 {
+            let res: f32 = num_students as f32 / group_size as f32;
+            res.floor() as u16
+        }
+        fn remainder(num_students: u16, group_size: u16) -> u16 {
+            num_students % group_size
+        }
     }
-
-    //
-    //
-    //
 }
 
 pub mod models {
@@ -314,6 +306,11 @@ pub mod models {
         group: u16,
         email: String,
     }
+    // impl FromIterator<Student> for Vec<Student> {
+    //     fn from_iter<I: IntoIterator<Item = Student>>(iter: I) -> Self {
+    //         iter.into_iter().collect()
+    //     }
+    // }
 
     pub struct StudentBuilder {
         id: Option<u32>,

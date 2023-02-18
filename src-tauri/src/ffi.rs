@@ -4,7 +4,7 @@ use serde::Serialize;
 use csv::{Error, ReaderBuilder, StringRecord};
 use src_tauri::{
     files::FileHandler,
-    grouper::Balancer,
+    grouper::Utils,
     models::{Student, StudentBuilder},
 };
 use std::io::Cursor;
@@ -90,20 +90,12 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()>
         .read_and_return_students(obj_name)
         .expect("Failed to parse students from json ... ");
 
-    for student in &students {
+    let sorted = Utils::sort_students(&students);
+    for student in &sorted {
         println!("{:?}", student);
     }
-
-    let balancer = Balancer::new(group_size, students);
-    let sorted = balancer.sort_students();
-    println!("{:?}", &sorted);
-
-    let utils = balancer.get_utils();
-    let test_sd = utils.std_dev();
-
     //
 
-    println!("{}", &test_sd);
     println!("{}", &obj_name);
     println!("{}", &group_size);
 
