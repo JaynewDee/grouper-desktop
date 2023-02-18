@@ -173,3 +173,8 @@ pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
     let result_string = FileHandler::new().delete_file(obj_name).unwrap();
     Ok(result_string)
 }
+
+#[tauri::command]
+pub async fn build_groups(obj_name: &str) -> Result<&str, ()> {
+    Ok("OK!")
+}
