@@ -3,6 +3,8 @@ import { IoMdSettings } from "react-icons/io";
 import { TbHelp } from "react-icons/tb";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { TiDelete } from "react-icons/ti";
+import { HiUserGroup } from "react-icons/hi";
+
 export const Unlocked = BsFillUnlockFill;
 export const Locked = BsFillLockFill;
 export const Settings = IoMdSettings;
@@ -19,3 +21,6 @@ export const CollapseArrow = () =>
 
 export const DeleteClassBtn = () =>
   TiDelete({ size: "1rem", className: "delete-class-btn" });
+
+export const BuildGroupsBtn = () =>
+  HiUserGroup({ size: "1rem", className: "build-groups-btn" });

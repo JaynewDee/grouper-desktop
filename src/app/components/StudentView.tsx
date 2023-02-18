@@ -32,7 +32,7 @@ export const StudentView: FC<ContentProps> = ({
     setStudentData(studentData);
   };
 
-  const handleDeleteFile: DeleteFileEvent = async (
+  const handleDeleteFile: FileEvent = async (
     _: MouseEvent<any, any>,
     clickRef: MutableRefObject<HTMLInputElement | null>
   ) => {
@@ -46,11 +46,23 @@ export const StudentView: FC<ContentProps> = ({
     setStudentData([]);
   };
 
+  const handleBuildGroups: FileEvent = async (
+    _: MouseEvent<any, any>,
+    clickRef: MutableRefObject<HTMLInputElement | null>
+  ) => {
+    // TODO
+    // Call Rust @ build_groups
+    const target = clickRef.current;
+    const text = target?.textContent;
+    console.log(text);
+  };
+
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);
   // Packaged handlers for single-prop send
   const classHandlers: ClassHandlers = {
     handleGetFile,
     handleDeleteFile,
+    handleBuildGroups,
     fileOptions: stripExt(fileOptions)
   };
 
@@ -87,14 +99,15 @@ interface ContentProps {
 }
 
 export type GetFileEvent = (e: MouseEvent<any, any>) => Promise<void>;
-export type DeleteFileEvent = (
+export type FileEvent = (
   e: MouseEvent<any, any>,
   clickRef: MutableRefObject<HTMLInputElement | null>
 ) => Promise<void>;
 
 export interface ClassHandlers {
   handleGetFile: GetFileEvent;
-  handleDeleteFile: DeleteFileEvent;
+  handleDeleteFile: FileEvent;
+  handleBuildGroups: FileEvent;
   fileOptions: string[];
 }
 

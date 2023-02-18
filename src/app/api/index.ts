@@ -13,7 +13,7 @@ export const API = {
     objName: string,
     loggedIn: boolean
   ): Promise<any> =>
-    await invoke("upload_csv_object", {
+    await invoke("upload_students_s3", {
       csvAsJson: jsonData,
       objName,
       loggedIn

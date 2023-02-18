@@ -1,11 +1,12 @@
 import { FC, useState, memo, useMemo, useRef } from "react";
-import { ClassHandlers, DeleteFileEvent, GetFileEvent } from "./StudentView";
+import { ClassHandlers, FileEvent, GetFileEvent } from "./StudentView";
 import "./ClassList.css";
-import { DeleteClassBtn } from "./Icons";
+import { BuildGroupsBtn, DeleteClassBtn } from "./Icons";
 
 interface ClassProps {
   handleGetFile: GetFileEvent;
-  handleDeleteFile: DeleteFileEvent;
+  handleDeleteFile: FileEvent;
+  handleBuildGroups: FileEvent;
   opt: string;
   id: number;
 }
@@ -13,6 +14,7 @@ interface ClassProps {
 const Class: FC<ClassProps> = ({
   handleGetFile,
   handleDeleteFile,
+  handleBuildGroups,
   opt,
   id
 }) => {
@@ -45,6 +47,11 @@ const Class: FC<ClassProps> = ({
       >
         {opt}
       </p>
+      {hoverState && (
+        <div onClick={(e) => handleBuildGroups(e, clickRef)}>
+          {BuildGroupsBtn()}
+        </div>
+      )}
     </div>
   );
 };
@@ -54,7 +61,14 @@ type ClassesProps = {
 };
 
 export const Classes: FC<ClassesProps> = memo(
-  ({ handlers: { handleGetFile, handleDeleteFile, fileOptions } }) => {
+  ({
+    handlers: {
+      handleGetFile,
+      handleDeleteFile,
+      handleBuildGroups,
+      fileOptions
+    }
+  }) => {
     //
     const [listState, setListState] = useState(false);
     //
@@ -76,6 +90,7 @@ export const Classes: FC<ClassesProps> = memo(
                 <Class
                   handleGetFile={handleGetFile}
                   handleDeleteFile={handleDeleteFile}
+                  handleBuildGroups={handleBuildGroups}
                   opt={opt}
                   id={idx}
                   key={idx}

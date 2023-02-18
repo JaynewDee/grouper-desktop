@@ -77,6 +77,17 @@
 .delete-class-btn:hover {
   outline: 2px solid red;
 }
+.build-groups-btn {
+  position: absolute;
+  outline: 2px solid black;
+  margin-top: 0.66rem;
+  left: 3rem;
+  border-radius: 50%;
+  z-index: 3;
+}
+.build-groups-btn:hover {
+  outline: 2px solid cyan;
+}
 .toggle-display-box {
   display: flex;
   flex-flow: column nowrap;
