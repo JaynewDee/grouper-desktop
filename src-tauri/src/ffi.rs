@@ -2,14 +2,18 @@ use super::s3::S3Client;
 use serde::Serialize;
 
 use csv::ReaderBuilder;
-use src_tauri::files::FileHandler;
-use src_tauri::models::{Student, Template};
+use src_tauri::{
+    files::FileHandler,
+    grouper::Balancer,
+    models::{Student, Template},
+};
 use std::io::Cursor;
 
 ///
-///////////////////
-/// Handles messages received from client
-///////////////////
+/////////////////////////////
+/// Handles messages received
+/// from TypeScript client
+/////////////////////////////
 ///
 
 #[derive(Serialize, Debug)]
@@ -103,7 +107,7 @@ pub async fn get_object(obj_name: &str) -> Result<String, ()> {
 }
 
 #[tauri::command]
-pub async fn upload_csv_object(
+pub async fn upload_students_s3(
     csv_as_json: &str,
     obj_name: &str,
     logged_in: bool,
@@ -175,6 +179,18 @@ pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
 }
 
 #[tauri::command]
-pub async fn build_groups(obj_name: &str) -> Result<&str, ()> {
+pub async fn build_groups(obj_name: &str, group_size: u8) -> Result<&str, ()> {
+    let balancer = Balancer::new();
+    let utils = balancer.get_utils();
+    let test_sd = utils.get_sd();
+    println!("{}", &test_sd);
+    println!("{}", &obj_name);
+    println!("{}", &group_size);
+    //
+    // Call grouper module
+    // - parse file
+    // - create groups by size
+    //
+
     Ok("OK!")
 }

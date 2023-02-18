@@ -40,15 +40,25 @@ pub mod files {
             &self,
             filename: &str,
         ) -> Result<String, Box<dyn std::error::Error>> {
-            let temp_path = self.get_temp_path();
-            let full_path = format!("{}\\{}", &temp_path, &filename);
-            let mut file = File::open(full_path).expect("Failed to read json file");
+            let full_path = self.get_full_path(&filename);
 
+            let file = File::open(full_path).expect("Failed to read json file");
+
+            let file_contents = Self::file_to_string(file);
+            Ok(file_contents)
+        }
+
+        fn file_to_string(mut file: File) -> String {
             let mut file_contents = String::new();
+
             file.read_to_string(&mut file_contents)
                 .expect("Failed to read json file.");
+            file_contents
+        }
 
-            Ok(file_contents)
+        fn get_full_path(&self, filename: &str) -> String {
+            let temp_path = self.get_temp_path();
+            format!("{}\\{}", &temp_path, &filename)
         }
 
         pub fn write_json(
@@ -73,6 +83,7 @@ pub mod files {
                 write_path
             ))
         }
+
         pub fn delete_file(&self, filename: &str) -> Result<String, Box<dyn std::error::Error>> {
             let path = self.get_temp_path();
             let full_path = format!("{}\\{}", &path, &filename);
@@ -81,6 +92,7 @@ pub mod files {
                 Err(e) => Err(format!("Error deleting file: {}", e).into()),
             }
         }
+
         fn get_temp_path(&self) -> String {
             format!("{}", self.temp_path.clone())
         }
@@ -127,7 +139,7 @@ pub mod files {
 pub mod models {
     use serde::{Deserialize, Serialize};
 
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct Student {
         id: u32,
         name: String,
@@ -226,6 +238,35 @@ pub mod models {
 pub mod grouper {
     use crate::models::Student;
     use std::collections::BTreeMap;
+
+    //
+    // Main Handler - Balancer
+    //
+    pub struct Balancer {
+        group_map: GroupsMap,
+        utils: Utils,
+    }
+
+    impl Balancer {
+        pub fn new() -> Balancer {
+            println!("crate::grouper::Balancer");
+            Balancer {
+                group_map: GroupsMap::new(),
+                utils: Utils::new(),
+            }
+        }
+        pub fn get_utils(&self) -> Utils {
+            self.utils
+        }
+        pub fn group_map_ref(&self) -> &GroupsMap {
+            &self.group_map
+        }
+    }
+
+    //
+    // Collection Transformation State
+    //
+    #[derive(Clone)]
     pub struct GroupsMap(BTreeMap<u16, Vec<Student>>);
 
     impl GroupsMap {
@@ -233,14 +274,32 @@ pub mod grouper {
             GroupsMap(BTreeMap::new())
         }
     }
+    //
+    // Utilities / Auxiliaries
+    //
+    #[derive(Clone, Copy)]
+    pub struct Utils;
 
-    //
-    //
-    //
+    impl Utils {
+        pub fn new() -> Utils {
+            Utils
+        }
 
-    //
-    //
-    //
+        pub fn get_sd(&self) -> f32 {
+            let test_vector = vec![
+                // Each group's average as f32
+                79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
+            ];
+            // 1. Calculate the mean of the vector.
+            // 2. Calculate the difference between each element of the vector and the mean.
+            // 3. Square the differences.
+            // 4. Calculate the mean of the squared differences.
+            // 5. Take the square root of the mean of the squared differences to get the standard deviation.
+            let mean = test_vector.iter().fold(0 as f32, |acc, n| acc + n);
+            println!("Mean of test_vector: {}", &mean);
+            mean
+        }
+    }
 
     //
     //
