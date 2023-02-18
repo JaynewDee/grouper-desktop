@@ -56,9 +56,9 @@ export const StudentView: FC<ContentProps> = ({
     const target = clickRef.current;
     const text = target?.textContent;
     const objName = text + ".json";
-    log(objName);
     const res = await API.buildGroups(objName, 4);
-    log(res);
+    const data = JSON.parse(res);
+    log(data);
   };
 
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);

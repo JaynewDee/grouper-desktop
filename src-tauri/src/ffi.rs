@@ -1,12 +1,8 @@
 use super::s3::S3Client;
 use serde::Serialize;
 
-use csv::{Error, ReaderBuilder, StringRecord};
-use src_tauri::{
-    files::FileHandler,
-    grouper::{GroupsMap, Utils},
-    models::{Student, StudentBuilder},
-};
+use csv::ReaderBuilder;
+use src_tauri::{files::FileHandler, grouper::Utils, models::Student};
 use std::io::Cursor;
 
 ///
@@ -22,6 +18,8 @@ struct BucketDetails {
     name: String,
     created: i64,
 }
+
+//
 
 #[tauri::command]
 pub async fn list_buckets() -> Result<Vec<String>, ()> {
@@ -43,6 +41,8 @@ pub async fn list_buckets() -> Result<Vec<String>, ()> {
     Ok(buckets_serialized)
 }
 
+//
+
 #[tauri::command]
 pub async fn list_objects() -> Result<Vec<String>, ()> {
     let test_bucket_name = "grouper-client-test-bucket";
@@ -54,6 +54,8 @@ pub async fn list_objects() -> Result<Vec<String>, ()> {
     Ok(objects)
 }
 
+//
+
 #[tauri::command]
 pub async fn get_file_list() -> Result<Vec<String>, ()> {
     let handler = FileHandler::new();
@@ -63,6 +65,8 @@ pub async fn get_file_list() -> Result<Vec<String>, ()> {
     Ok(file_list)
 }
 
+//
+
 #[tauri::command]
 pub fn read_json(obj_name: &str) -> Result<String, ()> {
     println!("{}", obj_name);
@@ -71,17 +75,23 @@ pub fn read_json(obj_name: &str) -> Result<String, ()> {
     Ok(json)
 }
 
+//
+
 #[tauri::command]
 pub async fn check_connection() -> Result<bool, ()> {
     let has_connection = FileHandler::network_available();
     Ok(has_connection)
 }
 
+//
+
 #[tauri::command]
 pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
     let result_string = FileHandler::new().delete_file(obj_name).unwrap();
     Ok(result_string)
 }
+
+//
 
 #[tauri::command]
 pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()> {
@@ -90,48 +100,10 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()>
         .read_and_return_students(obj_name)
         .expect("Failed to parse students from json ... ");
 
-    let groups_map = GroupsMap::new(students.len() as u16, group_size);
-    let sorted = Utils::sort_students(&students);
-    let num_groups = Utils::num_groups(sorted.len() as u16, group_size);
-    //
-    let assigned = Utils::random_assignment(1, sorted, groups_map, num_groups);
-    let avgs = Utils::group_avgs_map(assigned);
-    for avg in avgs.iter() {
-        println!("{:?}", avg);
-    }
-    //
-    // Call grouper module
-    // - parse file
-    // - create groups by size
-    //
+    let balanced = Utils::balance(students, group_size, 4);
 
-    Ok("OK!".into())
+    Ok(Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... "))
 }
-
-//
-
-//
-
-fn read_record(idx: usize, row: Result<StringRecord, Error>) -> Student {
-    let r = row.expect("Unable to parse string record");
-
-    fn parse_avg(r: StringRecord) -> f32 {
-        match r.get(42).unwrap().parse::<f32>() {
-            Ok(val) => val,
-            Err(_) => 0.0 as f32,
-        }
-    }
-
-    StudentBuilder::new()
-        .id(idx as u32)
-        .name(r.get(0).unwrap().to_string())
-        .email(r.get(2).unwrap().to_string())
-        .avg(parse_avg(r))
-        .group(0)
-        .build()
-}
-
-//
 
 //
 
@@ -152,7 +124,7 @@ pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
     let mut serializable: Vec<Student> = Vec::new();
 
     for (idx, row) in reader.records().enumerate() {
-        let student = read_record(idx, row);
+        let student = FileHandler::read_record(idx, row);
         if student.avg > 0.0 {
             serializable.push(student);
         }
@@ -162,6 +134,8 @@ pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
 
     Ok(json)
 }
+
+//
 
 #[tauri::command]
 pub async fn upload_students_s3(
@@ -179,7 +153,7 @@ pub async fn upload_students_s3(
     let mut serializable: Vec<Student> = Vec::new();
 
     for (idx, row) in reader.records().enumerate() {
-        let student = read_record(idx, row);
+        let student = FileHandler::read_record(idx, row);
         if student.avg > 0.0 {
             serializable.push(student);
         }

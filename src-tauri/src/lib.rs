@@ -4,7 +4,8 @@
 ////////////////////////
 //
 pub mod files {
-    use crate::models::Student;
+    use crate::models::{Student, StudentBuilder};
+    use csv::StringRecord;
     use serde::Deserialize;
     use std::io::Read;
     use std::net::TcpStream;
@@ -152,7 +153,25 @@ pub mod files {
             }
             Ok(file_list)
         }
+        //
+        pub fn read_record(idx: usize, row: Result<StringRecord, csv::Error>) -> Student {
+            let r = row.expect("Unable to parse string record");
 
+            fn parse_avg(r: StringRecord) -> f32 {
+                match r.get(42).unwrap().parse::<f32>() {
+                    Ok(val) => val,
+                    Err(_) => 0.0 as f32,
+                }
+            }
+
+            StudentBuilder::new()
+                .id(idx as u32)
+                .name(r.get(0).unwrap().to_string())
+                .email(r.get(2).unwrap().to_string())
+                .avg(parse_avg(r))
+                .group(0)
+                .build()
+        }
         //
 
         pub fn network_available() -> bool {
@@ -243,23 +262,22 @@ pub mod grouper {
             floats.iter().map(|float| float.powi(2)).collect()
         }
         //
-        pub fn std_dev(_floats: Vec<f32>) -> f32 {
-            let test_vector = vec![
-                // Each group's average as f32
-                79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
-            ];
+        fn round_to_dec_count(value: f32, dec_count: i32) -> f32 {
+            let multi = 10.0_f32.powi(dec_count);
+            (value * multi).round() / multi
+        }
+        //
+        pub fn std_dev(floats: Vec<f32>) -> f32 {
             // 1. Calculate the mean of the vector.
-            let mean = Self::mean(&test_vector);
+            let mean = Self::mean(&floats);
             // 2. Calculate the difference between each element of the vector and the mean.
-            let differences = Self::diffs(&test_vector, &mean);
+            let differences = Self::diffs(&floats, &mean);
             // 3. Square the differences.
             let all_squared: Vec<f32> = Self::square_all(&differences);
             // 4. Calculate the mean of the squared differences.
             let mean_of_squared: f32 = Self::mean(&all_squared);
             // 5. Take the square root of the mean of the squared differences to get the standard deviation.
             let sd: f32 = mean_of_squared.sqrt();
-
-            assert_eq!(sd, 6.2126956 as f32);
 
             sd
         }
@@ -276,16 +294,28 @@ pub mod grouper {
         }
 
         //
-        pub fn group_avgs_map(groups: GroupsMap) -> HashMap<u16, f32> {
+        pub fn group_avgs_map(groups: &GroupsMap) -> HashMap<u16, f32> {
             let mut map = HashMap::new();
-            for (k, v) in groups.0.into_iter() {
+
+            for (k, v) in groups.0.clone().into_iter() {
                 let group_avg = v.iter().fold(0 as f32, |mut acc, val| {
                     acc += val.avg;
                     acc
                 }) / v.len() as f32;
                 map.entry(k).or_insert(group_avg);
             }
+
             map
+        }
+        //
+        pub fn group_avgs_vec(map: HashMap<u16, f32>) -> Vec<f32> {
+            let mut avgs = vec![];
+
+            for (_, v) in map.into_iter() {
+                avgs.push(Self::round_to_dec_count(v, 2));
+            }
+
+            avgs
         }
         //
         pub fn random_assignment(
@@ -298,7 +328,6 @@ pub mod grouper {
                 return groups_map;
             };
             let rand_idx = Self::rand_idx(students.len());
-            println!("{:?}", &groups_map);
             let mut current_group = current;
             let mut random_student: Student = students[rand_idx].clone();
 
@@ -306,6 +335,7 @@ pub mod grouper {
 
             let mut new_vec = groups_map.0.get(&current_group).unwrap().clone();
             new_vec.push(random_student);
+
             groups_map.0.insert(current_group, new_vec.to_vec());
 
             if let true = current_group == num_groups {
@@ -317,6 +347,36 @@ pub mod grouper {
             students.remove(rand_idx);
 
             Self::random_assignment(current_group, students, groups_map, num_groups)
+        }
+        //
+        pub fn balance(
+            students: Vec<Student>,
+            group_size: u16,
+            target_sd: u8,
+        ) -> BTreeMap<u16, Vec<Student>> {
+            let groups_map = GroupsMap::new(students.len() as u16, group_size);
+            let sorted = Utils::sort_students(&students);
+            let num_groups = Utils::num_groups(sorted.len() as u16, group_size);
+            //
+            let assigned = Utils::random_assignment(1, sorted, groups_map, num_groups);
+            let avgs_map = Utils::group_avgs_map(&assigned);
+
+            let avgs_vec = Utils::group_avgs_vec(avgs_map);
+            for avg in avgs_vec.iter() {
+                println!("{}", avg);
+            }
+            if let true = Utils::std_dev(avgs_vec) > target_sd as f32 {
+                Self::balance(students, group_size, target_sd)
+            } else {
+                assigned.0.clone()
+            }
+        }
+        //
+        pub fn treemap_to_json(
+            groups: BTreeMap<u16, Vec<Student>>,
+        ) -> Result<String, Box<dyn std::error::Error>> {
+            let json = serde_json::to_string(&groups)?;
+            Ok(json)
         }
     }
 
@@ -346,6 +406,9 @@ pub mod grouper {
     }
 }
 
+//////////////////
+/// Struct Builders
+//////////////////
 pub mod models {
     use serde::{Deserialize, Serialize};
 

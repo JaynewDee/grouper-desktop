@@ -22,6 +22,6 @@ export const API = {
     await invoke("delete_one_file", { objName }),
   checkConnection: async (): Promise<boolean> =>
     await invoke("check_connection"),
-  buildGroups: async (objName: string, groupSize: 4) =>
+  buildGroups: async (objName: string, groupSize: 4): Promise<string> =>
     await invoke("build_groups", { objName, groupSize })
 };
