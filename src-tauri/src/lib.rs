@@ -183,7 +183,7 @@ pub mod files {
 pub mod grouper {
     use crate::models::Student;
     use rand::Rng;
-    use std::collections::BTreeMap;
+    use std::collections::{BTreeMap, HashMap};
     // Main Handler - Balancer
 
     type Students = Vec<Student>;
@@ -191,35 +191,39 @@ pub mod grouper {
     //
     // Collection Transformation State
     //
-    #[derive(Clone)]
+    #[derive(Debug, Clone)]
     pub struct GroupsMap(BTreeMap<u16, Vec<Student>>);
 
     impl GroupsMap {
-        pub fn new(group_size: u16) -> Self {
+        pub fn new(num_students: u16, group_size: u16) -> Self {
             let tree_map = BTreeMap::new();
             let mut new_map = GroupsMap(tree_map);
-            new_map.populate(group_size);
+            new_map.populate(num_students, group_size);
             new_map
         }
 
-        fn populate(&mut self, group_size: u16) -> &mut Self {
-            for num in 0..group_size {
+        fn populate(&mut self, num_students: u16, group_size: u16) -> &mut Self {
+            let num_groups: u16 = (num_students as f32 / group_size as f32).floor() as u16;
+
+            for num in 1..=num_groups {
                 self.0.insert(num, vec![]);
             }
             self
         }
     }
     //
+    //
+    //
+
+    //
     // Utilities / Auxiliaries
     //
-    #[derive(Clone, Copy)]
+    #[derive(Debug, Clone, Copy)]
     pub struct Utils;
-
-    #[allow(dead_code)]
 
     impl Utils {
         //
-        fn _rand_idx(vec_length: usize) -> usize {
+        fn rand_idx(vec_length: usize) -> usize {
             let mut rng = rand::thread_rng();
             rng.gen_range(0..vec_length)
         }
@@ -266,7 +270,7 @@ pub mod grouper {
             students
         }
         //
-        fn partition(sorted: Students, remainder: u8) -> (Students, Students) {
+        fn _partition(sorted: Students, remainder: u8) -> (Students, Students) {
             let copy = sorted.clone();
             let outliers = Self::get_outliers(copy, remainder);
             let pruned: Vec<Student> = sorted
@@ -285,12 +289,56 @@ pub mod grouper {
             outliers
         }
         //
-        fn num_groups(num_students: u16, group_size: u16) -> u16 {
+        pub fn num_groups(num_students: u16, group_size: u16) -> u16 {
             let res: f32 = num_students as f32 / group_size as f32;
             res.floor() as u16
         }
+        //
         fn remainder(num_students: u16, group_size: u16) -> u16 {
             num_students % group_size
+        }
+        //
+        pub fn group_avgs_map(groups: GroupsMap) -> HashMap<u16, f32> {
+            let mut map = HashMap::new();
+            for (k, v) in groups.0.into_iter() {
+                let group_avg = v.iter().fold(0 as f32, |mut acc, val| {
+                    acc += val.avg;
+                    acc
+                }) / v.len() as f32;
+                map.entry(k).or_insert(group_avg);
+            }
+            map
+        }
+        //
+        pub fn random_assignment(
+            current: u16,
+            mut students: Students,
+            mut groups_map: GroupsMap,
+            num_groups: u16,
+        ) -> GroupsMap {
+            if let 0 = students.len() {
+                return groups_map;
+            };
+            let rand_idx = Self::rand_idx(students.len());
+            println!("{:?}", &groups_map);
+            let mut current_group = current;
+            let mut random_student: Student = students[rand_idx].clone();
+
+            random_student.set_group(current_group);
+
+            let mut new_vec = groups_map.0.get(&current_group).unwrap().clone();
+            new_vec.push(random_student);
+            groups_map.0.insert(current_group, new_vec.to_vec());
+
+            if let true = current_group == num_groups {
+                current_group = 1;
+            } else {
+                current_group += 1;
+            }
+
+            students.remove(rand_idx);
+
+            Self::random_assignment(current_group, students, groups_map, num_groups)
         }
     }
 }
@@ -306,11 +354,11 @@ pub mod models {
         group: u16,
         email: String,
     }
-    // impl FromIterator<Student> for Vec<Student> {
-    //     fn from_iter<I: IntoIterator<Item = Student>>(iter: I) -> Self {
-    //         iter.into_iter().collect()
-    //     }
-    // }
+    impl Student {
+        pub fn set_group(&mut self, g: u16) {
+            self.group = g;
+        }
+    }
 
     pub struct StudentBuilder {
         id: Option<u32>,

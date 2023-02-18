@@ -4,7 +4,7 @@ use serde::Serialize;
 use csv::{Error, ReaderBuilder, StringRecord};
 use src_tauri::{
     files::FileHandler,
-    grouper::Utils,
+    grouper::{GroupsMap, Utils},
     models::{Student, StudentBuilder},
 };
 use std::io::Cursor;
@@ -90,15 +90,15 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()>
         .read_and_return_students(obj_name)
         .expect("Failed to parse students from json ... ");
 
+    let groups_map = GroupsMap::new(students.len() as u16, group_size);
     let sorted = Utils::sort_students(&students);
-    for student in &sorted {
-        println!("{:?}", student);
-    }
+    let num_groups = Utils::num_groups(sorted.len() as u16, group_size);
     //
-
-    println!("{}", &obj_name);
-    println!("{}", &group_size);
-
+    let assigned = Utils::random_assignment(1, sorted, groups_map, num_groups);
+    let avgs = Utils::group_avgs_map(assigned);
+    for avg in avgs.iter() {
+        println!("{:?}", avg);
+    }
     //
     // Call grouper module
     // - parse file
