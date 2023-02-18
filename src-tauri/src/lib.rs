@@ -15,7 +15,7 @@ pub mod files {
     ////////////////////////
     //
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, Clone)]
     pub struct FileHandler {
         pub temp_path: String,
     }
@@ -30,11 +30,23 @@ pub mod files {
             }
         }
 
+        //
+
         pub fn init_base_dir(&self) -> std::io::Result<()> {
             let path = format!("{}", self.get_temp_path());
             create_dir(path)?;
             Ok(())
         }
+
+        //
+
+        fn students_from_json(json_str: &str) -> Result<Vec<Student>, ()> {
+            let people: Vec<Student> = serde_json::from_str(json_str)
+                .expect("Failed to parse students from json string ... ");
+            Ok(people)
+        }
+
+        //
 
         pub fn read_and_return_json(
             &self,
@@ -48,6 +60,18 @@ pub mod files {
             Ok(file_contents)
         }
 
+        //
+
+        pub fn read_and_return_students(&self, filename: &str) -> Result<Vec<Student>, ()> {
+            let full_path = self.get_full_path(&filename);
+            let file = File::open(full_path).expect("Failed to read json file");
+
+            let file_contents = Self::file_to_string(file);
+            Self::students_from_json(&file_contents)
+        }
+
+        //
+
         fn file_to_string(mut file: File) -> String {
             let mut file_contents = String::new();
 
@@ -56,10 +80,14 @@ pub mod files {
             file_contents
         }
 
+        //
+
         fn get_full_path(&self, filename: &str) -> String {
             let temp_path = self.get_temp_path();
             format!("{}\\{}", &temp_path, &filename)
         }
+
+        //
 
         pub fn write_json(
             &self,
@@ -84,6 +112,8 @@ pub mod files {
             ))
         }
 
+        //
+
         pub fn delete_file(&self, filename: &str) -> Result<String, Box<dyn std::error::Error>> {
             let path = self.get_temp_path();
             let full_path = format!("{}\\{}", &path, &filename);
@@ -93,15 +123,21 @@ pub mod files {
             }
         }
 
+        //
+
         fn get_temp_path(&self) -> String {
-            format!("{}", self.temp_path.clone())
+            self.temp_path.clone()
         }
+
+        //
 
         fn check_for_dir(&self) -> bool {
             let temp = &self.get_temp_path();
             let path = Path::new(temp);
             path.is_dir()
         }
+
+        //
 
         pub fn read_directory(&self) -> Result<Vec<String>, Box<dyn std::error::Error>> {
             let path = self.get_temp_path();
@@ -117,6 +153,8 @@ pub mod files {
             Ok(file_list)
         }
 
+        //
+
         pub fn network_available() -> bool {
             match TcpStream::connect("8.8.8.8:53") {
                 Ok(_) => true,
@@ -124,16 +162,126 @@ pub mod files {
             }
         }
 
+        //
+
         pub fn temp_data_available(&self) -> bool {
             let path = format!("{}{}", self.get_temp_path(), "\\grouper-students.json");
             let file_path = Path::new(&path);
-            if file_path.exists() {
+            println!("{}", &path);
+            if let true = file_path.exists() {
+                println!("path found");
                 return true;
-            } else {
-                return false;
             }
+            false
         }
     }
+}
+
+//////////////////
+/// Handles all student group manipulations
+//////////////////
+pub mod grouper {
+    use crate::models::Student;
+    use rand::Rng;
+    use std::collections::BTreeMap;
+    // Main Handler - Balancer
+
+    pub struct Balancer {
+        group_map: GroupsMap,
+        utils: Utils,
+    }
+
+    impl Balancer {
+        pub fn new(group_size: u16) -> Balancer {
+            Balancer {
+                group_map: GroupsMap::new(group_size),
+                utils: Utils::new(),
+            }
+        }
+        pub fn get_utils(&self) -> Utils {
+            self.utils
+        }
+        pub fn group_map_ref(&self) -> &GroupsMap {
+            &self.group_map
+        }
+    }
+
+    //
+    // Collection Transformation State
+    //
+    #[derive(Clone)]
+    pub struct GroupsMap(BTreeMap<u16, Vec<Student>>);
+
+    impl GroupsMap {
+        pub fn new(group_size: u16) -> Self {
+            let tree_map = BTreeMap::new();
+            let mut new_map = GroupsMap(tree_map);
+            new_map.populate(group_size);
+            new_map
+        }
+        fn populate(&mut self, group_size: u16) -> &mut Self {
+            for num in 0..group_size {
+                self.0.insert(num, vec![]);
+            }
+            self
+        }
+    }
+    //
+    // Utilities / Auxiliaries
+    //
+    #[derive(Clone, Copy)]
+    pub struct Utils;
+
+    impl Utils {
+        pub fn new() -> Utils {
+            Utils
+        }
+
+        fn _get_rand_idx(vec_length: usize) -> usize {
+            let mut rng = rand::thread_rng();
+            rng.gen_range(0..vec_length)
+        }
+
+        fn get_mean(floats: &Vec<f32>) -> f32 {
+            floats.iter().fold(0 as f32, |acc, n| acc + n) / floats.len() as f32
+        }
+
+        fn get_diffs(floats: &Vec<f32>, mean: &f32) -> Vec<f32> {
+            floats.iter().fold(vec![], |mut acc: Vec<f32>, &val| {
+                acc.push((val - mean).abs());
+                acc
+            })
+        }
+
+        fn square_all(floats: &Vec<f32>) -> Vec<f32> {
+            floats.iter().map(|float| float * float).collect()
+        }
+
+        pub fn get_std_dev(&self) -> f32 {
+            let test_vector = vec![
+                // Each group's average as f32
+                79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
+            ];
+            // 1. Calculate the mean of the vector.
+            let mean = Self::get_mean(&test_vector);
+            // 2. Calculate the difference between each element of the vector and the mean.
+            let differences = Self::get_diffs(&test_vector, &mean);
+            // 3. Square the differences.
+            let all_squared: Vec<f32> = Self::square_all(&differences);
+            // 4. Calculate the mean of the squared differences.
+            let mean_of_squared: f32 = Self::get_mean(&all_squared);
+            // 5. Take the square root of the mean of the squared differences to get the standard deviation.
+            let sd: f32 = mean_of_squared.sqrt();
+
+            assert_eq!(sd, 6.2126956 as f32);
+
+            sd
+        }
+    }
+
+    //
+    //
+    //
 }
 
 pub mod models {
@@ -233,75 +381,4 @@ pub mod models {
             }
         }
     }
-}
-
-pub mod grouper {
-    use crate::models::Student;
-    use std::collections::BTreeMap;
-
-    //
-    // Main Handler - Balancer
-    //
-    pub struct Balancer {
-        group_map: GroupsMap,
-        utils: Utils,
-    }
-
-    impl Balancer {
-        pub fn new() -> Balancer {
-            println!("crate::grouper::Balancer");
-            Balancer {
-                group_map: GroupsMap::new(),
-                utils: Utils::new(),
-            }
-        }
-        pub fn get_utils(&self) -> Utils {
-            self.utils
-        }
-        pub fn group_map_ref(&self) -> &GroupsMap {
-            &self.group_map
-        }
-    }
-
-    //
-    // Collection Transformation State
-    //
-    #[derive(Clone)]
-    pub struct GroupsMap(BTreeMap<u16, Vec<Student>>);
-
-    impl GroupsMap {
-        pub fn new() -> GroupsMap {
-            GroupsMap(BTreeMap::new())
-        }
-    }
-    //
-    // Utilities / Auxiliaries
-    //
-    #[derive(Clone, Copy)]
-    pub struct Utils;
-
-    impl Utils {
-        pub fn new() -> Utils {
-            Utils
-        }
-
-        pub fn get_sd(&self) -> f32 {
-            let test_vector = vec![
-                // Each group's average as f32
-                79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
-            ];
-            // 1. Calculate the mean of the vector.
-            // 2. Calculate the difference between each element of the vector and the mean.
-            // 3. Square the differences.
-            // 4. Calculate the mean of the squared differences.
-            // 5. Take the square root of the mean of the squared differences to get the standard deviation.
-            let mean = test_vector.iter().fold(0 as f32, |acc, n| acc + n);
-            println!("Mean of test_vector: {}", &mean);
-            mean
-        }
-    }
-
-    //
-    //
-    //
 }

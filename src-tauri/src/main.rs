@@ -7,7 +7,7 @@ mod ffi;
 mod s3;
 
 use ffi::{
-    build_groups, check_connection, create_bucket, delete_one_file, get_file_list, get_object,
+    build_groups, check_connection, create_bucket, delete_one_file, get_file_list, get_file_s3,
     list_buckets, list_objects, read_json, upload_students_s3,
 };
 
@@ -17,7 +17,7 @@ fn main() {
             list_buckets,
             create_bucket,
             list_objects,
-            get_object,
+            get_file_s3,
             upload_students_s3,
             get_file_list,
             check_connection,

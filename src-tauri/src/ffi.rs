@@ -11,6 +11,7 @@ use std::io::Cursor;
 
 ///
 /////////////////////////////
+/// Foreign Function API
 /// Handles messages received
 /// from TypeScript client
 /////////////////////////////
@@ -68,7 +69,42 @@ pub async fn get_file_list() -> Result<Vec<String>, ()> {
 }
 
 #[tauri::command]
-pub async fn get_object(obj_name: &str) -> Result<String, ()> {
+pub fn read_json(obj_name: &str) -> Result<String, ()> {
+    println!("{}", obj_name);
+    let handler = FileHandler::new();
+    let json = handler.read_and_return_json(obj_name).unwrap();
+    Ok(json)
+}
+
+#[tauri::command]
+pub async fn check_connection() -> Result<bool, ()> {
+    let has_connection = FileHandler::network_available();
+    Ok(has_connection)
+}
+
+#[tauri::command]
+pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
+    let result_string = FileHandler::new().delete_file(obj_name).unwrap();
+    Ok(result_string)
+}
+
+#[tauri::command]
+pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()> {
+    let handler = FileHandler::new();
+    let students = handler
+        .read_and_return_students(obj_name)
+        .expect("Failed to parse students from json ...");
+    println!("{:?}", students);
+
+    let balancer = Balancer::new(group_size);
+    let utils = balancer.get_utils();
+    let _test_sd = utils.get_std_dev();
+
+    Ok("OK!".into())
+}
+
+#[tauri::command]
+pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
     let test_bucket_name = "grouper-client-test-bucket";
     let client = S3Client::get_client().await.unwrap();
 
@@ -156,41 +192,4 @@ pub async fn upload_students_s3(
     let filename: String = format!("{}.json", obj_name);
     let json = read_json(&filename).expect("Failed to read json file.");
     Ok(json)
-}
-
-#[tauri::command]
-pub fn read_json(obj_name: &str) -> Result<String, ()> {
-    println!("{}", obj_name);
-    let handler = FileHandler::new();
-    let json = handler.read_and_return_json(obj_name).unwrap();
-    Ok(json)
-}
-
-#[tauri::command]
-pub async fn check_connection() -> Result<bool, ()> {
-    let has_connection = FileHandler::network_available();
-    Ok(has_connection)
-}
-
-#[tauri::command]
-pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
-    let result_string = FileHandler::new().delete_file(obj_name).unwrap();
-    Ok(result_string)
-}
-
-#[tauri::command]
-pub async fn build_groups(obj_name: &str, group_size: u8) -> Result<&str, ()> {
-    let balancer = Balancer::new();
-    let utils = balancer.get_utils();
-    let test_sd = utils.get_sd();
-    println!("{}", &test_sd);
-    println!("{}", &obj_name);
-    println!("{}", &group_size);
-    //
-    // Call grouper module
-    // - parse file
-    // - create groups by size
-    //
-
-    Ok("OK!")
 }
