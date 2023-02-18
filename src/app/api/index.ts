@@ -7,7 +7,7 @@ export const API = {
   readJson: async (objName: string): Promise<string> =>
     await invoke("read_json", { objName }),
   getObject: async (objName: string): Promise<string> =>
-    await invoke("get_object", { objName }),
+    await invoke("get_file_s3", { objName }),
   uploadObject: async (
     jsonData: string,
     objName: string,
@@ -22,5 +22,7 @@ export const API = {
   deleteFile: async (objName: string): Promise<string> =>
     await invoke("delete_one_file", { objName }),
   checkConnection: async (): Promise<boolean> =>
-    await invoke("check_connection")
+    await invoke("check_connection"),
+  buildGroups: async (objName: string, groupSize: 4) =>
+    await invoke("build_groups", { objName, groupSize })
 };

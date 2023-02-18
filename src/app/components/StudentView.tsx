@@ -12,6 +12,7 @@ import DisplayControls from "./Students/DisplayControls";
 import StudentCard from "./Students/StudentCard";
 import { StudentType } from "./Students/StudentCard";
 
+const { log } = console;
 export const StudentView: FC<ContentProps> = ({
   studentData,
   setStudentData,
@@ -54,7 +55,10 @@ export const StudentView: FC<ContentProps> = ({
     // Call Rust @ build_groups
     const target = clickRef.current;
     const text = target?.textContent;
-    console.log(text);
+    const objName = text + ".json";
+    log(objName);
+    const res = await API.buildGroups(objName, 4);
+    log(res);
   };
 
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);
