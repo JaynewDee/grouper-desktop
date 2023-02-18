@@ -1,3 +1,8 @@
+//
+////////////////////////
+// Handles os-based i/o
+////////////////////////
+//
 pub mod files {
     use crate::models::Student;
     use serde::Deserialize;
@@ -9,11 +14,6 @@ pub mod files {
         fs::{create_dir, read_dir, remove_file, File},
         io::Write,
     };
-    //
-    ////////////////////////
-    // Handles os-based i/o
-    ////////////////////////
-    //
 
     #[derive(Deserialize, Clone)]
     pub struct FileHandler {
@@ -270,33 +270,11 @@ pub mod grouper {
             students
         }
         //
-        fn _partition(sorted: Students, remainder: u8) -> (Students, Students) {
-            let copy = sorted.clone();
-            let outliers = Self::get_outliers(copy, remainder);
-            let pruned: Vec<Student> = sorted
-                .iter()
-                .filter(|student| !outliers.contains(student))
-                .cloned()
-                .collect();
-            (outliers, pruned)
-        }
-        //
-        fn get_outliers(mut sorted: Students, remainder: u8) -> Students {
-            let mut outliers = vec![];
-            for _ in 0..remainder {
-                outliers.push(sorted.remove(0));
-            }
-            outliers
-        }
-        //
         pub fn num_groups(num_students: u16, group_size: u16) -> u16 {
             let res: f32 = num_students as f32 / group_size as f32;
             res.floor() as u16
         }
-        //
-        fn remainder(num_students: u16, group_size: u16) -> u16 {
-            num_students % group_size
-        }
+
         //
         pub fn group_avgs_map(groups: GroupsMap) -> HashMap<u16, f32> {
             let mut map = HashMap::new();
@@ -339,6 +317,31 @@ pub mod grouper {
             students.remove(rand_idx);
 
             Self::random_assignment(current_group, students, groups_map, num_groups)
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::Utils;
+
+        #[test]
+        fn test_standard_deviation() {
+            let test_vector = vec![
+                // Each group's average as f32
+                79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
+            ];
+            // 1. Calculate the mean of the vector.
+            let mean = Utils::mean(&test_vector);
+            // 2. Calculate the difference between each element of the vector and the mean.
+            let differences = Utils::diffs(&test_vector, &mean);
+            // 3. Square the differences.
+            let all_squared: Vec<f32> = Utils::square_all(&differences);
+            // 4. Calculate the mean of the squared differences.
+            let mean_of_squared: f32 = Utils::mean(&all_squared);
+            // 5. Take the square root of the mean of the squared differences to get the standard deviation.
+            let sd: f32 = mean_of_squared.sqrt();
+
+            assert_eq!(sd, 6.2126956 as f32);
         }
     }
 }
