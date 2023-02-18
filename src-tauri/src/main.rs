@@ -7,15 +7,14 @@ mod ffi;
 mod s3;
 
 use ffi::{
-    build_groups, check_connection, create_bucket, delete_one_file, get_file_list, get_file_s3,
-    list_buckets, list_objects, read_json, upload_students_s3,
+    build_groups, check_connection, delete_one_file, get_file_list, get_file_s3, list_buckets,
+    list_objects, read_json, upload_students_s3,
 };
 
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             list_buckets,
-            create_bucket,
             list_objects,
             get_file_s3,
             upload_students_s3,

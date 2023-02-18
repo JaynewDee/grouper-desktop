@@ -64,7 +64,7 @@ pub mod files {
 
         pub fn read_and_return_students(&self, filename: &str) -> Result<Vec<Student>, ()> {
             let full_path = self.get_full_path(&filename);
-            let file = File::open(full_path).expect("Failed to read json file");
+            let file = File::open(&full_path).expect("Failed to read json file");
 
             let file_contents = Self::file_to_string(file);
             Self::students_from_json(&file_contents)
@@ -187,22 +187,40 @@ pub mod grouper {
     // Main Handler - Balancer
 
     pub struct Balancer {
+        students: Vec<Student>,
         group_map: GroupsMap,
         utils: Utils,
     }
 
+    type Students = Vec<Student>;
+
     impl Balancer {
-        pub fn new(group_size: u16) -> Balancer {
+        pub fn new(group_size: u16, students: Students) -> Balancer {
             Balancer {
+                students,
                 group_map: GroupsMap::new(group_size),
                 utils: Utils::new(),
             }
         }
+        //
         pub fn get_utils(&self) -> Utils {
             self.utils
         }
+        //
         pub fn group_map_ref(&self) -> &GroupsMap {
             &self.group_map
+        }
+        //
+        pub fn sort_students(&self) -> Students {
+            let mut students = self.students.clone();
+            students.sort_by(|a, b| a.avg.partial_cmp(&b.avg).unwrap());
+            students
+        }
+        pub fn partition(sorted: Students, remainder: u8) -> (Students, u8) {
+            (sorted, remainder)
+        }
+        pub fn get_outliers(sorted: Students, remainder: u8) -> Students {
+            sorted
         }
     }
 
@@ -219,6 +237,7 @@ pub mod grouper {
             new_map.populate(group_size);
             new_map
         }
+
         fn populate(&mut self, group_size: u16) -> &mut Self {
             for num in 0..group_size {
                 self.0.insert(num, vec![]);
@@ -237,16 +256,16 @@ pub mod grouper {
             Utils
         }
 
-        fn _get_rand_idx(vec_length: usize) -> usize {
+        fn _rand_idx(vec_length: usize) -> usize {
             let mut rng = rand::thread_rng();
             rng.gen_range(0..vec_length)
         }
 
-        fn get_mean(floats: &Vec<f32>) -> f32 {
+        fn mean(floats: &Vec<f32>) -> f32 {
             floats.iter().fold(0 as f32, |acc, n| acc + n) / floats.len() as f32
         }
 
-        fn get_diffs(floats: &Vec<f32>, mean: &f32) -> Vec<f32> {
+        fn diffs(floats: &Vec<f32>, mean: &f32) -> Vec<f32> {
             floats.iter().fold(vec![], |mut acc: Vec<f32>, &val| {
                 acc.push((val - mean).abs());
                 acc
@@ -257,19 +276,19 @@ pub mod grouper {
             floats.iter().map(|float| float * float).collect()
         }
 
-        pub fn get_std_dev(&self) -> f32 {
+        pub fn std_dev(&self) -> f32 {
             let test_vector = vec![
                 // Each group's average as f32
                 79.08, 83.15, 96.23, 85.11, 90.73, 77.79, 80.34,
             ];
             // 1. Calculate the mean of the vector.
-            let mean = Self::get_mean(&test_vector);
+            let mean = Self::mean(&test_vector);
             // 2. Calculate the difference between each element of the vector and the mean.
-            let differences = Self::get_diffs(&test_vector, &mean);
+            let differences = Self::diffs(&test_vector, &mean);
             // 3. Square the differences.
             let all_squared: Vec<f32> = Self::square_all(&differences);
             // 4. Calculate the mean of the squared differences.
-            let mean_of_squared: f32 = Self::get_mean(&all_squared);
+            let mean_of_squared: f32 = Self::mean(&all_squared);
             // 5. Take the square root of the mean of the squared differences to get the standard deviation.
             let sd: f32 = mean_of_squared.sqrt();
 
@@ -287,97 +306,66 @@ pub mod grouper {
 pub mod models {
     use serde::{Deserialize, Serialize};
 
-    #[derive(Debug, Clone, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
     pub struct Student {
         id: u32,
         name: String,
-        avg: f32,
+        pub avg: f32,
         group: u16,
         email: String,
     }
 
-    impl Student {
-        pub fn get_id(&self) -> u32 {
-            self.id.clone()
+    pub struct StudentBuilder {
+        id: Option<u32>,
+        name: Option<String>,
+        avg: Option<f32>,
+        group: Option<u16>,
+        email: Option<String>,
+    }
+
+    impl StudentBuilder {
+        pub fn new() -> Self {
+            StudentBuilder {
+                id: None,
+                name: None,
+                avg: None,
+                group: None,
+                email: None,
+            }
         }
-        pub fn set_id(&mut self, id: u32) {
-            self.id = id;
+
+        pub fn id(mut self, id: u32) -> Self {
+            self.id = Some(id);
+            self
         }
-        pub fn get_name(&self) -> String {
-            self.name.clone()
+
+        pub fn name(mut self, name: String) -> Self {
+            self.name = Some(name);
+            self
         }
-        pub fn set_name(&mut self, name: String) {
-            self.name = name;
+
+        pub fn avg(mut self, avg: f32) -> Self {
+            self.avg = Some(avg);
+            self
         }
-        pub fn get_avg(&self) -> f32 {
-            self.avg.clone()
+
+        pub fn group(mut self, group: u16) -> Self {
+            self.group = Some(group);
+            self
         }
-        pub fn set_avg(&mut self, avg: f32) {
-            self.avg = avg;
+
+        pub fn email(mut self, email: String) -> Self {
+            self.email = Some(email);
+            self
         }
-        pub fn get_group(&self) -> u16 {
-            self.group.clone()
-        }
-        pub fn set_group(&mut self, group: u16) {
-            self.group = group;
-        }
-        pub fn get_email(&self) -> String {
-            self.email.clone()
-        }
-        pub fn set_email(&mut self, email: String) {
-            self.email = email;
-        }
-        pub fn clone(&self) -> Student {
+
+        pub fn build(self) -> Student {
             Student {
-                id: self.get_id(),
-                name: self.get_name(),
-                avg: self.get_avg(),
-                group: self.get_group(),
-                email: self.get_email(),
-            }
-        }
-    }
-
-    impl From<Template> for Student {
-        fn from(value: Template) -> Self {
-            match value {
-                value if (!value.name.is_empty() && !value.email.is_empty()) => Student {
-                    id: value.id,
-                    name: value.name,
-                    avg: value.avg,
-                    group: value.group,
-                    email: value.email,
-                },
-                _ => {
-                    let default = Template::default();
-                    Student {
-                        id: default.id,
-                        name: default.name,
-                        avg: default.avg,
-                        group: default.group,
-                        email: default.email,
-                    }
-                }
-            }
-        }
-    }
-
-    pub struct Template {
-        id: u32,
-        name: String,
-        avg: f32,
-        group: u16,
-        email: String,
-    }
-
-    impl Default for Template {
-        fn default() -> Self {
-            Template {
-                id: 0,
-                name: "".into(),
-                avg: 0.0,
-                group: 0,
-                email: "".into(),
+                id: self.id.unwrap(),
+                name: self.name.unwrap(),
+                avg: self.avg.unwrap(),
+                group: self.group.unwrap(),
+                email: self.email.unwrap(),
             }
         }
     }

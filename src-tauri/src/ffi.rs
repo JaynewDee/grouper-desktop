@@ -1,11 +1,11 @@
 use super::s3::S3Client;
 use serde::Serialize;
 
-use csv::ReaderBuilder;
+use csv::{Error, ReaderBuilder, StringRecord};
 use src_tauri::{
     files::FileHandler,
     grouper::Balancer,
-    models::{Student, Template},
+    models::{Student, StudentBuilder},
 };
 use std::io::Cursor;
 
@@ -41,11 +41,6 @@ pub async fn list_buckets() -> Result<Vec<String>, ()> {
         .collect();
 
     Ok(buckets_serialized)
-}
-
-#[tauri::command]
-pub async fn create_bucket() -> String {
-    "'Create bucket' reached!".into()
 }
 
 #[tauri::command]
@@ -93,15 +88,60 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()>
     let handler = FileHandler::new();
     let students = handler
         .read_and_return_students(obj_name)
-        .expect("Failed to parse students from json ...");
-    println!("{:?}", students);
+        .expect("Failed to parse students from json ... ");
 
-    let balancer = Balancer::new(group_size);
+    for student in &students {
+        println!("{:?}", student);
+    }
+
+    let balancer = Balancer::new(group_size, students);
+    let sorted = balancer.sort_students();
+    println!("{:?}", &sorted);
+
     let utils = balancer.get_utils();
-    let _test_sd = utils.get_std_dev();
+    let test_sd = utils.std_dev();
+
+    //
+
+    println!("{}", &test_sd);
+    println!("{}", &obj_name);
+    println!("{}", &group_size);
+
+    //
+    // Call grouper module
+    // - parse file
+    // - create groups by size
+    //
 
     Ok("OK!".into())
 }
+
+//
+
+//
+
+fn read_record(idx: usize, row: Result<StringRecord, Error>) -> Student {
+    let r = row.expect("Unable to parse string record");
+
+    fn parse_avg(r: StringRecord) -> f32 {
+        match r.get(42).unwrap().parse::<f32>() {
+            Ok(val) => val,
+            Err(_) => 0.0 as f32,
+        }
+    }
+
+    StudentBuilder::new()
+        .id(idx as u32)
+        .name(r.get(0).unwrap().to_string())
+        .email(r.get(2).unwrap().to_string())
+        .avg(parse_avg(r))
+        .group(0)
+        .build()
+}
+
+//
+
+//
 
 #[tauri::command]
 pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
@@ -120,19 +160,8 @@ pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
     let mut serializable: Vec<Student> = Vec::new();
 
     for (idx, row) in reader.records().enumerate() {
-        let r = row.expect("Unable to parse string record");
-        let mut student = Student::from(Template::default());
-
-        student.set_id(idx as u32);
-        student.set_name(r.get(0).unwrap().to_string());
-        student.set_email(r.get(2).unwrap().to_string());
-
-        match r.get(42).unwrap().parse::<f32>() {
-            Ok(float) => student.set_avg(float),
-            Err(_) => student.set_avg(0.0),
-        }
-
-        if student.get_avg() > 0.0 {
+        let student = read_record(idx, row);
+        if student.avg > 0.0 {
             serializable.push(student);
         }
     }
@@ -158,19 +187,8 @@ pub async fn upload_students_s3(
     let mut serializable: Vec<Student> = Vec::new();
 
     for (idx, row) in reader.records().enumerate() {
-        let r = row.expect("Unable to parse string record");
-        let mut student = Student::from(Template::default());
-
-        student.set_id(idx as u32);
-        student.set_name(r.get(0).unwrap().to_string());
-        student.set_email(r.get(2).unwrap().to_string());
-
-        match r.get(42).unwrap().parse::<f32>() {
-            Ok(float) => student.set_avg(float),
-            Err(_) => student.set_avg(0.0),
-        }
-
-        if student.get_avg() > 0.0 {
+        let student = read_record(idx, row);
+        if student.avg > 0.0 {
             serializable.push(student);
         }
     }
