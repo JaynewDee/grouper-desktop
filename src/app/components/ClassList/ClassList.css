@@ -59,6 +59,8 @@
 
 .class-option {
   margin: 0.33rem auto;
+  font-size: 1.33rem;
+  color: rgba(235, 235, 235, 0.8);
 }
 
 .class-option:hover {

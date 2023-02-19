@@ -1,11 +1,7 @@
 import { useEffect, useState, FC } from "react";
+import { HeaderProps } from "../../Types";
 import { Unlocked, Locked, Settings, Help } from "../Icons";
 import "./Header.css";
-
-interface HeaderProps {
-  isLoggedIn: boolean;
-  setLoggedIn: any;
-}
 
 const Header: FC<HeaderProps> = ({ isLoggedIn, setLoggedIn }) => {
   const toggleLock = () => {

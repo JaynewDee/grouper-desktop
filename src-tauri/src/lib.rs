@@ -336,7 +336,7 @@ pub mod grouper {
             let mut new_vec = groups_map.0.get(&current_group).unwrap().clone();
             new_vec.push(random_student);
 
-            groups_map.0.insert(current_group, new_vec.to_vec());
+            groups_map.0.insert(current_group, new_vec.clone());
 
             if let true = current_group == num_groups {
                 current_group = 1;
@@ -355,17 +355,14 @@ pub mod grouper {
             target_sd: u8,
         ) -> BTreeMap<u16, Vec<Student>> {
             let groups_map = GroupsMap::new(students.len() as u16, group_size);
-            let sorted = Utils::sort_students(&students);
-            let num_groups = Utils::num_groups(sorted.len() as u16, group_size);
+            let sorted = Self::sort_students(&students);
+            let num_groups = Self::num_groups(sorted.len() as u16, group_size);
             //
-            let assigned = Utils::random_assignment(1, sorted, groups_map, num_groups);
-            let avgs_map = Utils::group_avgs_map(&assigned);
-
-            let avgs_vec = Utils::group_avgs_vec(avgs_map);
-            for avg in avgs_vec.iter() {
-                println!("{}", avg);
-            }
-            if let true = Utils::std_dev(avgs_vec) > target_sd as f32 {
+            let assigned = Self::random_assignment(1, sorted, groups_map, num_groups);
+            let avgs_map = Self::group_avgs_map(&assigned);
+            let avgs_vec = Self::group_avgs_vec(avgs_map);
+            //
+            if let true = Self::std_dev(avgs_vec) > target_sd as f32 {
                 Self::balance(students, group_size, target_sd)
             } else {
                 assigned.0.clone()

@@ -1,4 +1,4 @@
-import { StudentType } from "./StudentCard";
+import { StudentType } from "../../Types";
 
 const splitName = (fullName: string) => fullName.split(", ");
 

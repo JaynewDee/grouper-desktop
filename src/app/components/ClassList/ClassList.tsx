@@ -1,12 +1,31 @@
-import { FC, useState, memo, useMemo, useRef } from "react";
-import { ClassHandlers, FileEvent, GetFileEvent } from "./StudentView";
+import {
+  FC,
+  useState,
+  memo,
+  useMemo,
+  useRef,
+  SetStateAction,
+  Dispatch,
+  MouseEvent,
+  MutableRefObject
+} from "react";
+
 import "./ClassList.css";
-import { BuildGroupsBtn, DeleteClassBtn } from "./Icons";
+import { BuildGroupsBtn, DeleteClassBtn } from "../Icons";
+import DisplayControls from "../Students/DisplayControls";
+import { GetFileEvent, FileEvent, ClassesProps, Setter } from "../../Types";
 
 interface ClassProps {
   handleGetFile: GetFileEvent;
   handleDeleteFile: FileEvent;
-  handleBuildGroups: FileEvent;
+  handleBuildGroups: (
+    _: MouseEvent<any, any>,
+    clickRef: MutableRefObject<HTMLInputElement | null>,
+    setStudentData: Setter,
+    setGroupsData: Setter
+  ) => Promise<void>;
+  setStudentData: Dispatch<SetStateAction<any>>;
+  setGroupsData: Dispatch<SetStateAction<any>>;
   opt: string;
   id: number;
 }
@@ -15,6 +34,8 @@ const Class: FC<ClassProps> = ({
   handleGetFile,
   handleDeleteFile,
   handleBuildGroups,
+  setStudentData,
+  setGroupsData,
   opt,
   id
 }) => {
@@ -48,16 +69,16 @@ const Class: FC<ClassProps> = ({
         {opt}
       </p>
       {hoverState && (
-        <div onClick={(e) => handleBuildGroups(e, clickRef)}>
+        <div
+          onClick={(e) =>
+            handleBuildGroups(e, clickRef, setStudentData, setGroupsData)
+          }
+        >
           {BuildGroupsBtn()}
         </div>
       )}
     </div>
   );
-};
-
-type ClassesProps = {
-  handlers: ClassHandlers;
 };
 
 export const Classes: FC<ClassesProps> = memo(
@@ -67,7 +88,11 @@ export const Classes: FC<ClassesProps> = memo(
       handleDeleteFile,
       handleBuildGroups,
       fileOptions
-    }
+    },
+    controls,
+    isData,
+    setStudentData,
+    setGroupsData
   }) => {
     //
     const [listState, setListState] = useState(false);
@@ -91,6 +116,8 @@ export const Classes: FC<ClassesProps> = memo(
                   handleGetFile={handleGetFile}
                   handleDeleteFile={handleDeleteFile}
                   handleBuildGroups={handleBuildGroups}
+                  setStudentData={setStudentData}
+                  setGroupsData={setGroupsData}
                   opt={opt}
                   id={idx}
                   key={idx}
@@ -102,6 +129,7 @@ export const Classes: FC<ClassesProps> = memo(
           </div>
         </div>
         <hr className="divider-md" />
+        {isData > 0 && <DisplayControls controls={controls} />}
       </>
     );
   }

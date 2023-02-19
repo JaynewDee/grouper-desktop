@@ -20,7 +20,7 @@ export const CollapseArrow = () =>
   });
 
 export const DeleteClassBtn = () =>
-  TiDelete({ size: "1rem", className: "delete-class-btn" });
+  TiDelete({ size: "1.66rem", className: "delete-class-btn" });
 
 export const BuildGroupsBtn = () =>
-  HiUserGroup({ size: "1rem", className: "build-groups-btn" });
+  HiUserGroup({ size: "1.66rem", className: "build-groups-btn" });

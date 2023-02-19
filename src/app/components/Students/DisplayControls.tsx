@@ -1,9 +1,6 @@
 import { FC } from "react";
-import { DisplayControllers } from "../StudentView";
+import { ControlsProps } from "../../Types";
 
-interface ControlsProps {
-  controls: DisplayControllers;
-}
 const DisplayControls: FC<ControlsProps> = ({ controls }) => {
   const { expandAll, collapseAll, clearStudentsDisplay } = controls;
 

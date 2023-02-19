@@ -1,32 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FC } from "react";
 import { ExpandArrow, CollapseArrow } from "../Icons";
 import { Fields } from "./CardField";
 import "./StudentCard.css";
 
-export interface StudentType {
-  id: number;
-  name: string;
-  avg: number;
-  group: number;
-  email: string;
+export interface CardProps {
+  data: any;
+  toggleAll: string;
 }
-
-const StudentCard = ({
-  data,
-  toggleState
-}: {
-  data: StudentType;
-  toggleState: string;
-}) => {
+const StudentCard: FC<CardProps> = ({ data, toggleAll }) => {
   const [cardState, setCardState] = useState("collapsed");
 
   useEffect(() => {
-    if (toggleState === "all") {
+    if (toggleAll === "all") {
       setCardState("expanded");
-    } else if (toggleState === "none") {
+    } else if (toggleAll === "none") {
       setCardState("collapsed");
     } else return;
-  }, [toggleState]);
+  }, [toggleAll]);
+
   const toggleCardState = () => {
     if (cardState === "collapsed") {
       setCardState("expanded");

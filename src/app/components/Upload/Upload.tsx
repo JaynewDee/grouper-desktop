@@ -1,27 +1,8 @@
-import {
-  ChangeEvent,
-  Dispatch,
-  MouseEvent,
-  SetStateAction,
-  useRef,
-  useState,
-  FC
-} from "react";
+import { useRef, useState, FC } from "react";
 import { Arrow } from "../Icons";
-import { API } from "../../api";
-import { fileToString } from "../../utils/parse";
 import "./Upload.css";
-import { SetStudentState } from "../StudentView";
-
-type SetFiles = Dispatch<SetStateAction<string[] | []>>;
-
-type InputChange = ChangeEvent<HTMLInputElement>;
-
-interface UploadProps {
-  setStudentData: SetStudentState;
-  setAvailableFiles: SetFiles;
-  isLoggedIn: boolean;
-}
+import Handlers from "../../api";
+import { InputChange, UploadProps } from "../../Types";
 
 const Upload: FC<UploadProps> = ({
   setStudentData,
@@ -66,33 +47,14 @@ const Upload: FC<UploadProps> = ({
     }
   };
 
-  const handleFileSubmit = async (_: MouseEvent<HTMLButtonElement>) => {
-    if (!clickRef.current) {
-      DisplayError("You must select a file to upload.");
-      return;
-    }
-    if (nameField.length < 3) {
-      DisplayError("The name for your file must be at least 3 characters long");
-      return;
-    }
-    if (clickRef.current) {
-      const file = clickRef.current.files![0];
-      const jsonString = await fileToString(file);
-      const res = await API.uploadObject(jsonString, nameField, isLoggedIn);
-      const data = JSON.parse(res);
-      setStudentData(data);
-      const filenames = await API.getFileList();
-      setAvailableFiles(filenames);
-      setNameField("");
-    }
-  };
-
   const DisplayError = (text: string) => {
     setErrorState(text);
     setTimeout(() => {
       setErrorState("");
     }, 3000);
   };
+
+  const { handleFileSubmit } = Handlers;
 
   return (
     <div className="upload-inputs">
@@ -127,7 +89,22 @@ const Upload: FC<UploadProps> = ({
           placeholder="classroom name"
           onChange={handleFileNameChange}
         />
-        <button onClick={containerState ? handleFileSubmit : toggleTray}>
+        <button
+          onClick={(e) =>
+            containerState
+              ? handleFileSubmit(
+                  e,
+                  clickRef,
+                  nameField,
+                  isLoggedIn,
+                  setAvailableFiles,
+                  setStudentData,
+                  setNameField,
+                  DisplayError
+                )
+              : toggleTray
+          }
+        >
           {containerState ? "SUBMIT" : "UPLOAD"}
         </button>
       </div>

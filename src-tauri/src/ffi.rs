@@ -94,15 +94,18 @@ pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
 //
 
 #[tauri::command]
-pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<String, ()> {
+pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>, ()> {
     let handler = FileHandler::new();
     let students = handler
         .read_and_return_students(obj_name)
         .expect("Failed to parse students from json ... ");
-
+    let students_json = handler
+        .read_and_return_json(obj_name)
+        .expect("Failed to parse file into json ...");
     let balanced = Utils::balance(students, group_size, 4);
-
-    Ok(Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... "))
+    let groups_json =
+        Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... ");
+    Ok(vec![students_json, groups_json])
 }
 
 //
