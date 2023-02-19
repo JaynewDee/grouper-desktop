@@ -6,10 +6,8 @@ import { NavProps } from "../../Types";
 import { FC } from "react";
 import "./Navigation.css";
 
-const Navigation: FC<NavProps> = ({ view, changeView }) => {
+const Navigation: FC<NavProps> = ({ view }) => {
   const [displayState, setDisplayState] = useState(true);
-  const setStudentsView = () => changeView("students");
-  const setGroupsView = () => changeView("groups");
 
   const toggleDisplay = (e: any) => setDisplayState((prev) => !prev);
   return (
@@ -22,22 +20,18 @@ const Navigation: FC<NavProps> = ({ view, changeView }) => {
       }
     >
       <a
-        onClick={setStudentsView}
         className="nav-link"
         style={view === "students" ? { color: "cyan" } : {}}
       >
         {StudentIcon()}
       </a>
       <a
-        onClick={setGroupsView}
         className="nav-link"
         style={view === "groups" ? { color: "cyan" } : {}}
       >
         {GroupIcon()}
       </a>
-      <a onClick={setStudentsView} className="nav-link">
-        {Placeholder()}
-      </a>
+      <a className="nav-link">{Placeholder()}</a>
       <a
         onClick={toggleDisplay}
         className={displayState ? "arrow-expand" : "arrow-collapse"}

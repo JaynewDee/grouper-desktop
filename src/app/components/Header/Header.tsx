@@ -1,6 +1,5 @@
-import { useEffect, useState, FC } from "react";
+import { FC } from "react";
 import { HeaderProps } from "../../Types";
-import { Unlocked, Locked, Settings, Help } from "../Icons";
 import "./Header.css";
 
 const Header: FC<HeaderProps> = () => {

@@ -1,14 +1,9 @@
 import { useRef, useState, FC } from "react";
 import { Arrow } from "../Icons";
 import "./Upload.css";
-import Handlers from "../../api";
 import { InputChange, UploadProps } from "../../Types";
 
-const Upload: FC<UploadProps> = ({
-  setStudentData,
-  setAvailableFiles,
-  isLoggedIn
-}) => {
+const Upload: FC<any> = ({}) => {
   // STATE
   const [containerState, setContainerState] = useState(true);
   const [nameField, setNameField] = useState("");
@@ -54,8 +49,6 @@ const Upload: FC<UploadProps> = ({
     }, 3000);
   };
 
-  const { handleFileSubmit } = Handlers;
-
   return (
     <div className="upload-inputs">
       <div
@@ -90,20 +83,11 @@ const Upload: FC<UploadProps> = ({
           onChange={handleFileNameChange}
         />
         <button
-          onClick={(e) =>
-            containerState
-              ? handleFileSubmit(
-                  e,
-                  clickRef,
-                  nameField,
-                  isLoggedIn,
-                  setAvailableFiles,
-                  setStudentData,
-                  setNameField,
-                  DisplayError
-                )
-              : toggleTray
-          }
+        // onClick={(e) =>
+        //   containerState
+        //     ? handleFileSubmit()
+        //     : toggleTray
+        // }
         >
           {containerState ? "SUBMIT" : "UPLOAD"}
         </button>

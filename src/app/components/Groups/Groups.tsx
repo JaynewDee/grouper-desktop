@@ -1,6 +1,4 @@
-import React from "react";
 import { StudentType } from "../../Types";
-import { useGroupAvgs } from "../../utils/parse";
 import "./Groups.css";
 
 type MinStudent = {

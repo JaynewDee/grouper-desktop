@@ -1,18 +1,12 @@
 import { FC } from "react";
 import { ControlsProps } from "../../Types";
 import "./styles.css";
-const DisplayControls: FC<ControlsProps> = ({ controls }) => {
-  const { expandAll, collapseAll, clearContentDisplay } = controls;
-
+const DisplayControls: FC<any> = () => {
   return (
     <div className="toggle-display-box">
-      <button id="expand" onClick={expandAll}>
-        EXPAND ALL
-      </button>
-      <button id="collapse" onClick={collapseAll}>
-        COLLAPSE ALL
-      </button>
-      <button onClick={clearContentDisplay}>CLEAR</button>
+      <button id="expand">EXPAND ALL</button>
+      <button id="collapse">COLLAPSE ALL</button>
+      <button>CLEAR</button>
     </div>
   );
 };

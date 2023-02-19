@@ -39,9 +39,6 @@
   color: cyan;
 }
 
-.fields-container {
-  width: 115%;
-}
 .student-field-set {
   text-align: left;
   margin-bottom: 1rem;
@@ -57,7 +54,6 @@
   margin: 0;
 }
 .student-field {
-  overflow: auto;
   color: cyan;
   word-break: break-all;
   font-size: 1.11rem;
@@ -72,9 +68,4 @@
   justify-content: center;
   align-items: center;
   margin: 0 1rem 0 3rem;
-}
-
-.hover-tooltip {
-  position: relative;
-  top: 0;
 }

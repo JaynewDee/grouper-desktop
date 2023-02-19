@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StudentType } from "../Types";
 import { useGroupAvgs } from "../utils/parse";
 import { Group, GroupType } from "./Groups/Groups";
@@ -11,9 +11,12 @@ export type Groups = {
 const GroupsView = ({ groupsData }: { groupsData: Groups }) => {
   const [groupAvgs, setGroupAvgs] = useGroupAvgs(groupsData);
 
+  const data = Object.values(groupsData);
+  const hasData = data !== null && data !== undefined;
+
   return (
     <div className="groups-container">
-      {groupsData &&
+      {hasData &&
         Object.values(groupsData).map((group: GroupType, idx: number) => {
           return <>{Group(group, idx, Object.values(groupAvgs)[idx])}</>;
         })}

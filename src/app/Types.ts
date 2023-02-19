@@ -11,8 +11,9 @@ export type SetStudentState = Dispatch<SetStateAction<StudentType[]>>;
 export interface ViewProps {
   studentData: StudentType[];
   toggleAll: string;
-  controls: DisplayControllers;
 }
+
+export type GroupObject = { [key: number]: StudentType[] } | {};
 
 export type Files = string[] | [];
 
@@ -104,18 +105,11 @@ export interface ClassProps {
 }
 
 export type ClassesProps = {
-  handlers: ClassHandlers;
-  controls: DisplayControllers;
   isData: number;
   setStudentData: Dispatch<SetStateAction<any>>;
   setGroupsData: Dispatch<SetStateAction<any>>;
   setAvailableFiles: Dispatch<SetStateAction<any>>;
-  handleBuildGroups: (
-    _: MouseEvent<any, any>,
-    clickRef: MutableRefObject<HTMLInputElement | null>,
-    setStudentData: Setter,
-    setGroupsData: Setter
-  ) => Promise<void>;
+
   changeView: Dispatch<SetStateAction<View>>;
 };
 

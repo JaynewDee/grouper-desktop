@@ -2,9 +2,9 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { MutableRefObject, MouseEvent, Dispatch, SetStateAction } from "react";
 import { fileToString } from "../utils/parse";
 
-import { ChangeView, Files, Setter, StudentType } from "../Types";
+import { ChangeView, Setter, StudentType } from "../Types";
 
-const Invokers = {
+export const Invokers = {
   showBuckets: async (): Promise<any> => await invoke("list_buckets"),
   listObjects: async (): Promise<any> => await invoke("list_objects"),
   readJson: async (objName: string): Promise<string> =>
@@ -32,104 +32,86 @@ const Invokers = {
     await invoke("get_group_avgs", { groupsJson })
 };
 
-const Handlers = (invokers: typeof Invokers) => ({
-  handleGetFile: async (
-    e: MouseEvent<any, any>,
-    setStudentData: Dispatch<SetStateAction<StudentType[]>>,
-    changeView: ChangeView
-  ) => {
-    const element = e.target as HTMLElement;
-    const objName = element.textContent + ".json";
-    const json = await invokers.readJson(objName as string);
-    const studentData = JSON.parse(json);
-    setStudentData(studentData);
-    changeView("students");
-  },
-  //
-  handleGetFileList: async ({
-    setAvailableFiles
-  }: {
-    setAvailableFiles: Dispatch<SetStateAction<Files>>;
-  }) =>
-    Invokers.getFileList()
-      .then((files) => setAvailableFiles(files))
-      .catch((err) => console.error(err)),
-  //
-  handleFileSubmit: async (
-    _: MouseEvent<HTMLButtonElement>,
-    ref: MutableRefObject<HTMLInputElement | null>,
-    nameField: string,
-    isLoggedIn: boolean,
-    setAvailableFiles: Dispatch<SetStateAction<string[]>>,
-    setStudentData: Dispatch<SetStateAction<StudentType[]>>,
-    setNameField: Dispatch<SetStateAction<string>>,
-    displayErr: any
-  ) => {
-    if (!ref.current) {
-      displayErr("You must select a file to upload.");
-      return;
-    }
-    if (nameField.length < 3) {
-      displayErr("The name for your file must be at least 3 characters long");
-      return;
-    }
-    if (ref.current) {
-      const file = ref.current.files![0];
-      const jsonString = await fileToString(file);
-      const res = await Invokers.uploadObject(
-        jsonString,
-        nameField,
-        isLoggedIn
-      );
-      const data = JSON.parse(res);
-      setStudentData(data);
-      const filenames = await Invokers.getFileList();
-      setAvailableFiles(filenames);
-      setNameField!("");
-    }
-  },
-  //
-  handleDeleteFile: async (
-    _: MouseEvent<any, any>,
-    clickRef: MutableRefObject<HTMLInputElement | null>,
-    setAvailableFiles: Dispatch<SetStateAction<any>>,
-    setStudentData: Dispatch<SetStateAction<any>>,
-    setGroupsData: Dispatch<SetStateAction<any>>
-  ) => {
-    const element = clickRef.current as HTMLInputElement;
-    const text = element.textContent;
-    const objName = text + ".json";
-    await invokers.deleteFile(objName);
-    setAvailableFiles((prev: string[]) =>
-      prev.filter((itemName) => itemName !== objName)
-    );
-    setStudentData([]);
-    setGroupsData({});
-  },
-  //
-  handleBuildGroups: async (
-    _: MouseEvent<any, any>,
-    clickRef: MutableRefObject<HTMLInputElement | null>,
-    setStudentData: Setter,
-    setGroupsData: Setter
-  ) => {
-    //
-    const target = clickRef.current;
-    const text = target?.textContent;
-    const objName = text + ".json";
+export const handleGetFile = async (
+  e: MouseEvent<any, any>,
+  setStudentData: Dispatch<SetStateAction<StudentType[]>>,
+  changeView: ChangeView
+) => {
+  const element = e.target as HTMLElement;
+  const objName = element.textContent + ".json";
+  const json = await Invokers.readJson(objName as string);
+  const studentData = JSON.parse(json);
+  setStudentData(studentData);
+  changeView("groups");
+};
+//
 
-    const res = await invokers.buildGroups(objName, 4);
-    console.log(res[0]);
-
-    const groupAvgs = await Invokers.getGroupAvgs(res[0].slice());
-    console.log(groupAvgs);
-    const students = JSON.parse(res[0]);
-    setStudentData(students);
-    const groups = JSON.parse(res[1]);
-    setGroupsData(groups);
-    console.log(groups);
+//
+export const handleFileSubmit = async (
+  _: MouseEvent<HTMLButtonElement>,
+  ref: MutableRefObject<HTMLInputElement | null>,
+  nameField: string,
+  isLoggedIn: boolean,
+  setAvailableFiles: Dispatch<SetStateAction<string[]>>,
+  setStudentData: Dispatch<SetStateAction<StudentType[]>>,
+  setNameField: Dispatch<SetStateAction<string>>,
+  displayErr: any
+) => {
+  if (!ref.current) {
+    displayErr("You must select a file to upload.");
+    return;
   }
+  if (nameField.length < 3) {
+    displayErr("The name for your file must be at least 3 characters long");
+    return;
+  }
+  if (ref.current) {
+    const file = ref.current.files![0];
+    const jsonString = await fileToString(file);
+    const res = await Invokers.uploadObject(jsonString, nameField, isLoggedIn);
+    const data = JSON.parse(res);
+    setStudentData(data);
+    const filenames = await Invokers.getFileList();
+    setAvailableFiles(filenames);
+    setNameField!("");
+  }
+};
+//
+export const handleDeleteFile = async (
+  _: MouseEvent<any, any>,
+  clickRef: MutableRefObject<HTMLInputElement | null>,
+  setAvailableFiles: Dispatch<SetStateAction<any>>,
+  setStudentData: Dispatch<SetStateAction<any>>,
+  setGroupsData: Dispatch<SetStateAction<any>>
+) => {
+  const element = clickRef.current as HTMLInputElement;
+  const text = element.textContent;
+  const objName = text + ".json";
+  await Invokers.deleteFile(objName);
+  setAvailableFiles((prev: string[]) =>
+    prev.filter((itemName) => itemName !== objName)
+  );
+  setStudentData([]);
+  setGroupsData({});
+};
+//
+export const handleBuildGroups = async (
+  _: MouseEvent<any, any>,
+  clickRef: MutableRefObject<HTMLInputElement | null>,
+  setStudentData: Setter,
+  setGroupsData: Setter
+) => {
   //
-});
+  const target = clickRef.current;
+  const text = target?.textContent;
+  const objName = text + ".json";
 
-export default Handlers(Invokers);
+  const res = await Invokers.buildGroups(objName, 4);
+
+  const groupAvgs = await Invokers.getGroupAvgs(res[0].slice());
+  const students = JSON.parse(res[0]);
+  setStudentData(students);
+  const groups = JSON.parse(res[1]);
+  setGroupsData(groups);
+};
+//

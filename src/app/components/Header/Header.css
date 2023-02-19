@@ -1,14 +1,10 @@
 header {
   background-color: var(--accent);
-  margin: 0;
   position: fixed;
-  top: 0;
   display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-end;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: flex-end;
   height: 4rem;
-  color: var(--o-white);
   border: 2px solid var(--alt);
   z-index: 3;
   width: 100%;
@@ -16,32 +12,15 @@ header {
 
 h1 {
   margin: 0;
-  margin-left: 0.66rem;
+  margin-left: 0.33rem;
   font-size: 1.66rem;
   letter-spacing: 0.11rem;
-  font-weight: 200;
-  font-style: italic;
 }
 
 .title {
   pointer-events: none;
 }
 
-.header-utils {
-  margin-right: 0.33rem;
-  margin-bottom: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.header-utils > * {
-  margin: 0.18rem;
-}
-.header-utils > *:hover {
-  cursor: pointer;
-  transform: scale(1.1);
-}
 .unlocked,
 .locked {
   color: var(--tertiary);
