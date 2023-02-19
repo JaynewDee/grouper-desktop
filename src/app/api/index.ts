@@ -122,13 +122,12 @@ const Handlers = (invokers: typeof Invokers) => ({
     console.log(res[0]);
 
     const groupAvgs = await Invokers.getGroupAvgs(res[0].slice());
+    console.log(groupAvgs);
     const students = JSON.parse(res[0]);
     setStudentData(students);
     const groups = JSON.parse(res[1]);
     setGroupsData(groups);
     console.log(groups);
-    const avgs = JSON.parse(groupAvgs);
-    console.log(avgs);
   }
   //
 });

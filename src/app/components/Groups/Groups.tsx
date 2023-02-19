@@ -1,5 +1,6 @@
 import React from "react";
 import { StudentType } from "../../Types";
+import { useGroupAvgs } from "../../utils/parse";
 import "./Groups.css";
 
 type MinStudent = {
@@ -14,13 +15,15 @@ export type GroupType = AnyStudent[];
 const Student = ({ name, avg }: MinStudent) => (
   <div className="group-student">
     <p>{name}</p>
-    <p>{avg}</p>
   </div>
 );
 
-export const Group = (group: GroupType, idx: number) => (
-  <div className="group-box">
-    <h4>Group {idx + 1}</h4>
-    {group.map(({ name, avg }: AnyStudent) => Student({ name, avg }))}
-  </div>
-);
+export const Group = (group: GroupType, idx: number, group_avg: number) => {
+  return (
+    <div className="group-box">
+      <h4>Group {idx + 1}</h4>
+      <h5>AVG: {group_avg}</h5>
+      {group.map(({ name, avg }: AnyStudent) => Student({ name, avg }))}
+    </div>
+  );
+};

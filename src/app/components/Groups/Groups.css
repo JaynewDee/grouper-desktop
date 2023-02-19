@@ -5,7 +5,17 @@
 }
 
 .group-box {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  border: 1px solid white;
 }
 
-.group-student {
+h4 {
+  margin: 1rem auto 0;
+}
+
+.group-student > * {
+  margin: 0 auto;
+  font-size: 1.33rem;
 }
