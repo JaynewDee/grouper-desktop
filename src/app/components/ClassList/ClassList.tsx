@@ -1,34 +1,9 @@
-import {
-  FC,
-  useState,
-  memo,
-  useMemo,
-  useRef,
-  SetStateAction,
-  Dispatch,
-  MouseEvent,
-  MutableRefObject
-} from "react";
+import { FC, useState, memo, useMemo, useRef } from "react";
 
 import "./ClassList.css";
 import { BuildGroupsBtn, DeleteClassBtn } from "../Icons";
 import DisplayControls from "../Students/DisplayControls";
-import { GetFileEvent, FileEvent, ClassesProps, Setter } from "../../Types";
-
-interface ClassProps {
-  handleGetFile: GetFileEvent;
-  handleDeleteFile: FileEvent;
-  handleBuildGroups: (
-    _: MouseEvent<any, any>,
-    clickRef: MutableRefObject<HTMLInputElement | null>,
-    setStudentData: Setter,
-    setGroupsData: Setter
-  ) => Promise<void>;
-  setStudentData: Dispatch<SetStateAction<any>>;
-  setGroupsData: Dispatch<SetStateAction<any>>;
-  opt: string;
-  id: number;
-}
+import { ClassesProps, ClassProps } from "../../Types";
 
 const Class: FC<ClassProps> = ({
   handleGetFile,
@@ -36,6 +11,7 @@ const Class: FC<ClassProps> = ({
   handleBuildGroups,
   setStudentData,
   setGroupsData,
+  setAvailableFiles,
   opt,
   id
 }) => {
@@ -43,7 +19,7 @@ const Class: FC<ClassProps> = ({
 
   const clickRef = useRef<HTMLInputElement | null>(null);
 
-  const handleOptionClick = (e: any) => handleGetFile(e);
+  const handleOptionClick = (e: any) => handleGetFile(e, setStudentData);
 
   const handleMouseEnter = (_: any) => setHoverState(true);
 
@@ -56,7 +32,11 @@ const Class: FC<ClassProps> = ({
       onMouseLeave={handleMouseLeave}
     >
       {hoverState && (
-        <div onClick={(e) => handleDeleteFile(e, clickRef)}>
+        <div
+          onClick={(e) =>
+            handleDeleteFile(e, clickRef, setAvailableFiles, setStudentData)
+          }
+        >
           {DeleteClassBtn()}
         </div>
       )}
@@ -92,7 +72,8 @@ export const Classes: FC<ClassesProps> = memo(
     controls,
     isData,
     setStudentData,
-    setGroupsData
+    setGroupsData,
+    setAvailableFiles
   }) => {
     //
     const [listState, setListState] = useState(false);
@@ -118,6 +99,7 @@ export const Classes: FC<ClassesProps> = memo(
                   handleBuildGroups={handleBuildGroups}
                   setStudentData={setStudentData}
                   setGroupsData={setGroupsData}
+                  setAvailableFiles={setAvailableFiles}
                   opt={opt}
                   id={idx}
                   key={idx}

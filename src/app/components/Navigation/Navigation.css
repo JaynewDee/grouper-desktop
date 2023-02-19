@@ -1,0 +1,13 @@
+.navigation {
+  display: flex;
+  position: fixed;
+  transition: all 0.33s;
+
+  width: 17%;
+  font-size: 2rem;
+  z-index: 3;
+  top: 4rem;
+  right: 0.1rem;
+
+  outline: 1px solid white;
+}

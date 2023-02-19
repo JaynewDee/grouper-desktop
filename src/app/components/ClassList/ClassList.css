@@ -2,7 +2,7 @@
   display: flex;
   flex-flow: column nowrap;
   margin-bottom: 0rem;
-  margin-top: 15rem;
+  margin-top: 12rem;
   overflow-y: hidden;
 }
 .classes-box > button {

@@ -14,6 +14,7 @@ import {
   DisplayControllers
 } from "./Types";
 import { StudentView } from "./components/StudentView";
+import Navigation from "./components/Navigation/Navigation";
 
 const App: FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -83,12 +84,14 @@ const App: FC = () => {
         setAvailableFiles={setAvailableFiles}
         isLoggedIn={loggedIn}
       />
+      <Navigation />
       <Classes
         handlers={classHandlers}
         controls={controls}
         handleBuildGroups={handleBuildGroups}
         setStudentData={setStudentData}
         setGroupsData={setGroupsData}
+        setAvailableFiles={setAvailableFiles}
         isData={students.length}
       />
       {ViewSwitch(view)}

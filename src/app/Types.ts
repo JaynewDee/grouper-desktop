@@ -20,7 +20,10 @@ export type View = "students" | "groups";
 
 export type ChangeView = Dispatch<SetStateAction<View>>;
 
-export type GetFileEvent = (e: MouseEvent<any, any>) => Promise<void>;
+export type GetFileEvent = (
+  e: MouseEvent<any, any>,
+  setStudentData: SetStudentState
+) => Promise<void>;
 
 export type FileEvent = (
   e: MouseEvent<any, any>,
@@ -71,12 +74,34 @@ export interface HeaderProps {
 
 export type EvtUnused = MouseEvent<any, any>;
 
+export interface ClassProps {
+  handleGetFile: GetFileEvent;
+  handleDeleteFile: (
+    _: MouseEvent<any, any>,
+    clickRef: MutableRefObject<HTMLInputElement | null>,
+    setAvailableFiles: Dispatch<SetStateAction<any>>,
+    setStudentData: Dispatch<SetStateAction<any>>
+  ) => Promise<void>;
+  handleBuildGroups: (
+    _: MouseEvent<any, any>,
+    clickRef: MutableRefObject<HTMLInputElement | null>,
+    setStudentData: Setter,
+    setGroupsData: Setter
+  ) => Promise<void>;
+  setStudentData: Dispatch<SetStateAction<any>>;
+  setGroupsData: Dispatch<SetStateAction<any>>;
+  setAvailableFiles: Dispatch<SetStateAction<any>>;
+  opt: string;
+  id: number;
+}
+
 export type ClassesProps = {
   handlers: ClassHandlers;
   controls: DisplayControllers;
   isData: number;
   setStudentData: Dispatch<SetStateAction<any>>;
   setGroupsData: Dispatch<SetStateAction<any>>;
+  setAvailableFiles: Dispatch<SetStateAction<any>>;
   handleBuildGroups: (
     _: MouseEvent<any, any>,
     clickRef: MutableRefObject<HTMLInputElement | null>,

@@ -33,7 +33,7 @@ const Invokers = {
 const Handlers = (invokers: typeof Invokers) => ({
   handleGetFile: async (
     e: MouseEvent<any, any>,
-    { setStudentData }: { setStudentData: any }
+    setStudentData: Dispatch<SetStateAction<StudentType[]>>
   ) => {
     const element = e.target as HTMLElement;
     const objName = element.textContent + ".json";

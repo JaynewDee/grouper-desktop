@@ -1,7 +1,7 @@
-import { MouseEvent, FC, MutableRefObject } from "react";
+import { FC } from "react";
+import { StudentType, ViewProps } from "../Types";
 
 import StudentCard from "./Students/StudentCard";
-import { StudentType } from "./Students/StudentCard";
 
 export const StudentView: FC<ViewProps> = ({ studentData, toggleAll }) => {
   return (
