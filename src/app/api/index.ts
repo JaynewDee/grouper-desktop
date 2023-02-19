@@ -117,6 +117,7 @@ const Handlers = (invokers: typeof Invokers) => ({
     setStudentData(students);
     const groups = JSON.parse(res[1]);
     setGroupsData(groups);
+    console.log(groups);
   }
 });
 

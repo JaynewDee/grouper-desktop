@@ -21,10 +21,18 @@ const Navigation: FC<NavProps> = ({ view, changeView }) => {
           : { transform: "translateY(-75%)" }
       }
     >
-      <a onClick={setStudentsView} className="nav-link">
+      <a
+        onClick={setStudentsView}
+        className="nav-link"
+        style={view === "students" ? { color: "cyan" } : {}}
+      >
         {StudentIcon()}
       </a>
-      <a onClick={setGroupsView} className="nav-link">
+      <a
+        onClick={setGroupsView}
+        className="nav-link"
+        style={view === "groups" ? { color: "cyan" } : {}}
+      >
         {GroupIcon()}
       </a>
       <a onClick={setStudentsView} className="nav-link">

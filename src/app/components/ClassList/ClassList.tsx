@@ -2,7 +2,7 @@ import { FC, useState, memo, useMemo, useRef } from "react";
 
 import "./ClassList.css";
 import { BuildGroupsBtn, DeleteClassBtn } from "../Icons";
-import DisplayControls from "../Students/DisplayControls";
+import DisplayControls from "../DisplayControls";
 import { ClassesProps, ClassProps } from "../../Types";
 
 const Class: FC<ClassProps> = ({
@@ -12,6 +12,7 @@ const Class: FC<ClassProps> = ({
   setStudentData,
   setGroupsData,
   setAvailableFiles,
+  changeView,
   opt,
   id
 }) => {
@@ -25,21 +26,15 @@ const Class: FC<ClassProps> = ({
 
   const handleMouseLeave = (_: any) => setHoverState(false);
 
+  const deleteFile = async (e: any) =>
+    await handleDeleteFile(e, clickRef, setAvailableFiles, setStudentData);
   return (
     <div
       className="class-option-container"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {hoverState && (
-        <div
-          onClick={(e) =>
-            handleDeleteFile(e, clickRef, setAvailableFiles, setStudentData)
-          }
-        >
-          {DeleteClassBtn()}
-        </div>
-      )}
+      {hoverState && <div onClick={deleteFile}>{DeleteClassBtn()}</div>}
       <p
         onClick={handleOptionClick}
         key={id}
@@ -50,9 +45,10 @@ const Class: FC<ClassProps> = ({
       </p>
       {hoverState && (
         <div
-          onClick={(e) =>
-            handleBuildGroups(e, clickRef, setStudentData, setGroupsData)
-          }
+          onClick={async (e) => {
+            await handleBuildGroups(e, clickRef, setStudentData, setGroupsData);
+            changeView("groups");
+          }}
         >
           {BuildGroupsBtn()}
         </div>
@@ -73,7 +69,8 @@ export const Classes: FC<ClassesProps> = memo(
     isData,
     setStudentData,
     setGroupsData,
-    setAvailableFiles
+    setAvailableFiles,
+    changeView
   }) => {
     //
     const [listState, setListState] = useState(false);
@@ -100,6 +97,7 @@ export const Classes: FC<ClassesProps> = memo(
                   setStudentData={setStudentData}
                   setGroupsData={setGroupsData}
                   setAvailableFiles={setAvailableFiles}
+                  changeView={changeView}
                   opt={opt}
                   id={idx}
                   key={idx}

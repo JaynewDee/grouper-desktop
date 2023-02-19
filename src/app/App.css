@@ -2,7 +2,7 @@
 
 button,
 input {
-  border-radius: 3px;
+  border-radius: 0.33rem;
   transition: all 0.33s;
 }
 

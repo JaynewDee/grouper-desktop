@@ -14,7 +14,7 @@
 
 .class-option-container {
   display: flex;
-  width: 100%;
+  justify-content: space-evenly;
 }
 .class-option-container:hover > div {
   cursor: pointer;
@@ -69,10 +69,7 @@
 }
 
 .delete-class-btn {
-  position: absolute;
   outline: 2px solid black;
-  margin-top: 0.66rem;
-  left: 1rem;
   border-radius: 50%;
   z-index: 3;
 }
@@ -80,13 +77,16 @@
   outline: 2px solid red;
 }
 .build-groups-btn {
-  position: absolute;
   outline: 2px solid black;
-  margin-top: 0.66rem;
-  left: 3rem;
   border-radius: 50%;
   z-index: 3;
 }
+
+.delete-class-btn,
+.build-groups-btn {
+  margin: 0.66rem 1.66rem 0;
+}
+
 .build-groups-btn:hover {
   outline: 2px solid cyan;
 }

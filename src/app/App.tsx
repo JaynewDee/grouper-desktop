@@ -16,6 +16,7 @@ import {
 import { StudentView } from "./components/StudentView";
 import Navigation from "./components/Navigation/Navigation";
 
+type GroupObject = { [key: number]: StudentType[] } | {};
 const App: FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -23,14 +24,17 @@ const App: FC = () => {
 
   const [students, setStudentData] = useState<StudentType[]>([]);
 
-  const [groups, setGroupsData] = useState();
+  const [groups, setGroupsData] = useState<GroupObject>();
 
   const [availableFiles, setAvailableFiles] = useState<Files>([]);
   const [toggleAll, setToggleAll] = useState("");
 
   const expandAll = () => setToggleAll("all");
   const collapseAll = () => setToggleAll("none");
-  const clearStudentsDisplay = () => setStudentData([]);
+  const clearContentDisplay = () => {
+    setStudentData([]);
+    setGroupsData({});
+  };
 
   const stripExt = (opts: string[]) => opts.map((opt) => opt.split(".")[0]);
 
@@ -53,7 +57,7 @@ const App: FC = () => {
   const controls: DisplayControllers = {
     expandAll,
     collapseAll,
-    clearStudentsDisplay
+    clearContentDisplay
   };
 
   useMemo(() => {
@@ -92,6 +96,7 @@ const App: FC = () => {
         setStudentData={setStudentData}
         setGroupsData={setGroupsData}
         setAvailableFiles={setAvailableFiles}
+        changeView={changeView}
         isData={students.length}
       />
       {ViewSwitch(view)}

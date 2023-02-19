@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { ControlsProps } from "../../Types";
+import { ControlsProps } from "../Types";
 
 const DisplayControls: FC<ControlsProps> = ({ controls }) => {
-  const { expandAll, collapseAll, clearStudentsDisplay } = controls;
+  const { expandAll, collapseAll, clearContentDisplay } = controls;
 
   return (
     <div className="toggle-display-box">
@@ -12,7 +12,7 @@ const DisplayControls: FC<ControlsProps> = ({ controls }) => {
       <button id="collapse" onClick={collapseAll}>
         Collapse All
       </button>
-      <button onClick={clearStudentsDisplay}>Clear</button>
+      <button onClick={clearContentDisplay}>Clear</button>
     </div>
   );
 };

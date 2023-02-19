@@ -42,7 +42,7 @@ export type SimpleSetter = () => void;
 export interface DisplayControllers {
   expandAll: SimpleSetter;
   collapseAll: SimpleSetter;
-  clearStudentsDisplay: SimpleSetter;
+  clearContentDisplay: SimpleSetter;
 }
 
 export type SetFiles = Dispatch<SetStateAction<string[] | []>>;
@@ -96,6 +96,8 @@ export interface ClassProps {
   setStudentData: Dispatch<SetStateAction<any>>;
   setGroupsData: Dispatch<SetStateAction<any>>;
   setAvailableFiles: Dispatch<SetStateAction<any>>;
+  changeView: Dispatch<SetStateAction<View>>;
+
   opt: string;
   id: number;
 }
@@ -113,6 +115,7 @@ export type ClassesProps = {
     setStudentData: Setter,
     setGroupsData: Setter
   ) => Promise<void>;
+  changeView: Dispatch<SetStateAction<View>>;
 };
 
 export type GetFile = (
