@@ -1,9 +1,14 @@
-import { BsFillUnlockFill, BsFillLockFill } from "react-icons/bs";
-import { IoMdSettings } from "react-icons/io";
+import {
+  BsFillUnlockFill,
+  BsFillLockFill,
+  BsArrowUpShort
+} from "react-icons/bs";
+import { IoMdSettings, IoIosPeople, IoIosPerson } from "react-icons/io";
 import { TbHelp } from "react-icons/tb";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { TiDelete } from "react-icons/ti";
 import { HiUserGroup } from "react-icons/hi";
+import { GiMaterialsScience } from "react-icons/gi";
 
 export const Unlocked = BsFillUnlockFill;
 export const Locked = BsFillLockFill;
@@ -24,3 +29,14 @@ export const DeleteClassBtn = () =>
 
 export const BuildGroupsBtn = () =>
   HiUserGroup({ size: "1.66rem", className: "build-groups-btn" });
+
+export const StudentIcon = () =>
+  IoIosPerson({ size: "2.22rem", className: "student-view-link" });
+export const GroupIcon = () =>
+  IoIosPeople({ size: "2.33rem", className: "group-view-link" });
+
+export const Placeholder = () =>
+  GiMaterialsScience({ size: "2.33rem", className: "science-view-link" });
+
+export const NavArrow = () =>
+  BsArrowUpShort({ size: "2.33rem", className: "nav-arrow" });

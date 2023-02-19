@@ -1,13 +1,28 @@
 .navigation {
   display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-end;
   position: fixed;
   transition: all 0.33s;
-
-  width: 17%;
   font-size: 2rem;
-  z-index: 3;
+  z-index: 1;
   top: 4rem;
-  right: 0.1rem;
+  right: 0;
+  background-color: rgba(20, 20, 20, 0.9);
+}
 
-  outline: 1px solid white;
+.nav-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.33rem 1.66rem;
+}
+.nav-link:hover {
+  cursor: pointer;
+}
+
+.student-view-link {
+}
+
+.group-view-link {
 }

@@ -84,7 +84,7 @@ const App: FC = () => {
         setAvailableFiles={setAvailableFiles}
         isLoggedIn={loggedIn}
       />
-      <Navigation />
+      <Navigation view={view} changeView={changeView} />
       <Classes
         handlers={classHandlers}
         controls={controls}

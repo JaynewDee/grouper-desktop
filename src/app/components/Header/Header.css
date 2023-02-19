@@ -34,7 +34,7 @@ h1 {
 }
 
 .header-utils > * {
-  margin: 0.15rem;
+  margin: 0.33rem;
 }
 .header-utils > *:hover {
   cursor: pointer;

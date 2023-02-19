@@ -72,6 +72,11 @@ export interface HeaderProps {
   setLoggedIn: any;
 }
 
+export interface NavProps {
+  view: string;
+  changeView: Dispatch<SetStateAction<View>>;
+}
+
 export type EvtUnused = MouseEvent<any, any>;
 
 export interface ClassProps {
