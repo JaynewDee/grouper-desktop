@@ -25,10 +25,10 @@ export const CollapseArrow = () =>
   });
 
 export const DeleteClassBtn = () =>
-  TiDelete({ size: "1.66rem", className: "delete-class-btn" });
+  TiDelete({ size: "1.11rem", className: "delete-class-btn" });
 
 export const BuildGroupsBtn = () =>
-  HiUserGroup({ size: "1.66rem", className: "build-groups-btn" });
+  HiUserGroup({ size: "1.11rem", className: "build-groups-btn" });
 
 export const StudentIcon = () =>
   IoIosPerson({ size: "2.22rem", className: "student-view-link" });
@@ -39,4 +39,7 @@ export const Placeholder = () =>
   GiMaterialsScience({ size: "2.33rem", className: "science-view-link" });
 
 export const NavArrow = () =>
-  BsArrowUpShort({ size: "2.33rem", className: "nav-arrow" });
+  BsArrowUpShort({
+    size: "1.33rem",
+    className: "nav-arrow"
+  });

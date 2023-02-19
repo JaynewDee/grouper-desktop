@@ -318,6 +318,27 @@ pub mod grouper {
             avgs
         }
         //
+        pub fn send_group_avgs(groups_json: String) -> Result<String, ()> {
+            let data: Students =
+                serde_json::from_str(&groups_json).expect("Failed to parse vector from json ...");
+            println!("{:?}", data);
+            // for (k, v) in data.iter() {
+            //     let group_avg = Self::mean(v);
+            //     map.insert(*k, group_avg);
+            // }
+
+            // let json = serde_json::to_string(&map).expect("Failed to serialize GroupAvgs ...");
+            /*
+               - deserialize
+               - compose new collection:
+                   BTreeMap<u16, f32>
+               - reserialize
+               - return to typescript
+            */
+
+            Ok("".into())
+        }
+        //
         pub fn random_assignment(
             current: u16,
             mut students: Students,

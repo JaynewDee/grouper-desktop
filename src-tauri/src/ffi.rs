@@ -111,6 +111,15 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
 //
 
 #[tauri::command]
+pub async fn get_group_avgs(groups_json: String) -> Result<String, ()> {
+    let group_avgs =
+        Utils::send_group_avgs(groups_json).expect("Encountered an error building GroupAvgs ...");
+    Ok(group_avgs)
+}
+
+//
+
+#[tauri::command]
 pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
     let test_bucket_name = "grouper-client-test-bucket";
     let client = S3Client::get_client().await.unwrap();

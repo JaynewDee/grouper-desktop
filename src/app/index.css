@@ -12,7 +12,7 @@
   --tertiary: #fff;
   --util: rgba(0, 0, 0, 0.87);
   --alt: #3c4043;
-  --o-white: #e3e3e3;
+  --o-white: rgba(227, 227, 227, 0.9);
 }
 
 * {

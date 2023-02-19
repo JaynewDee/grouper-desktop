@@ -1,0 +1,12 @@
+.toggle-display-box {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.toggle-display-box > button {
+  letter-spacing: 0.06rem;
+  font-size: 0.66rem;
+}

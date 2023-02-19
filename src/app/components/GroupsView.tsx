@@ -1,20 +1,18 @@
 import React from "react";
 import { StudentType } from "../Types";
+import { Group, GroupType } from "./Groups/Groups";
+import "./Groups/Groups.css";
+type Groups = {
+  [key: number]: GroupType;
+};
 
-const GroupsView = ({ groupsData }: { groupsData: any }) => {
+const GroupsView = ({ groupsData }: { groupsData?: Groups }) => {
   return (
-    <div>
-      {Object.values(groupsData).map((group: any, idx: number) => (
-        <div>
-          <h4>Group {idx + 1}</h4>
-          {group.map((student: StudentType) => (
-            <>
-              <p>{student.name}</p>
-              <p>{student.avg}</p>
-            </>
-          ))}
-        </div>
-      ))}
+    <div className="groups-container">
+      {groupsData &&
+        Object.values(groupsData).map((group: GroupType, idx: number) =>
+          Group(group, idx)
+        )}
     </div>
   );
 };

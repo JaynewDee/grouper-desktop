@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { MutableRefObject, MouseEvent, Dispatch, SetStateAction } from "react";
 import { fileToString } from "../utils/parse";
 
-import { Files, Setter, StudentType } from "../Types";
+import { ChangeView, Files, Setter, StudentType } from "../Types";
 
 const Invokers = {
   showBuckets: async (): Promise<any> => await invoke("list_buckets"),
@@ -27,19 +27,23 @@ const Invokers = {
   checkConnection: async (): Promise<boolean> =>
     await invoke("check_connection"),
   buildGroups: async (objName: string, groupSize: 4): Promise<string> =>
-    await invoke("build_groups", { objName, groupSize })
+    await invoke("build_groups", { objName, groupSize }),
+  getGroupAvgs: async (groupsJson: string): Promise<string> =>
+    await invoke("get_group_avgs", { groupsJson })
 };
 
 const Handlers = (invokers: typeof Invokers) => ({
   handleGetFile: async (
     e: MouseEvent<any, any>,
-    setStudentData: Dispatch<SetStateAction<StudentType[]>>
+    setStudentData: Dispatch<SetStateAction<StudentType[]>>,
+    changeView: ChangeView
   ) => {
     const element = e.target as HTMLElement;
     const objName = element.textContent + ".json";
     const json = await invokers.readJson(objName as string);
     const studentData = JSON.parse(json);
     setStudentData(studentData);
+    changeView("students");
   },
   //
   handleGetFileList: async ({
@@ -89,7 +93,8 @@ const Handlers = (invokers: typeof Invokers) => ({
     _: MouseEvent<any, any>,
     clickRef: MutableRefObject<HTMLInputElement | null>,
     setAvailableFiles: Dispatch<SetStateAction<any>>,
-    setStudentData: Dispatch<SetStateAction<any>>
+    setStudentData: Dispatch<SetStateAction<any>>,
+    setGroupsData: Dispatch<SetStateAction<any>>
   ) => {
     const element = clickRef.current as HTMLInputElement;
     const text = element.textContent;
@@ -99,6 +104,7 @@ const Handlers = (invokers: typeof Invokers) => ({
       prev.filter((itemName) => itemName !== objName)
     );
     setStudentData([]);
+    setGroupsData({});
   },
   //
   handleBuildGroups: async (
@@ -113,12 +119,18 @@ const Handlers = (invokers: typeof Invokers) => ({
     const objName = text + ".json";
 
     const res = await invokers.buildGroups(objName, 4);
+    console.log(res[0]);
+
+    const groupAvgs = await Invokers.getGroupAvgs(res[0].slice());
     const students = JSON.parse(res[0]);
     setStudentData(students);
     const groups = JSON.parse(res[1]);
     setGroupsData(groups);
     console.log(groups);
+    const avgs = JSON.parse(groupAvgs);
+    console.log(avgs);
   }
+  //
 });
 
 export default Handlers(Invokers);

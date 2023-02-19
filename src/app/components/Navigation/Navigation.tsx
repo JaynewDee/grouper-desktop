@@ -18,7 +18,7 @@ const Navigation: FC<NavProps> = ({ view, changeView }) => {
       style={
         displayState
           ? { transform: "translateY(0)" }
-          : { transform: "translateY(-75%)" }
+          : { transform: "translateY(-83%)" }
       }
     >
       <a
@@ -40,12 +40,7 @@ const Navigation: FC<NavProps> = ({ view, changeView }) => {
       </a>
       <a
         onClick={toggleDisplay}
-        className="nav-link"
-        style={
-          displayState
-            ? { transform: "rotate(0deg)" }
-            : { transform: "rotate(-180deg)" }
-        }
+        className={displayState ? "arrow-expand" : "arrow-collapse"}
       >
         {NavArrow()}
       </a>

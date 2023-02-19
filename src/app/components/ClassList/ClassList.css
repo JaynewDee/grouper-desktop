@@ -15,6 +15,7 @@
 .class-option-container {
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
 }
 .class-option-container:hover > div {
   cursor: pointer;
@@ -59,7 +60,7 @@
 
 .class-option {
   margin: 0.33rem auto;
-  font-size: 1.33rem;
+  font-size: 1rem;
   color: rgba(235, 235, 235, 0.8);
 }
 
@@ -89,13 +90,6 @@
 
 .build-groups-btn:hover {
   outline: 2px solid cyan;
-}
-.toggle-display-box {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 3rem;
 }
 
 .divider-md {

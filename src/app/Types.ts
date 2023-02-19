@@ -22,7 +22,8 @@ export type ChangeView = Dispatch<SetStateAction<View>>;
 
 export type GetFileEvent = (
   e: MouseEvent<any, any>,
-  setStudentData: SetStudentState
+  setStudentData: SetStudentState,
+  changeView: ChangeView
 ) => Promise<void>;
 
 export type FileEvent = (
@@ -85,7 +86,8 @@ export interface ClassProps {
     _: MouseEvent<any, any>,
     clickRef: MutableRefObject<HTMLInputElement | null>,
     setAvailableFiles: Dispatch<SetStateAction<any>>,
-    setStudentData: Dispatch<SetStateAction<any>>
+    setStudentData: Dispatch<SetStateAction<any>>,
+    setGroupsData: Dispatch<SetStateAction<any>>
   ) => Promise<void>;
   handleBuildGroups: (
     _: MouseEvent<any, any>,
@@ -97,7 +99,6 @@ export interface ClassProps {
   setGroupsData: Dispatch<SetStateAction<any>>;
   setAvailableFiles: Dispatch<SetStateAction<any>>;
   changeView: Dispatch<SetStateAction<View>>;
-
   opt: string;
   id: number;
 }

@@ -7,8 +7,8 @@ mod ffi;
 mod s3;
 
 use ffi::{
-    build_groups, check_connection, delete_one_file, get_file_list, get_file_s3, list_buckets,
-    list_objects, read_json, upload_students_s3,
+    build_groups, check_connection, delete_one_file, get_file_list, get_file_s3, get_group_avgs,
+    list_buckets, list_objects, read_json, upload_students_s3,
 };
 
 fn main() {
@@ -22,7 +22,8 @@ fn main() {
             check_connection,
             read_json,
             delete_one_file,
-            build_groups
+            build_groups,
+            get_group_avgs
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

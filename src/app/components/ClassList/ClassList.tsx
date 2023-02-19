@@ -2,7 +2,7 @@ import { FC, useState, memo, useMemo, useRef } from "react";
 
 import "./ClassList.css";
 import { BuildGroupsBtn, DeleteClassBtn } from "../Icons";
-import DisplayControls from "../DisplayControls";
+import DisplayControls from "../DisplayControls/DisplayControls";
 import { ClassesProps, ClassProps } from "../../Types";
 
 const Class: FC<ClassProps> = ({
@@ -20,14 +20,21 @@ const Class: FC<ClassProps> = ({
 
   const clickRef = useRef<HTMLInputElement | null>(null);
 
-  const handleOptionClick = (e: any) => handleGetFile(e, setStudentData);
+  const handleOptionClick = (e: any) =>
+    handleGetFile(e, setStudentData, changeView);
 
   const handleMouseEnter = (_: any) => setHoverState(true);
 
   const handleMouseLeave = (_: any) => setHoverState(false);
 
   const deleteFile = async (e: any) =>
-    await handleDeleteFile(e, clickRef, setAvailableFiles, setStudentData);
+    await handleDeleteFile(
+      e,
+      clickRef,
+      setAvailableFiles,
+      setStudentData,
+      setGroupsData
+    );
   return (
     <div
       className="class-option-container"
@@ -75,7 +82,7 @@ export const Classes: FC<ClassesProps> = memo(
     //
     const [listState, setListState] = useState(false);
     //
-    useMemo(() => setListState((prev) => !prev), [fileOptions]);
+    // useMemo(() => setListState((prev) => !prev), [fileOptions]);
     //
     return (
       <>

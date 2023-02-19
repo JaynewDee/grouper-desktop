@@ -4,8 +4,9 @@ header {
   position: fixed;
   top: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-flow: column nowrap;
+  justify-content: flex-end;
+  align-items: flex-start;
   height: 4rem;
   color: var(--o-white);
   border: 2px solid var(--alt);
@@ -28,13 +29,14 @@ h1 {
 
 .header-utils {
   margin-right: 0.33rem;
+  margin-bottom: auto;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .header-utils > * {
-  margin: 0.33rem;
+  margin: 0.18rem;
 }
 .header-utils > *:hover {
   cursor: pointer;

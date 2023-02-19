@@ -1,31 +1,51 @@
 .navigation {
   display: flex;
   flex-flow: column nowrap;
-  align-items: flex-end;
+  align-items: center;
   position: fixed;
   transition: all 0.33s;
   font-size: 2rem;
   z-index: 1;
   top: 4rem;
   right: 0;
-  background-color: rgba(20, 20, 20, 0.9);
+  background-color: rgba(0, 0, 0, 0.6);
   border-radius: 0 0 0 0.66rem;
-  filter: drop-shadow(0px -3px 1px black);
 }
 
 .nav-link {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.33rem 1.66rem;
+  margin: 1rem 1rem 0;
   transition: all 1s;
 }
 .nav-link:hover {
   cursor: pointer;
 }
 
-.student-view-link {
+.navigation:nth-child(3) {
+  margin-bottom: 3rem;
+}
+.arrow-expand,
+.arrow-collapse {
+  margin-top: 1.33rem;
+}
+.arrow-expand {
+  transform: rotate(0deg) translateY(0.5rem);
+  line-height: 0;
+}
+.arrow-collapse {
+  transform: rotate(180deg) translateY(-0.5rem);
+  line-height: 0;
+}
+.nav-arrow {
+  outline: 1px solid cyan;
+  border-radius: 50%;
+  transition: all 0.66s;
 }
 
-.group-view-link {
+.nav-arrow:hover {
+  color: black;
+  background-color: white;
+  cursor: pointer;
 }
