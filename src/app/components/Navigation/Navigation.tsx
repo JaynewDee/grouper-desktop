@@ -25,12 +25,14 @@ const Navigation: FC<any> = ({ view }) => {
       <a
         className="nav-link"
         style={view === "students" ? { color: "cyan" } : {}}
+        onClick={(_) => adjustView("students")}
       >
         {StudentIcon()}
       </a>
       <a
         className="nav-link"
         style={view === "groups" ? { color: "cyan" } : {}}
+        onClick={(_) => adjustView("groups")}
       >
         {GroupIcon()}
       </a>

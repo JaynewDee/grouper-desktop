@@ -1,4 +1,5 @@
 import { StudentType } from "../../Types";
+import { useAnimationDelay } from "../Students/StudentCard";
 import "./Groups.css";
 
 type MinStudent = {
@@ -18,7 +19,7 @@ const Student = ({ name, avg }: MinStudent) => (
 
 export const Group = (group: GroupType, idx: number, group_avg: number) => {
   return (
-    <div className="group-box">
+    <div className="group-box" style={useAnimationDelay(idx + 1)}>
       <h4>Group {idx + 1}</h4>
       <h5>AVG: {group_avg}</h5>
       {group.map(({ name, avg }: AnyStudent) => Student({ name, avg }))}

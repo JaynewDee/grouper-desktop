@@ -3,6 +3,10 @@ import { ExpandArrow, CollapseArrow } from "../Icons";
 import { Fields } from "./CardField";
 import "./StudentCard.css";
 
+export const useAnimationDelay = (id: number) => ({
+  animationDelay: `${String(id / 10)}s`
+});
+
 export interface CardProps {
   data: any;
 }
@@ -16,10 +20,6 @@ const StudentCard: FC<CardProps> = ({ data }) => {
       setCardState("collapsed");
     }
   };
-
-  const useAnimationDelay = (id: number) => ({
-    animationDelay: `${String(id / 10)}s`
-  });
 
   return (
     <div

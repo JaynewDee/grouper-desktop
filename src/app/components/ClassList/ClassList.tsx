@@ -15,16 +15,22 @@ const Class: FC<any> = ({ opt, id }) => {
 
   const handleMouseLeave = (_: any) => setHoverState(false);
 
-  const { getData, deleteFile } = useFileContextState();
+  const { getData, deleteFile, adjustView } = useFileContextState();
 
   const handleFileSelection = (e: any) => {
     getData(e.target.textContent);
   };
+
   const handleDeleteFile = (e: any) => {
     const element = clickRef.current as HTMLInputElement;
     const text = element.textContent;
     deleteFile(text);
   };
+
+  const handleBuildGroups = (e: any) => {
+    adjustView("groups");
+  };
+
   return (
     <div
       className="class-option-container"
@@ -40,7 +46,7 @@ const Class: FC<any> = ({ opt, id }) => {
       >
         {opt.split(".")[0]}
       </p>
-      {hoverState && <div>{BuildGroupsBtn()}</div>}
+      {hoverState && <div onClick={handleBuildGroups}>{BuildGroupsBtn()}</div>}
     </div>
   );
 };

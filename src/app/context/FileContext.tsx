@@ -59,7 +59,7 @@ const FileContextProvider = ({ children }: any) => {
     },
     [setView]
   );
-  
+
   const setFiles = useCallback(
     () =>
       Invokers.getFileList()
@@ -68,21 +68,27 @@ const FileContextProvider = ({ children }: any) => {
     [setAvailableFiles]
   );
 
-  const setActiveFile = useCallback((file: string) => {
-    setCurrentFile(file);
-  }, []);
+  const setActiveFile = useCallback(
+    (file: string) => {
+      setCurrentFile(file);
+    },
+    [setCurrentFile]
+  );
 
-  const submitFile = useCallback((file: any) => {
-    if (!file) return "You must select a file to upload.";
-    const adjustState = async () => {
-      const objName = file["name"].split(".")[0];
-      const jsonString = await fileToString(file);
-      await Invokers.uploadObject(jsonString, objName, false);
-      const filenames = await Invokers.getFileList();
-      setAvailableFiles(filenames);
-    };
-    adjustState();
-  }, []);
+  const submitFile = useCallback(
+    (file: any) => {
+      if (!file) return "You must select a file to upload.";
+      const adjustState = async () => {
+        const objName = file["name"].split(".")[0];
+        const jsonString = await fileToString(file);
+        await Invokers.uploadObject(jsonString, objName, false);
+        const filenames = await Invokers.getFileList();
+        setAvailableFiles(filenames);
+      };
+      adjustState();
+    },
+    [setAvailableFiles]
+  );
 
   const deleteFile = useCallback(
     (text: string) => {
@@ -112,6 +118,7 @@ const FileContextProvider = ({ children }: any) => {
     },
     [setStudentData, setGroupsData, setView]
   );
+
   const ctx = useMemo(
     () => ({
       files,
