@@ -1,19 +1,18 @@
 import { FC, useState, memo, useRef } from "react";
-
 import { BuildGroupsBtn, DeleteClassBtn } from "../Icons";
 import DisplayControls from "../DisplayControls/DisplayControls";
-import { ClassesProps, ClassProps } from "../../Types";
-import "./ClassList.css";
 import { useFileContextState } from "../../context/FileContext";
+import { ClassProps, EvtUnused } from "../../Types";
+import "./ClassList.css";
 
-const Class: FC<any> = ({ opt, id }) => {
+const Class: FC<ClassProps> = ({ opt, id }) => {
   const [hoverState, setHoverState] = useState(false);
 
   const clickRef = useRef<HTMLInputElement | null>(null);
 
-  const handleMouseEnter = (_: any) => setHoverState(true);
+  const handleMouseEnter = (_: EvtUnused) => setHoverState(true);
 
-  const handleMouseLeave = (_: any) => setHoverState(false);
+  const handleMouseLeave = (_: EvtUnused) => setHoverState(false);
 
   const { getData, deleteFile, adjustView } = useFileContextState();
 
@@ -21,13 +20,13 @@ const Class: FC<any> = ({ opt, id }) => {
     getData(e.target.textContent);
   };
 
-  const handleDeleteFile = (e: any) => {
+  const handleDeleteFile = (_: EvtUnused) => {
     const element = clickRef.current as HTMLInputElement;
     const text = element.textContent;
     deleteFile(text);
   };
 
-  const handleBuildGroups = (e: any) => {
+  const handleBuildGroups = (_: EvtUnused) => {
     adjustView("groups");
   };
 
@@ -68,7 +67,7 @@ export const Classes: FC<any> = memo(({ isData }) => {
             listState ? "class-options-expanded" : "class-options-collapsed"
           }
         >
-          {files ? (
+          {files && files.length ? (
             files.map((opt: string, idx: number) => (
               <Class opt={opt} id={idx} key={idx} />
             ))

@@ -1,11 +1,10 @@
-import { FC, useState, memo, useMemo, useEffect } from "react";
+import { FC, memo, useEffect } from "react";
 import "./App.css";
 import Header from "./components/Header/Header";
 import Upload from "./components/Upload/Upload";
 import GroupsView from "./components/GroupsView";
 import { Classes } from "./components/ClassList/ClassList";
 import { useFileContextState } from "./context/FileContext";
-
 import { StudentView } from "./components/StudentView";
 import Navigation from "./components/Navigation/Navigation";
 
@@ -26,11 +25,12 @@ const App: FC = () => {
   useEffect(() => {
     adjustView("students");
   }, []);
+
   return (
     <>
       <Header />
       <Upload />
-      <Navigation view={view} setView={adjustView} />
+      <Navigation view={view} />
       <Classes isData={students && students.length} />
       {view ? ViewSwitch(view) : null}
     </>

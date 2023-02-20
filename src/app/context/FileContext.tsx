@@ -7,14 +7,14 @@ import {
   useEffect
 } from "react";
 import { Invokers } from "../api";
-import { Files, GroupObject, StudentType } from "../Types";
+import { Files, GroupsObject, StudentType } from "../Types";
 import { fileToString } from "../utils/parse";
 
 interface ContextState {
   files?: string[];
   activeFile?: string;
   students?: StudentType[];
-  groups?: GroupObject;
+  groups?: GroupsObject;
   view?: string;
   setFiles?: any;
   setActiveFile?: any;
@@ -42,7 +42,7 @@ const FileContextProvider = ({ children }: any) => {
   const [files, setAvailableFiles] = useState<Files>([]);
   const [activeFile, setCurrentFile] = useState("");
   const [students, setStudentData] = useState<StudentType[]>([]);
-  const [groups, setGroupsData] = useState<GroupObject>({});
+  const [groups, setGroupsData] = useState<GroupsObject>({});
   const [view, setView] = useState<string>("");
 
   useEffect(() => {

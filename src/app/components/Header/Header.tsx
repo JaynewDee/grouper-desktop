@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { HeaderProps } from "../../Types";
 import "./Header.css";
 
 const Header: FC<any> = () => {

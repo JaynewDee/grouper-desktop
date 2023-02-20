@@ -1,4 +1,5 @@
-import { useEffect, useState, FC } from "react";
+import { useState, FC } from "react";
+import { StudentCardProps } from "../../Types";
 import { ExpandArrow, CollapseArrow } from "../Icons";
 import { Fields } from "./CardField";
 import "./StudentCard.css";
@@ -7,10 +8,7 @@ export const useAnimationDelay = (id: number) => ({
   animationDelay: `${String(id / 10)}s`
 });
 
-export interface CardProps {
-  data: any;
-}
-const StudentCard: FC<CardProps> = ({ data }) => {
+const StudentCard: FC<StudentCardProps> = ({ data }) => {
   const [cardState, setCardState] = useState("collapsed");
 
   const toggleCardState = () => {

@@ -1,14 +1,14 @@
 import { useRef, useState, FC } from "react";
 import { Arrow } from "../Icons";
 import "./Upload.css";
-import { InputChange, UploadProps } from "../../Types";
+import { InputChange } from "../../Types";
 import { useFileContextState } from "../../context/FileContext";
 
 const Upload: FC<any> = ({}) => {
   // STATE
   const [containerState, setContainerState] = useState(true);
   const [nameField, setNameField] = useState("");
-  const [errorState, setErrorState] = useState("");
+  const [errorState] = useState("");
   // REF
   const clickRef = useRef<HTMLInputElement | null>(null);
   const proxyToRef = () => {

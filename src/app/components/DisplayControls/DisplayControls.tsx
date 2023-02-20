@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { ControlsProps } from "../../Types";
 import "./styles.css";
+
 const DisplayControls: FC<any> = () => {
   return (
     <div className="toggle-display-box">
