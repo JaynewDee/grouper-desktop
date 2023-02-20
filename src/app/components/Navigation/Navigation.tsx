@@ -4,11 +4,15 @@ import "./Navigation.css";
 import { GroupIcon, NavArrow, Placeholder, StudentIcon } from "../Icons";
 import { FC } from "react";
 import "./Navigation.css";
+import { useFileContextState } from "../../context/FileContext";
 
 const Navigation: FC<any> = ({ view }) => {
   const [displayState, setDisplayState] = useState(true);
 
   const toggleDisplay = (e: any) => setDisplayState((prev) => !prev);
+
+  const { adjustView } = useFileContextState();
+
   return (
     <nav
       className="navigation"

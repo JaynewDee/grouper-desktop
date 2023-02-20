@@ -4,11 +4,7 @@ import {
   useState,
   useCallback,
   useMemo,
-  useEffect,
-  MutableRefObject,
-  Dispatch,
-  SetStateAction,
-  MouseEvent
+  useEffect
 } from "react";
 import { Invokers } from "../api";
 import { Files, GroupObject, StudentType } from "../Types";
@@ -26,7 +22,8 @@ interface ContextState {
   setGroups?: any;
   submitFile?: any;
   deleteFile?: any;
-  setView?: any;
+  adjustView?: any;
+  getData?: any;
 }
 
 const FileContextState = createContext<ContextState>({});
@@ -46,7 +43,7 @@ const FileContextProvider = ({ children }: any) => {
   const [activeFile, setCurrentFile] = useState("");
   const [students, setStudentData] = useState<StudentType[]>([]);
   const [groups, setGroupsData] = useState<GroupObject>({});
-  const [view, setView] = useState<string>();
+  const [view, setView] = useState<string>("");
 
   useEffect(() => {
     Invokers.getFileList()
@@ -56,6 +53,13 @@ const FileContextProvider = ({ children }: any) => {
       .catch((err) => console.error(err));
   }, []);
 
+  const adjustView = useCallback(
+    (view: string) => {
+      setView(view);
+    },
+    [setView]
+  );
+  
   const setFiles = useCallback(
     () =>
       Invokers.getFileList()
@@ -68,30 +72,14 @@ const FileContextProvider = ({ children }: any) => {
     setCurrentFile(file);
   }, []);
 
-  const setStudents = useCallback(
-    (data: StudentType[]) => setStudentData(data),
-    [setStudentData]
-  );
-
-  const setGroups = useCallback(
-    (data: GroupObject[]) => {
-      setGroupsData(data);
-    },
-    [setGroupsData]
-  );
-
   const submitFile = useCallback((file: any) => {
     if (!file) return "You must select a file to upload.";
     const adjustState = async () => {
-      const objName = file["name"];
+      const objName = file["name"].split(".")[0];
       const jsonString = await fileToString(file);
-      const res = await Invokers.uploadObject(jsonString, objName, false);
-      const data = JSON.parse(res);
+      await Invokers.uploadObject(jsonString, objName, false);
       const filenames = await Invokers.getFileList();
-
-      setStudentData(data);
       setAvailableFiles(filenames);
-      console.log(objName);
     };
     adjustState();
   }, []);
@@ -108,6 +96,22 @@ const FileContextProvider = ({ children }: any) => {
     [setFiles]
   );
 
+  const getData = useCallback(
+    (text: string) => {
+      const adjustState = async () => {
+        const objName = text + ".json";
+        const res = await Invokers.buildGroups(objName, 4);
+        const students = JSON.parse(res[0]);
+        const groups = JSON.parse(res[1]);
+
+        setStudentData(students);
+        setGroupsData(groups);
+        setView("students");
+      };
+      adjustState();
+    },
+    [setStudentData, setGroupsData, setView]
+  );
   const ctx = useMemo(
     () => ({
       files,
@@ -117,11 +121,10 @@ const FileContextProvider = ({ children }: any) => {
       view,
       setFiles,
       setActiveFile,
-      setStudents,
-      setGroups,
       submitFile,
-      setView,
-      deleteFile
+      adjustView,
+      deleteFile,
+      getData
     }),
     [
       files,
@@ -131,11 +134,10 @@ const FileContextProvider = ({ children }: any) => {
       view,
       setFiles,
       setCurrentFile,
-      setStudents,
-      setGroups,
       submitFile,
-      setView,
-      deleteFile
+      adjustView,
+      deleteFile,
+      getData
     ]
   );
 

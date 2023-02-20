@@ -15,10 +15,10 @@ const Class: FC<any> = ({ opt, id }) => {
 
   const handleMouseLeave = (_: any) => setHoverState(false);
 
-  const { setActiveFile, deleteFile } = useFileContextState();
+  const { getData, deleteFile } = useFileContextState();
 
   const handleFileSelection = (e: any) => {
-    setActiveFile(e.target.textContent);
+    getData(e.target.textContent);
   };
   const handleDeleteFile = (e: any) => {
     const element = clickRef.current as HTMLInputElement;

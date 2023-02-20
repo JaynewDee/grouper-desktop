@@ -32,42 +32,4 @@ export const Invokers = {
     await invoke("get_group_avgs", { groupsJson })
 };
 
-export const handleGetFile = async (
-  e: MouseEvent<any, any>,
-  setStudentData: Dispatch<SetStateAction<StudentType[]>>,
-  changeView: ChangeView
-) => {
-  const element = e.target as HTMLElement;
-  const objName = element.textContent + ".json";
-  const json = await Invokers.readJson(objName as string);
-  const studentData = JSON.parse(json);
-  setStudentData(studentData);
-  changeView("groups");
-};
-//
 
-//
-
-//
-
-//
-export const handleBuildGroups = async (
-  _: MouseEvent<any, any>,
-  clickRef: MutableRefObject<HTMLInputElement | null>,
-  setStudentData: Setter,
-  setGroupsData: Setter
-) => {
-  //
-  const target = clickRef.current;
-  const text = target?.textContent;
-  const objName = text + ".json";
-
-  const res = await Invokers.buildGroups(objName, 4);
-
-  const groupAvgs = await Invokers.getGroupAvgs(res[0].slice());
-  const students = JSON.parse(res[0]);
-  setStudentData(students);
-  const groups = JSON.parse(res[1]);
-  setGroupsData(groups);
-};
-//
