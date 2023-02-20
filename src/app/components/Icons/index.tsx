@@ -31,15 +31,14 @@ export const BuildGroupsBtn = () =>
   HiUserGroup({ size: "1.11rem", className: "build-groups-btn" });
 
 export const StudentIcon = () =>
-  IoIosPerson({ size: "2.22rem", className: "student-view-link" });
+  IoIosPerson({ size: "2rem", className: "student-view-link" });
 export const GroupIcon = () =>
-  IoIosPeople({ size: "2.33rem", className: "group-view-link" });
+  IoIosPeople({ size: "2rem", className: "group-view-link" });
 
 export const Placeholder = () =>
-  GiMaterialsScience({ size: "2.33rem", className: "science-view-link" });
+  GiMaterialsScience({ size: "2rem", className: "science-view-link" });
 
 export const NavArrow = () =>
-  BsArrowUpShort({
-    size: "1.33rem",
+  BiRightArrowAlt({
     className: "nav-arrow"
   });

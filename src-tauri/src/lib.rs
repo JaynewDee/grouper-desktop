@@ -1,12 +1,16 @@
-//
+#![allow(unused_imports)]
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 ////////////////////////
 // Handles os-based i/o
 ////////////////////////
-//
 pub mod files {
+    use crate::grouper;
     use crate::models::{Student, StudentBuilder};
     use csv::StringRecord;
     use serde::Deserialize;
+    use std::collections::BTreeMap;
     use std::io::Read;
     use std::net::TcpStream;
     use std::path::Path;
@@ -41,14 +45,6 @@ pub mod files {
 
         //
 
-        fn students_from_json(json_str: &str) -> Result<Vec<Student>, ()> {
-            let people: Vec<Student> = serde_json::from_str(json_str)
-                .expect("Failed to parse students from json string ... ");
-            Ok(people)
-        }
-
-        //
-
         pub fn read_and_return_json(
             &self,
             filename: &str,
@@ -68,7 +64,7 @@ pub mod files {
             let file = File::open(&full_path).expect("Failed to read json file");
 
             let file_contents = Self::file_to_string(file);
-            Self::students_from_json(&file_contents)
+            grouper::Utils::students_from_json(&file_contents)
         }
 
         //
@@ -154,7 +150,7 @@ pub mod files {
             Ok(file_list)
         }
         //
-        pub fn read_record(idx: usize, row: Result<StringRecord, csv::Error>) -> Student {
+        pub fn student_from_record(idx: usize, row: Result<StringRecord, csv::Error>) -> Student {
             let r = row.expect("Unable to parse string record");
 
             fn parse_avg(r: StringRecord) -> f32 {
@@ -197,12 +193,15 @@ pub mod files {
 }
 
 //////////////////
-/// Handles all student group manipulations
+/// Handles student group manipulations
 //////////////////
 pub mod grouper {
+
     use crate::models::Student;
     use rand::Rng;
     use std::collections::{BTreeMap, HashMap};
+    use std::sync::mpsc::channel;
+    use std::thread;
     // Main Handler - Balancer
 
     type Students = Vec<Student>;
@@ -242,31 +241,42 @@ pub mod grouper {
 
     impl Utils {
         //
+
         fn rand_idx(vec_length: usize) -> usize {
             let mut rng = rand::thread_rng();
             rng.gen_range(0..vec_length)
         }
+
         //
+
         fn mean(floats: &Vec<f32>) -> f32 {
             floats.iter().fold(0 as f32, |acc, n| acc + n) / floats.len() as f32
         }
+
         //
+
         fn diffs(floats: &Vec<f32>, mean: &f32) -> Vec<f32> {
             floats.iter().fold(vec![], |mut acc: Vec<f32>, &val| {
                 acc.push((val - mean).abs());
                 acc
             })
         }
+
         //
+
         fn square_all(floats: &Vec<f32>) -> Vec<f32> {
             floats.iter().map(|float| float.powi(2)).collect()
         }
+
         //
+
         fn round_to_dec_count(value: f32, dec_count: i32) -> f32 {
             let multi = 10.0_f32.powi(dec_count);
             (value * multi).round() / multi
         }
+
         //
+
         pub fn std_dev(floats: Vec<f32>) -> f32 {
             // 1. Calculate the mean of the vector.
             let mean = Self::mean(&floats);
@@ -281,19 +291,24 @@ pub mod grouper {
 
             sd
         }
+
         //
+
         pub fn sort_students(vec_of_students: &Students) -> Students {
             let mut students = vec_of_students.clone();
             students.sort_by(|a, b| a.avg.partial_cmp(&b.avg).unwrap());
             students
         }
+
         //
+
         pub fn num_groups(num_students: u16, group_size: u16) -> u16 {
             let res: f32 = num_students as f32 / group_size as f32;
             res.floor() as u16
         }
 
         //
+
         pub fn group_avgs_map(groups: &GroupsMap) -> HashMap<u16, f32> {
             let mut map = HashMap::new();
 
@@ -307,7 +322,25 @@ pub mod grouper {
 
             map
         }
+
         //
+
+        pub fn students_from_json(json_str: &str) -> Result<Vec<Student>, ()> {
+            let people: Vec<Student> = serde_json::from_str(json_str)
+                .expect("Failed to parse students from json string ... ");
+            Ok(people)
+        }
+
+        //
+
+        pub fn groups_from_json(json_str: &str) -> Result<BTreeMap<u16, Vec<Student>>, ()> {
+            let groups: BTreeMap<u16, Vec<Student>> = serde_json::from_str(json_str)
+                .expect("Failed to parse groups from json string ... ");
+            Ok(groups)
+        }
+
+        //
+
         pub fn group_avgs_vec(map: HashMap<u16, f32>) -> Vec<f32> {
             let mut avgs = vec![];
 
@@ -317,7 +350,9 @@ pub mod grouper {
 
             avgs
         }
+
         //
+
         pub fn send_group_avgs(groups_json: String) -> Result<String, ()> {
             let data: Students =
                 serde_json::from_str(&groups_json).expect("Failed to parse vector from json ...");
@@ -325,7 +360,9 @@ pub mod grouper {
 
             Ok("".into())
         }
+
         //
+
         pub fn random_assignment(
             current: u16,
             mut students: Students,
@@ -356,7 +393,9 @@ pub mod grouper {
 
             Self::random_assignment(current_group, students, groups_map, num_groups)
         }
+
         //
+
         pub fn balance(
             students: Vec<Student>,
             group_size: u16,
@@ -373,10 +412,21 @@ pub mod grouper {
             if let true = Self::std_dev(avgs_vec) > target_sd as f32 {
                 Self::balance(students, group_size, target_sd)
             } else {
-                assigned.0.clone()
+                assigned.0
             }
         }
+
         //
+        pub fn balancer_pool(
+            students: Vec<Student>,
+            group_size: u16,
+            target_sd: u8,
+        ) -> BTreeMap<u16, Vec<Student>> {
+            todo!()
+        }
+
+        //
+
         pub fn treemap_to_json(
             groups: BTreeMap<u16, Vec<Student>>,
         ) -> Result<String, Box<dyn std::error::Error>> {
@@ -412,7 +462,7 @@ pub mod grouper {
 }
 
 //////////////////
-/// Struct Builders
+/// Builders
 //////////////////
 pub mod models {
     use serde::{Deserialize, Serialize};
@@ -486,3 +536,8 @@ pub mod models {
         }
     }
 }
+
+//////////////////
+/// Multithreading
+//////////////////
+pub mod mutant {}

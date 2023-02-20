@@ -5,28 +5,25 @@ import { useFileContextState } from "../../context/FileContext";
 import { ClassProps, EvtUnused } from "../../Types";
 import "./ClassList.css";
 
-const Class: FC<ClassProps> = ({ opt, id }) => {
+const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
   const [hoverState, setHoverState] = useState(false);
 
   const clickRef = useRef<HTMLInputElement | null>(null);
   const handleMouseEnter = (_: EvtUnused) => setHoverState(true);
   const handleMouseLeave = (_: EvtUnused) => setHoverState(false);
 
-  const { getData, deleteFile, adjustView } = useFileContextState();
+  const { getData, deleteFile, adjustView, activeFile } = useFileContextState();
 
-  const handleFileSelection = (e: any) => {
-    getData(e.target.textContent);
-  };
+  const handleFileSelection = (e: any) =>
+    getData(e.target.textContent, Number(groupSize));
 
   const handleDeleteFile = (_: EvtUnused) => {
     const element = clickRef.current as HTMLInputElement;
     const text = element.textContent;
-    deleteFile(text);
+    deleteFile(text || "");
   };
 
-  const handleBuildGroups = (_: EvtUnused) => {
-    adjustView("groups");
-  };
+  const handleBuildGroups = (_: EvtUnused) => adjustView("groups");
 
   return (
     <div
@@ -49,9 +46,15 @@ const Class: FC<ClassProps> = ({ opt, id }) => {
 };
 
 export const Classes: FC<any> = memo(({ isData }) => {
+  const [groupSize, setGroupSize] = useState(4);
   const [listState, setListState] = useState(false);
-  //
-  const { files } = useFileContextState();
+
+  const { activeFile, files, sendForGroups } = useFileContextState();
+  console.log(activeFile);
+  const handleSizeChange = (e: any) => {
+    setGroupSize(e.target.value);
+    sendForGroups(activeFile, Number(e.target.value));
+  };
 
   return (
     <>
@@ -66,15 +69,35 @@ export const Classes: FC<any> = memo(({ isData }) => {
         >
           {files && files.length ? (
             files.map((opt: string, idx: number) => (
-              <Class opt={opt} id={idx} key={idx} />
+              <Class groupSize={groupSize} opt={opt} id={idx} key={idx} />
             ))
           ) : (
             <p>Upload a file to build your first classroom!</p>
           )}
         </div>
       </div>
+
       <hr className="divider-md" />
-      {isData > 0 && <DisplayControls />}
+
+      {isData > 0 && (
+        <>
+          <div className="size-input-container">
+            <label htmlFor="groupSize">
+              <span className="group-size-label">GROUP SIZE</span>
+            </label>
+            <input
+              name="groupsize"
+              onMouseUp={handleSizeChange}
+              defaultValue={groupSize}
+              type="range"
+              min="2"
+              max="20"
+            ></input>
+            <span>{groupSize}</span>
+          </div>
+          <DisplayControls />
+        </>
+      )}
     </>
   );
 });

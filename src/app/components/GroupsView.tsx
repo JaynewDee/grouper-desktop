@@ -25,4 +25,4 @@ const GroupsView: FC<ViewProps> = ({ groupsData }) => {
   );
 };
 
-export default React.memo(GroupsView);
+export default GroupsView;

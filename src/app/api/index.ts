@@ -22,8 +22,13 @@ export const Invokers = {
     await invoke("delete_one_file", { objName }),
   checkConnection: async (): Promise<boolean> =>
     await invoke("check_connection"),
-  buildGroups: async (objName: string, groupSize: 4): Promise<string> =>
+  buildGroups: async (objName: string, groupSize: number): Promise<string> =>
     await invoke("build_groups", { objName, groupSize }),
   getGroupAvgs: async (groupsJson: string): Promise<string> =>
-    await invoke("get_group_avgs", { groupsJson })
+    await invoke("get_group_avgs", { groupsJson }),
+  groupsFromData: async (
+    studentsJson: string,
+    groupSize: number
+  ): Promise<string> =>
+    await invoke("groups_from_data", { studentsJson, groupSize })
 };

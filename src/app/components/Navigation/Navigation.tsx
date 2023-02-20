@@ -19,10 +19,16 @@ const Navigation: FC<NavProps> = ({ view }) => {
       className="navigation"
       style={
         displayState
-          ? { transform: "translateY(0)" }
-          : { transform: "translateY(-83%)" }
+          ? { transform: "translateX(0)" }
+          : { transform: "translateX(83%)" }
       }
     >
+      <a
+        onClick={toggleDisplay}
+        className={displayState ? "arrow-expand" : "arrow-collapse"}
+      >
+        {NavArrow()}
+      </a>
       <a
         className="nav-link"
         style={view === "students" ? { color: "cyan" } : {}}
@@ -38,12 +44,6 @@ const Navigation: FC<NavProps> = ({ view }) => {
         {GroupIcon()}
       </a>
       <a className="nav-link">{Placeholder()}</a>
-      <a
-        onClick={toggleDisplay}
-        className={displayState ? "arrow-expand" : "arrow-collapse"}
-      >
-        {NavArrow()}
-      </a>
     </nav>
   );
 };

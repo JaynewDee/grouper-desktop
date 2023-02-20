@@ -1,4 +1,10 @@
-import { Dispatch, SetStateAction, MouseEvent, ChangeEvent } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  MouseEvent,
+  ChangeEvent,
+  MutableRefObject
+} from "react";
 
 export interface StudentType {
   id: number;
@@ -40,6 +46,7 @@ export type EvtUnused = MouseEvent<any, any>;
 export interface ClassProps {
   opt: string;
   id: number;
+  groupSize: number;
 }
 
 export interface NavProps {

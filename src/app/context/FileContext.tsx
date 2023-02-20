@@ -11,22 +11,20 @@ import { Files, GroupsObject, StudentType } from "../Types";
 import { fileToString } from "../utils/parse";
 
 interface ContextState {
-  files?: string[];
-  activeFile?: string;
-  students?: StudentType[];
-  groups?: GroupsObject;
-  view?: string;
-  setFiles?: any;
-  setActiveFile?: any;
-  setStudents?: any;
-  setGroups?: any;
-  submitFile?: any;
-  deleteFile?: any;
-  adjustView?: any;
-  getData?: any;
+  files: string[];
+  activeFile: string;
+  students: StudentType[];
+  groups: GroupsObject;
+  view: string;
+  setFiles: () => void;
+  setActiveFile: (file: string) => void;
+  submitFile: (file: File) => void;
+  deleteFile: (text: string) => void;
+  adjustView: (newView: string) => void;
+  getData: (text: string, groupSize: number) => void;
 }
 
-const FileContextState = createContext<ContextState>({});
+const FileContextState = createContext<ContextState | any>({});
 
 const useFileContextState = () => {
   const context = useContext(FileContextState);
@@ -76,47 +74,69 @@ const FileContextProvider = ({ children }: any) => {
   );
 
   const submitFile = useCallback(
-    (file: any) => {
-      if (!file) return "You must select a file to upload.";
-      const adjustState = async () => {
-        const objName = file["name"].split(".")[0];
-        const jsonString = await fileToString(file);
-        await Invokers.uploadObject(jsonString, objName, false);
-        const filenames = await Invokers.getFileList();
-        setAvailableFiles(filenames);
-      };
-      adjustState();
+    async (file: File) => {
+      const objName = file["name"].split(".")[0];
+      setActiveFile(objName);
+      const jsonString = await fileToString(file);
+      await Invokers.uploadObject(jsonString, objName, false);
+      const filenames = await Invokers.getFileList();
+      setAvailableFiles(filenames);
     },
     [setAvailableFiles]
   );
 
   const deleteFile = useCallback(
-    (text: string) => {
-      const adjustState = async () => {
-        const objName = text + ".json";
-        await Invokers.deleteFile(objName);
-        setFiles();
-      };
-      adjustState();
+    async (text: string) => {
+      const objName = text + ".json";
+      if (activeFile === objName && files.length) {
+        setActiveFile(files[0]);
+      }
+      await Invokers.deleteFile(objName);
+      setFiles();
     },
     [setFiles]
   );
 
   const getData = useCallback(
-    (text: string) => {
-      const adjustState = async () => {
+    async (text: string, groupSize: number) => {
+      const objName = text + ".json";
+      setActiveFile(text);
+      const res = await Invokers.buildGroups(objName, groupSize);
+      const students = JSON.parse(res[0]);
+      const groups = JSON.parse(res[1]);
+
+      setStudentData(students);
+      setGroupsData(groups);
+      setView("students");
+    },
+    [setStudentData, setGroupsData, setView]
+  );
+
+  const sendForGroups = useCallback(
+    async (text: string, groupSize: number) => {
+      if (students.length === 0) {
         const objName = text + ".json";
-        const res = await Invokers.buildGroups(objName, 4);
+        const res = await Invokers.buildGroups(objName, groupSize);
+
         const students = JSON.parse(res[0]);
         const groups = JSON.parse(res[1]);
 
         setStudentData(students);
         setGroupsData(groups);
-        setView("students");
-      };
-      adjustState();
+      } else {
+        const studentsJson = JSON.stringify(students);
+        const groupsJson = await Invokers.groupsFromData(
+          studentsJson,
+          Number(groupSize)
+        );
+
+        const parsed = JSON.parse(groupsJson);
+
+        setGroupsData(parsed);
+      }
+      setView("groups");
     },
-    [setStudentData, setGroupsData, setView]
+    [setGroupsData]
   );
 
   const ctx = useMemo(
@@ -131,7 +151,8 @@ const FileContextProvider = ({ children }: any) => {
       submitFile,
       adjustView,
       deleteFile,
-      getData
+      getData,
+      sendForGroups
     }),
     [
       files,
@@ -144,7 +165,8 @@ const FileContextProvider = ({ children }: any) => {
       submitFile,
       adjustView,
       deleteFile,
-      getData
+      getData,
+      sendForGroups
     ]
   );
 

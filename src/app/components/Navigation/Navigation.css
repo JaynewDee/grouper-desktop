@@ -1,20 +1,19 @@
 .navigation {
   display: flex;
-  flex-flow: column nowrap;
   align-items: center;
+  justify-content: center;
   position: fixed;
   transition: transform 0.33s;
-  z-index: 1;
-  top: 4rem;
+  z-index: 5;
   right: 0;
+  height: 4rem;
+  padding-right: 1rem;
   background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 0 0 0 0.66rem;
-  padding-top: 1rem;
 }
 
 .nav-link {
-  margin: 1rem 1rem 0;
   transition: color 1s;
+  margin: 0.33rem;
 }
 
 .nav-link:hover {
@@ -23,16 +22,20 @@
 
 .arrow-expand,
 .arrow-collapse {
-  margin-top: 1.33rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto 1rem auto -0.6rem;
+  transition: all 1s;
 }
 
 .arrow-expand {
-  transform: rotate(0deg) translateY(0.5rem);
+  transform: rotate(0deg);
   border-radius: 50%;
 }
 
 .arrow-collapse {
-  transform: rotate(180deg) translateY(-0.5rem);
+  transform: rotate(180deg);
 }
 
 .nav-arrow {
@@ -40,6 +43,8 @@
   outline: 1px solid cyan;
   border-radius: 50%;
   transition: all 0.66s;
+  height: 110%;
+  width: 110%;
 }
 
 .nav-arrow:hover {
