@@ -43,10 +43,7 @@ pub async fn check_connection() -> Result<bool, ()> {
 pub fn delete_one_file(obj_name: &str) -> Result<String, String> {
     match FileHandler::new().delete_file(obj_name) {
         Ok(res) => Ok(res),
-        Err(e) => Err(format!(
-            "Encountered an error while deleting file: {}",
-            e.to_string()
-        )),
+        Err(e) => Err(format!("Encountered an error while deleting file: {}", e)),
     }
 }
 
@@ -162,7 +159,7 @@ pub async fn list_buckets() -> Result<Vec<String>, ()> {
 pub async fn list_objects() -> Result<Vec<String>, ()> {
     let test_bucket_name = "grouper-client-test-bucket";
     let client = S3Client::get_client().await.unwrap();
-    let objects = S3Client::list_objects(&client, &test_bucket_name)
+    let objects = S3Client::list_objects(&client, test_bucket_name)
         .await
         .unwrap();
 
@@ -175,7 +172,7 @@ pub async fn get_file_s3(obj_name: &str) -> Result<String, ()> {
     let test_bucket_name = "grouper-client-test-bucket";
     let client = S3Client::get_client().await.unwrap();
 
-    let object = S3Client::download_object(&client, &test_bucket_name, obj_name)
+    let object = S3Client::download_object(&client, test_bucket_name, obj_name)
         .await
         .unwrap();
     let body = object.body.collect().await.unwrap();
@@ -226,7 +223,7 @@ pub async fn upload_students_s3(
     let test_bucket_name = "grouper-client-test-bucket";
     let json_string = serde_json::to_string(&serializable).unwrap();
     if logged_in {
-        S3Client::upload_object(&client, &test_bucket_name, &json_string, obj_name)
+        S3Client::upload_object(&client, test_bucket_name, &json_string, obj_name)
             .await
             .expect("Error uploading object to S3.");
     }

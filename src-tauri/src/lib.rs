@@ -6,6 +6,7 @@
 // Handles os-based i/o
 ////////////////////////
 pub mod files {
+    use crate::err_handle::ReadError;
     use crate::grouper;
     use crate::models::{Student, StudentBuilder};
     use csv::StringRecord;
@@ -24,7 +25,11 @@ pub mod files {
     pub struct FileHandler {
         pub temp_path: String,
     }
-
+    impl Default for FileHandler {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
     impl FileHandler {
         pub fn new() -> FileHandler {
             FileHandler {
@@ -38,7 +43,7 @@ pub mod files {
         //
 
         pub fn init_base_dir(&self) -> std::io::Result<()> {
-            let path = format!("{}", self.get_temp_path());
+            let path = self.get_temp_path();
             create_dir(path)?;
             Ok(())
         }
@@ -49,7 +54,7 @@ pub mod files {
             &self,
             filename: &str,
         ) -> Result<String, Box<dyn std::error::Error>> {
-            let full_path = self.get_full_path(&filename);
+            let full_path = self.get_full_path(filename);
 
             let file = File::open(full_path).expect("Failed to read json file");
 
@@ -59,12 +64,17 @@ pub mod files {
 
         //
 
-        pub fn read_and_return_students(&self, filename: &str) -> Result<Vec<Student>, ()> {
-            let full_path = self.get_full_path(&filename);
-            let file = File::open(&full_path).expect("Failed to read json file");
+        pub fn read_and_return_students(&self, filename: &str) -> Result<Vec<Student>, ReadError> {
+            let full_path = self.get_full_path(filename);
+            let file = File::open(full_path).expect("Failed to read json file");
 
             let file_contents = Self::file_to_string(file);
-            grouper::Utils::students_from_json(&file_contents)
+
+            if let Ok(result) = grouper::Utils::students_from_json(&file_contents) {
+                Ok(result)
+            } else {
+                Err(ReadError)
+            }
         }
 
         //
@@ -114,8 +124,8 @@ pub mod files {
         pub fn delete_file(&self, filename: &str) -> Result<String, Box<dyn std::error::Error>> {
             let path = self.get_temp_path();
             let full_path = format!("{}\\{}", &path, &filename);
-            match remove_file(&full_path) {
-                Ok(_) => Ok(format!("File deleted successfully.")),
+            match remove_file(full_path) {
+                Ok(_) => Ok("File deleted successfully".to_string()),
                 Err(e) => Err(format!("Error deleting file: {}", e).into()),
             }
         }
@@ -147,6 +157,7 @@ pub mod files {
                 println!("{:?}", file_name);
                 file_list.push(file_name.into_string().expect("Failed to parse file name."));
             }
+
             Ok(file_list)
         }
         //
@@ -154,10 +165,7 @@ pub mod files {
             let r = row.expect("Unable to parse string record");
 
             fn parse_avg(r: StringRecord) -> f32 {
-                match r.get(42).unwrap().parse::<f32>() {
-                    Ok(val) => val,
-                    Err(_) => 0.0 as f32,
-                }
+                r.get(42).unwrap().parse::<f32>().unwrap_or(0.0_f32)
             }
 
             StudentBuilder::new()
@@ -171,10 +179,7 @@ pub mod files {
         //
 
         pub fn network_available() -> bool {
-            match TcpStream::connect("8.8.8.8:53") {
-                Ok(_) => true,
-                Err(_) => false,
-            }
+            TcpStream::connect("8.8.8.8:53").is_ok()
         }
 
         //
@@ -197,6 +202,7 @@ pub mod files {
 //////////////////
 pub mod grouper {
 
+    use crate::err_handle::SerializeError;
     use crate::models::Student;
     use rand::Rng;
     use std::collections::{BTreeMap, HashMap};
@@ -249,13 +255,13 @@ pub mod grouper {
 
         //
 
-        fn mean(floats: &Vec<f32>) -> f32 {
+        fn mean(floats: &[f32]) -> f32 {
             floats.iter().fold(0 as f32, |acc, n| acc + n) / floats.len() as f32
         }
 
         //
 
-        fn diffs(floats: &Vec<f32>, mean: &f32) -> Vec<f32> {
+        fn diffs(floats: &[f32], mean: &f32) -> Vec<f32> {
             floats.iter().fold(vec![], |mut acc: Vec<f32>, &val| {
                 acc.push((val - mean).abs());
                 acc
@@ -264,7 +270,7 @@ pub mod grouper {
 
         //
 
-        fn square_all(floats: &Vec<f32>) -> Vec<f32> {
+        fn square_all(floats: &[f32]) -> Vec<f32> {
             floats.iter().map(|float| float.powi(2)).collect()
         }
 
@@ -325,7 +331,7 @@ pub mod grouper {
 
         //
 
-        pub fn students_from_json(json_str: &str) -> Result<Vec<Student>, ()> {
+        pub fn students_from_json(json_str: &str) -> Result<Vec<Student>, SerializeError> {
             let people: Vec<Student> = serde_json::from_str(json_str)
                 .expect("Failed to parse students from json string ... ");
             Ok(people)
@@ -333,7 +339,9 @@ pub mod grouper {
 
         //
 
-        pub fn groups_from_json(json_str: &str) -> Result<BTreeMap<u16, Vec<Student>>, ()> {
+        pub fn groups_from_json(
+            json_str: &str,
+        ) -> Result<BTreeMap<u16, Vec<Student>>, SerializeError> {
             let groups: BTreeMap<u16, Vec<Student>> = serde_json::from_str(json_str)
                 .expect("Failed to parse groups from json string ... ");
             Ok(groups)
@@ -353,7 +361,7 @@ pub mod grouper {
 
         //
 
-        pub fn send_group_avgs(groups_json: String) -> Result<String, ()> {
+        pub fn send_group_avgs(groups_json: String) -> Result<String, SerializeError> {
             let data: Students =
                 serde_json::from_str(&groups_json).expect("Failed to parse vector from json ...");
             println!("{:?}", data);
@@ -489,6 +497,12 @@ pub mod models {
         email: Option<String>,
     }
 
+    impl Default for StudentBuilder {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
     impl StudentBuilder {
         pub fn new() -> Self {
             StudentBuilder {
@@ -541,3 +555,43 @@ pub mod models {
 /// Multithreading
 //////////////////
 pub mod mutant {}
+
+//////////////////
+/// Error Handling
+//////////////////
+pub mod err_handle {
+    use std::fmt;
+
+    #[derive(Debug)]
+    pub struct ReadError;
+
+    impl fmt::Display for ReadError {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "Error reading file ... ")
+        }
+    }
+
+    impl std::error::Error for ReadError {}
+
+    #[derive(Debug)]
+    pub struct GroupingError;
+
+    impl fmt::Display for GroupingError {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "Error building groups from json ... ")
+        }
+    }
+
+    impl std::error::Error for GroupingError {}
+
+    #[derive(Debug)]
+    pub struct SerializeError;
+
+    impl fmt::Display for SerializeError {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "Error during serde serialization ... ")
+        }
+    }
+
+    impl std::error::Error for SerializeError {}
+}
