@@ -7,6 +7,7 @@ import { Classes } from "./components/ClassList/ClassList";
 import { useFileContextState } from "./context/FileContext";
 import { StudentView } from "./components/StudentView";
 import Navigation from "./components/Navigation/Navigation";
+import Toolbar from "./components/Toolbar/Toolbar";
 
 const App: FC = () => {
   const { students, groups, view, adjustView } = useFileContextState();
@@ -33,6 +34,7 @@ const App: FC = () => {
       <Navigation view={view} />
       <Classes isData={students && students.length} />
       {view ? ViewSwitch(view) : <></>}
+      <Toolbar />
     </>
   );
 };

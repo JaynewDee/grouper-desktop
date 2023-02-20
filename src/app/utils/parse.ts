@@ -17,7 +17,7 @@ export const useGroupAvgs = (input: GroupsObject) => {
   const [avgs, setAvgs] = useState<AvgsObject>({});
   useEffect(() => {
     const avgsStruct = Object.values(input).reduce(
-      (acc: AvgsObject, v: any, idx: number) => ({
+      (acc: AvgsObject, v: StudentType[], idx: number) => ({
         ...acc,
         [idx + 1]: (
           v.reduce(

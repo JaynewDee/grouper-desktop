@@ -17,8 +17,8 @@ button:hover {
 
 body {
   margin: 0;
-  max-width: 100vw;
   min-height: 100vh;
+
   background-color: var(--bg);
   box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
 }
@@ -28,6 +28,7 @@ body {
   flex-flow: column nowrap;
   overflow-x: hidden;
   z-index: 1;
+  padding-bottom: 4rem;
 }
 
 @keyframes slide-in {

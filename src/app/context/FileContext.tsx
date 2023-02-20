@@ -26,16 +26,6 @@ interface ContextState {
 
 const FileContextState = createContext<ContextState | any>({});
 
-const useFileContextState = () => {
-  const context = useContext(FileContextState);
-
-  if (context === undefined) {
-    throw new Error("useUserContextState was used outside of its Provider");
-  }
-
-  return context;
-};
-
 const FileContextProvider = ({ children }: any) => {
   const [files, setAvailableFiles] = useState<Files>([]);
   const [activeFile, setCurrentFile] = useState("");
@@ -175,6 +165,16 @@ const FileContextProvider = ({ children }: any) => {
       {children}
     </FileContextState.Provider>
   );
+};
+
+const useFileContextState = () => {
+  const context = useContext(FileContextState);
+
+  if (context === undefined) {
+    throw new Error("useUserContextState was used outside of its Provider");
+  }
+
+  return context;
 };
 
 export { FileContextProvider, useFileContextState };

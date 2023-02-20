@@ -12,7 +12,7 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
   const handleMouseEnter = (_: EvtUnused) => setHoverState(true);
   const handleMouseLeave = (_: EvtUnused) => setHoverState(false);
 
-  const { getData, deleteFile, adjustView, activeFile } = useFileContextState();
+  const { getData, deleteFile, sendForGroups } = useFileContextState();
 
   const handleFileSelection = (e: any) =>
     getData(e.target.textContent, Number(groupSize));
@@ -23,7 +23,11 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
     deleteFile(text || "");
   };
 
-  const handleBuildGroups = (_: EvtUnused) => adjustView("groups");
+  const handleBuildGroups = (_: EvtUnused) => {
+    const element = clickRef.current as HTMLInputElement;
+    const text = element.textContent;
+    sendForGroups(text, Number(groupSize));
+  };
 
   return (
     <div
@@ -50,7 +54,7 @@ export const Classes: FC<any> = memo(({ isData }) => {
   const [listState, setListState] = useState(false);
 
   const { activeFile, files, sendForGroups } = useFileContextState();
-  console.log(activeFile);
+
   const handleSizeChange = (e: any) => {
     setGroupSize(e.target.value);
     sendForGroups(activeFile, Number(e.target.value));

@@ -1,10 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  MouseEvent,
-  ChangeEvent,
-  MutableRefObject
-} from "react";
+import { Dispatch, SetStateAction, MouseEvent, ChangeEvent } from "react";
 
 export interface StudentType {
   id: number;
