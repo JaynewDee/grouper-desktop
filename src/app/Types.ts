@@ -31,10 +31,6 @@ export interface StudentCardProps {
   data: StudentType;
 }
 
-type VoidDispatch = () => void;
-
-type ViewDispatch = Dispatch<SetStateAction<string>>;
-
 export type SetFilesDispatch = Dispatch<SetStateAction<string[] | []>>;
 
 export type InputChange = ChangeEvent<HTMLInputElement>;

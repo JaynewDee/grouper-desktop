@@ -9,9 +9,7 @@ const Class: FC<ClassProps> = ({ opt, id }) => {
   const [hoverState, setHoverState] = useState(false);
 
   const clickRef = useRef<HTMLInputElement | null>(null);
-
   const handleMouseEnter = (_: EvtUnused) => setHoverState(true);
-
   const handleMouseLeave = (_: EvtUnused) => setHoverState(false);
 
   const { getData, deleteFile, adjustView } = useFileContextState();
@@ -51,11 +49,10 @@ const Class: FC<ClassProps> = ({ opt, id }) => {
 };
 
 export const Classes: FC<any> = memo(({ isData }) => {
-  //
   const [listState, setListState] = useState(false);
   //
   const { files } = useFileContextState();
-  //
+
   return (
     <>
       <div className="classes-box">

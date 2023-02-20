@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Groups } from "../components/GroupsView";
+import { GroupsObject, StudentType } from "../Types";
 
 export const fileToString = (file: File): Promise<string> =>
   new Promise<string>((resolve, reject) => {
@@ -12,17 +12,18 @@ export const fileToString = (file: File): Promise<string> =>
   });
 
 type AvgsObject = { [key: number]: number } | {};
-type UseAvgsInput = Groups;
 
-export const useGroupAvgs = (input: UseAvgsInput) => {
+export const useGroupAvgs = (input: GroupsObject) => {
   const [avgs, setAvgs] = useState<AvgsObject>({});
-
   useEffect(() => {
     const avgsStruct = Object.values(input).reduce(
-      (acc: AvgsObject, v, idx: number) => ({
+      (acc: AvgsObject, v: any, idx: number) => ({
         ...acc,
         [idx + 1]: (
-          v.reduce((acc, student) => acc + student.avg, 0) / v.length
+          v.reduce(
+            (acc: number, student: StudentType) => acc + student.avg,
+            0
+          ) / v.length
         ).toFixed(2)
       }),
       {}

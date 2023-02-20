@@ -1,8 +1,4 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { MutableRefObject, MouseEvent, Dispatch, SetStateAction } from "react";
-import { fileToString } from "../utils/parse";
-
-import { ChangeView, Setter, StudentType } from "../Types";
 
 export const Invokers = {
   showBuckets: async (): Promise<any> => await invoke("list_buckets"),
@@ -31,5 +27,3 @@ export const Invokers = {
   getGroupAvgs: async (groupsJson: string): Promise<string> =>
     await invoke("get_group_avgs", { groupsJson })
 };
-
-

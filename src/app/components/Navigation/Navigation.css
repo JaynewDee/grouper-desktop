@@ -9,12 +9,14 @@
   right: 0;
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 0 0 0 0.66rem;
+  padding-top: 1rem;
 }
 
 .nav-link {
   margin: 1rem 1rem 0;
   transition: color 1s;
 }
+
 .nav-link:hover {
   cursor: pointer;
 }
@@ -23,13 +25,18 @@
 .arrow-collapse {
   margin-top: 1.33rem;
 }
+
 .arrow-expand {
   transform: rotate(0deg) translateY(0.5rem);
+  border-radius: 50%;
 }
+
 .arrow-collapse {
   transform: rotate(180deg) translateY(-0.5rem);
 }
+
 .nav-arrow {
+  background-color: black;
   outline: 1px solid cyan;
   border-radius: 50%;
   transition: all 0.66s;

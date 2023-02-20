@@ -15,8 +15,8 @@ const App: FC = () => {
     type Views = { [key: string]: JSX.Element };
 
     const views: Views = {
-      students: <StudentView studentData={students} />,
-      groups: <GroupsView groupsData={groups} />
+      students: <StudentView studentData={students} key={0} />,
+      groups: <GroupsView groupsData={groups} key={1} />
     };
 
     return views[view] || <> No view here ... </>;
@@ -32,7 +32,7 @@ const App: FC = () => {
       <Upload />
       <Navigation view={view} />
       <Classes isData={students && students.length} />
-      {view ? ViewSwitch(view) : null}
+      {view ? ViewSwitch(view) : <></>}
     </>
   );
 };
