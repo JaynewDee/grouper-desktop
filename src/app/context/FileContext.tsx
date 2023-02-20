@@ -5,21 +5,28 @@ import {
   useCallback,
   useMemo,
   useEffect,
+  MutableRefObject,
   Dispatch,
-  SetStateAction
+  SetStateAction,
+  MouseEvent
 } from "react";
 import { Invokers } from "../api";
-import { Files, GroupObject, StudentType, View } from "../Types";
+import { Files, GroupObject, StudentType } from "../Types";
+import { fileToString } from "../utils/parse";
 
 interface ContextState {
   files?: string[];
   activeFile?: string;
   students?: StudentType[];
   groups?: GroupObject;
+  view?: string;
   setFiles?: any;
   setActiveFile?: any;
   setStudents?: any;
   setGroups?: any;
+  submitFile?: any;
+  deleteFile?: any;
+  setView?: any;
 }
 
 const FileContextState = createContext<ContextState>({});
@@ -39,7 +46,7 @@ const FileContextProvider = ({ children }: any) => {
   const [activeFile, setCurrentFile] = useState("");
   const [students, setStudentData] = useState<StudentType[]>([]);
   const [groups, setGroupsData] = useState<GroupObject>({});
-  const [view, setView] = useState<View>();
+  const [view, setView] = useState<string>();
 
   useEffect(() => {
     Invokers.getFileList()
@@ -59,7 +66,6 @@ const FileContextProvider = ({ children }: any) => {
 
   const setActiveFile = useCallback((file: string) => {
     setCurrentFile(file);
-    console.log(activeFile);
   }, []);
 
   const setStudents = useCallback(
@@ -74,26 +80,62 @@ const FileContextProvider = ({ children }: any) => {
     [setGroupsData]
   );
 
+  const submitFile = useCallback((file: any) => {
+    if (!file) return "You must select a file to upload.";
+    const adjustState = async () => {
+      const objName = file["name"];
+      const jsonString = await fileToString(file);
+      const res = await Invokers.uploadObject(jsonString, objName, false);
+      const data = JSON.parse(res);
+      const filenames = await Invokers.getFileList();
+
+      setStudentData(data);
+      setAvailableFiles(filenames);
+      console.log(objName);
+    };
+    adjustState();
+  }, []);
+
+  const deleteFile = useCallback(
+    (text: string) => {
+      const adjustState = async () => {
+        const objName = text + ".json";
+        await Invokers.deleteFile(objName);
+        setFiles();
+      };
+      adjustState();
+    },
+    [setFiles]
+  );
+
   const ctx = useMemo(
     () => ({
       files,
       activeFile,
       students,
       groups,
+      view,
       setFiles,
       setActiveFile,
       setStudents,
-      setGroups
+      setGroups,
+      submitFile,
+      setView,
+      deleteFile
     }),
     [
       files,
       activeFile,
       students,
       groups,
+      view,
       setFiles,
       setCurrentFile,
       setStudents,
-      setGroups
+      setGroups,
+      submitFile,
+      setView,
+      deleteFile
     ]
   );
 

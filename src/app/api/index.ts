@@ -47,53 +47,9 @@ export const handleGetFile = async (
 //
 
 //
-export const handleFileSubmit = async (
-  _: MouseEvent<HTMLButtonElement>,
-  ref: MutableRefObject<HTMLInputElement | null>,
-  nameField: string,
-  isLoggedIn: boolean,
-  setAvailableFiles: Dispatch<SetStateAction<string[]>>,
-  setStudentData: Dispatch<SetStateAction<StudentType[]>>,
-  setNameField: Dispatch<SetStateAction<string>>,
-  displayErr: any
-) => {
-  if (!ref.current) {
-    displayErr("You must select a file to upload.");
-    return;
-  }
-  if (nameField.length < 3) {
-    displayErr("The name for your file must be at least 3 characters long");
-    return;
-  }
-  if (ref.current) {
-    const file = ref.current.files![0];
-    const jsonString = await fileToString(file);
-    const res = await Invokers.uploadObject(jsonString, nameField, isLoggedIn);
-    const data = JSON.parse(res);
-    setStudentData(data);
-    const filenames = await Invokers.getFileList();
-    setAvailableFiles(filenames);
-    setNameField!("");
-  }
-};
+
 //
-export const handleDeleteFile = async (
-  _: MouseEvent<any, any>,
-  clickRef: MutableRefObject<HTMLInputElement | null>,
-  setAvailableFiles: Dispatch<SetStateAction<any>>,
-  setStudentData: Dispatch<SetStateAction<any>>,
-  setGroupsData: Dispatch<SetStateAction<any>>
-) => {
-  const element = clickRef.current as HTMLInputElement;
-  const text = element.textContent;
-  const objName = text + ".json";
-  await Invokers.deleteFile(objName);
-  setAvailableFiles((prev: string[]) =>
-    prev.filter((itemName) => itemName !== objName)
-  );
-  setStudentData([]);
-  setGroupsData({});
-};
+
 //
 export const handleBuildGroups = async (
   _: MouseEvent<any, any>,

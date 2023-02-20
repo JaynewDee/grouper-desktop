@@ -86,9 +86,14 @@ pub async fn check_connection() -> Result<bool, ()> {
 //
 
 #[tauri::command]
-pub fn delete_one_file(obj_name: &str) -> Result<String, ()> {
-    let result_string = FileHandler::new().delete_file(obj_name).unwrap();
-    Ok(result_string)
+pub fn delete_one_file(obj_name: &str) -> Result<String, String> {
+    match FileHandler::new().delete_file(obj_name) {
+        Ok(res) => Ok(res),
+        Err(e) => Err(format!(
+            "Encountered an error while deleting file: {}",
+            e.to_string()
+        )),
+    }
 }
 
 //

@@ -15,10 +15,15 @@ const Class: FC<any> = ({ opt, id }) => {
 
   const handleMouseLeave = (_: any) => setHoverState(false);
 
-  const { setActiveFile } = useFileContextState();
+  const { setActiveFile, deleteFile } = useFileContextState();
 
   const handleFileSelection = (e: any) => {
     setActiveFile(e.target.textContent);
+  };
+  const handleDeleteFile = (e: any) => {
+    const element = clickRef.current as HTMLInputElement;
+    const text = element.textContent;
+    deleteFile(text);
   };
   return (
     <div
@@ -26,21 +31,21 @@ const Class: FC<any> = ({ opt, id }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {hoverState && <div>{DeleteClassBtn()}</div>}
+      {hoverState && <div onClick={handleDeleteFile}>{DeleteClassBtn()}</div>}
       <p
         key={id}
         ref={clickRef}
         onClick={handleFileSelection}
         className="class-option"
       >
-        {opt}
+        {opt.split(".")[0]}
       </p>
       {hoverState && <div>{BuildGroupsBtn()}</div>}
     </div>
   );
 };
 
-export const Classes: FC<ClassesProps> = memo(({ isData }) => {
+export const Classes: FC<any> = memo(({ isData }) => {
   //
   const [listState, setListState] = useState(false);
   //
@@ -57,8 +62,8 @@ export const Classes: FC<ClassesProps> = memo(({ isData }) => {
             listState ? "class-options-expanded" : "class-options-collapsed"
           }
         >
-          {files!.length ? (
-            files!.map((opt: string, idx: number) => (
+          {files ? (
+            files.map((opt: string, idx: number) => (
               <Class opt={opt} id={idx} key={idx} />
             ))
           ) : (

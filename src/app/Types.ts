@@ -10,16 +10,13 @@ export type SetStudentState = Dispatch<SetStateAction<StudentType[]>>;
 
 export interface ViewProps {
   studentData: StudentType[];
-  toggleAll: string;
 }
 
 export type GroupObject = { [key: number]: StudentType[] } | {};
 
 export type Files = string[] | [];
 
-export type View = "students" | "groups";
-
-export type ChangeView = Dispatch<SetStateAction<View>>;
+export type ChangeView = Dispatch<SetStateAction<any>>;
 
 export type GetFileEvent = (
   e: MouseEvent<any, any>,
@@ -74,11 +71,6 @@ export interface HeaderProps {
   setLoggedIn: any;
 }
 
-export interface NavProps {
-  view: string;
-  changeView: Dispatch<SetStateAction<View>>;
-}
-
 export type EvtUnused = MouseEvent<any, any>;
 
 export interface ClassProps {
@@ -99,7 +91,7 @@ export interface ClassProps {
   setStudentData: Dispatch<SetStateAction<any>>;
   setGroupsData: Dispatch<SetStateAction<any>>;
   setAvailableFiles: Dispatch<SetStateAction<any>>;
-  changeView: Dispatch<SetStateAction<View>>;
+  changeView: Dispatch<SetStateAction<any>>;
   opt: string;
   id: number;
 }
@@ -110,7 +102,7 @@ export type ClassesProps = {
   setGroupsData: Dispatch<SetStateAction<any>>;
   setAvailableFiles: Dispatch<SetStateAction<any>>;
 
-  changeView: Dispatch<SetStateAction<View>>;
+  changeView: Dispatch<SetStateAction<any>>;
 };
 
 export type GetFile = (

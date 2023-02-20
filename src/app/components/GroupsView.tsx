@@ -8,7 +8,7 @@ export type Groups = {
   [key: number]: GroupType;
 };
 
-const GroupsView = ({ groupsData }: { groupsData: Groups }) => {
+const GroupsView = ({ groupsData }: { groupsData: any }) => {
   const [groupAvgs, setGroupAvgs] = useGroupAvgs(groupsData);
 
   const data = Object.values(groupsData);
@@ -17,7 +17,7 @@ const GroupsView = ({ groupsData }: { groupsData: Groups }) => {
   return (
     <div className="groups-container">
       {hasData &&
-        Object.values(groupsData).map((group: GroupType, idx: number) => {
+        Object.values(groupsData).map((group: any, idx: number) => {
           return <>{Group(group, idx, Object.values(groupAvgs)[idx])}</>;
         })}
     </div>

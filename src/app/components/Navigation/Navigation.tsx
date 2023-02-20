@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import "./Navigation.css";
 
 import { GroupIcon, NavArrow, Placeholder, StudentIcon } from "../Icons";
-import { NavProps } from "../../Types";
 import { FC } from "react";
 import "./Navigation.css";
 
-const Navigation: FC<NavProps> = ({ view }) => {
+const Navigation: FC<any> = ({ view }) => {
   const [displayState, setDisplayState] = useState(true);
 
   const toggleDisplay = (e: any) => setDisplayState((prev) => !prev);

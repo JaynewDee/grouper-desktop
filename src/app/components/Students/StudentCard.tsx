@@ -5,18 +5,9 @@ import "./StudentCard.css";
 
 export interface CardProps {
   data: any;
-  toggleAll: string;
 }
-const StudentCard: FC<CardProps> = ({ data, toggleAll }) => {
+const StudentCard: FC<CardProps> = ({ data }) => {
   const [cardState, setCardState] = useState("collapsed");
-
-  useEffect(() => {
-    if (toggleAll === "all") {
-      setCardState("expanded");
-    } else if (toggleAll === "none") {
-      setCardState("collapsed");
-    } else return;
-  }, [toggleAll]);
 
   const toggleCardState = () => {
     if (cardState === "collapsed") {

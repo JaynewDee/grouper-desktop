@@ -2,7 +2,7 @@ import { FC } from "react";
 import { HeaderProps } from "../../Types";
 import "./Header.css";
 
-const Header: FC<HeaderProps> = () => {
+const Header: FC<any> = () => {
   return (
     <>
       <header>

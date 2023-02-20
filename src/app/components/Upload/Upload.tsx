@@ -2,6 +2,7 @@ import { useRef, useState, FC } from "react";
 import { Arrow } from "../Icons";
 import "./Upload.css";
 import { InputChange, UploadProps } from "../../Types";
+import { useFileContextState } from "../../context/FileContext";
 
 const Upload: FC<any> = ({}) => {
   // STATE
@@ -14,7 +15,7 @@ const Upload: FC<any> = ({}) => {
     clickRef.current?.click();
   };
   // STYLE STATES
-  const transforms = Object.freeze({
+  const { collapsed, expanded, pointLeft, pointRight } = Object.freeze({
     collapsed: {
       transform: "translateX(-71%)"
     },
@@ -28,13 +29,10 @@ const Upload: FC<any> = ({}) => {
       transform: "rotate(0deg)"
     }
   });
-  const { collapsed, expanded, pointLeft, pointRight } = transforms;
 
-  // EVENT HANDLERS
   const toggleTray = () => setContainerState((prev) => !prev);
 
   const handleFileNameChange = (e: InputChange) => setNameField(e.target.value);
-
   const handleFileInputChange = (_: InputChange) => {
     const suggested = clickRef.current!.files![0]["name"] || "";
     if (suggested) {
@@ -42,11 +40,11 @@ const Upload: FC<any> = ({}) => {
     }
   };
 
-  const DisplayError = (text: string) => {
-    setErrorState(text);
-    setTimeout(() => {
-      setErrorState("");
-    }, 3000);
+  const { submitFile } = useFileContextState();
+  const handleFileSubmit = () => {
+    const file = clickRef.current!.files![0];
+    submitFile(file);
+    setNameField("");
   };
 
   return (
@@ -82,13 +80,7 @@ const Upload: FC<any> = ({}) => {
           placeholder="classroom name"
           onChange={handleFileNameChange}
         />
-        <button
-        // onClick={(e) =>
-        //   containerState
-        //     ? handleFileSubmit()
-        //     : toggleTray
-        // }
-        >
+        <button onClick={containerState ? handleFileSubmit : toggleTray}>
           {containerState ? "SUBMIT" : "UPLOAD"}
         </button>
       </div>
