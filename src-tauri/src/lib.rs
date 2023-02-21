@@ -6,7 +6,7 @@
 // Handles os-based i/o
 ////////////////////////
 pub mod files {
-    use crate::err_handle::ReadError;
+    use crate::err_handle::Error;
     use crate::grouper;
     use crate::models::{Student, StudentBuilder};
     use csv::StringRecord;
@@ -64,7 +64,7 @@ pub mod files {
 
         //
 
-        pub fn read_and_return_students(&self, filename: &str) -> Result<Vec<Student>, ReadError> {
+        pub fn read_and_return_students(&self, filename: &str) -> Result<Vec<Student>, ()> {
             let full_path = self.get_full_path(filename);
             let file = File::open(full_path).expect("Failed to read json file");
 
@@ -73,7 +73,7 @@ pub mod files {
             if let Ok(result) = grouper::Utils::students_from_json(&file_contents) {
                 Ok(result)
             } else {
-                Err(ReadError)
+                Err(())
             }
         }
 
@@ -202,7 +202,7 @@ pub mod files {
 //////////////////
 pub mod grouper {
 
-    use crate::err_handle::SerializeError;
+    use crate::err_handle::{self, Error};
     use crate::models::Student;
     use rand::Rng;
     use std::collections::{BTreeMap, HashMap};
@@ -235,9 +235,6 @@ pub mod grouper {
             self
         }
     }
-    //
-    //
-    //
 
     //
     // Utilities / Auxiliaries
@@ -331,7 +328,7 @@ pub mod grouper {
 
         //
 
-        pub fn students_from_json(json_str: &str) -> Result<Vec<Student>, SerializeError> {
+        pub fn students_from_json(json_str: &str) -> Result<Vec<Student>, err_handle::Error> {
             let people: Vec<Student> = serde_json::from_str(json_str)
                 .expect("Failed to parse students from json string ... ");
             Ok(people)
@@ -341,7 +338,7 @@ pub mod grouper {
 
         pub fn groups_from_json(
             json_str: &str,
-        ) -> Result<BTreeMap<u16, Vec<Student>>, SerializeError> {
+        ) -> Result<BTreeMap<u16, Vec<Student>>, err_handle::Error> {
             let groups: BTreeMap<u16, Vec<Student>> = serde_json::from_str(json_str)
                 .expect("Failed to parse groups from json string ... ");
             Ok(groups)
@@ -361,7 +358,7 @@ pub mod grouper {
 
         //
 
-        pub fn send_group_avgs(groups_json: String) -> Result<String, SerializeError> {
+        pub fn send_group_avgs(groups_json: String) -> Result<String, err_handle::Error> {
             let data: Students =
                 serde_json::from_str(&groups_json).expect("Failed to parse vector from json ...");
             println!("{:?}", data);
@@ -403,8 +400,8 @@ pub mod grouper {
         }
 
         //
-
-        pub fn balance(
+        #[tokio::main]
+        pub async fn balance(
             students: Vec<Student>,
             group_size: u16,
             target_sd: u8,
@@ -413,7 +410,7 @@ pub mod grouper {
             let sorted = Self::sort_students(&students);
             let num_groups = Self::num_groups(sorted.len() as u16, group_size);
             //
-            let assigned = Self::random_assignment(1, sorted, groups_map, num_groups);
+            let assigned = Box::new(Self::random_assignment(1, sorted, groups_map, num_groups));
             let avgs_map = Self::group_avgs_map(&assigned);
             let avgs_vec = Self::group_avgs_vec(avgs_map);
             //
@@ -425,6 +422,7 @@ pub mod grouper {
         }
 
         //
+
         pub fn balancer_pool(
             students: Vec<Student>,
             group_size: u16,
@@ -562,36 +560,26 @@ pub mod mutant {}
 pub mod err_handle {
     use std::fmt;
 
-    #[derive(Debug)]
-    pub struct ReadError;
+    #[derive(Debug, thiserror::Error)]
 
-    impl fmt::Display for ReadError {
+    pub enum Error {
+        #[error(transparent)]
+        Io(#[from] std::io::Error),
+        Std(#[from] Box<dyn std::error::Error>),
+    }
+
+    impl serde::Serialize for Error {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::ser::Serializer,
+        {
+            serializer.serialize_str(self.to_string().as_ref())
+        }
+    }
+
+    impl fmt::Display for Error {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "Error reading file ... ")
         }
     }
-
-    impl std::error::Error for ReadError {}
-
-    #[derive(Debug)]
-    pub struct GroupingError;
-
-    impl fmt::Display for GroupingError {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "Error building groups from json ... ")
-        }
-    }
-
-    impl std::error::Error for GroupingError {}
-
-    #[derive(Debug)]
-    pub struct SerializeError;
-
-    impl fmt::Display for SerializeError {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "Error during serde serialization ... ")
-        }
-    }
-
-    impl std::error::Error for SerializeError {}
 }

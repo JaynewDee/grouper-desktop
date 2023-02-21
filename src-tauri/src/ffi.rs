@@ -60,10 +60,10 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
         .read_and_return_json(obj_name)
         .expect("Failed to parse file into json ...");
 
-    let balanced = Utils::balance(students, group_size, 4);
+    let balanced = Box::new(Utils::balance(students, group_size, 2));
 
     let groups_json =
-        Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... ");
+        Utils::treemap_to_json(*balanced).expect("Failed to parse json from groups map ... ");
 
     Ok(vec![students_json, groups_json])
 }
@@ -83,7 +83,7 @@ pub async fn groups_from_data(students_json: String, group_size: u16) -> Result<
     let students = Utils::students_from_json(&students_json)
         .expect("Failed to parse students vector from json ... ");
 
-    let balanced = Utils::balance(students, group_size, 4);
+    let balanced = Utils::balance(students, group_size, 2);
 
     let groups_json =
         Utils::treemap_to_json(balanced).expect("Failed to parse json from treemap ... ");
