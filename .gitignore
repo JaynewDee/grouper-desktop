@@ -3,3 +3,4 @@ build
 init-vite-tauri*
 start-dev*
 vscode*
+default*
