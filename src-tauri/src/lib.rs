@@ -1,17 +1,11 @@
-#![allow(unused_imports)]
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 ////////////////////////
 // Handles os-based i/o
 ////////////////////////
 pub mod files {
-    use crate::err_handle::Error;
     use crate::grouper;
     use crate::models::{Student, StudentBuilder};
     use csv::StringRecord;
     use serde::Deserialize;
-    use std::collections::BTreeMap;
     use std::io::Read;
     use std::net::TcpStream;
     use std::path::Path;
@@ -25,11 +19,13 @@ pub mod files {
     pub struct FileHandler {
         pub temp_path: String,
     }
+
     impl Default for FileHandler {
         fn default() -> Self {
             Self::new()
         }
     }
+
     impl FileHandler {
         pub fn new() -> FileHandler {
             FileHandler {
@@ -154,7 +150,7 @@ pub mod files {
 
             for file in dir {
                 let file_name = file.unwrap().file_name();
-                println!("{:?}", file_name);
+
                 file_list.push(file_name.into_string().expect("Failed to parse file name."));
             }
 
@@ -187,9 +183,8 @@ pub mod files {
         pub fn temp_data_available(&self) -> bool {
             let path = format!("{}{}", self.get_temp_path(), "\\grouper-students.json");
             let file_path = Path::new(&path);
-            println!("{}", &path);
-            if let true = file_path.exists() {
-                println!("path found");
+
+            if file_path.exists() {
                 return true;
             }
             false
@@ -202,19 +197,15 @@ pub mod files {
 //////////////////
 pub mod grouper {
 
-    use crate::err_handle::{self, Error};
-    use crate::models::Student;
+    use crate::err_handle::{self};
+    use crate::models::{Student, StudentMap};
     use rand::Rng;
     use std::collections::{BTreeMap, HashMap};
-    use std::sync::mpsc::channel;
+    use std::sync::{Arc, Mutex};
     use std::thread;
-    // Main Handler - Balancer
 
     type Students = Vec<Student>;
 
-    //
-    // Collection Transformation State
-    //
     #[derive(Debug, Clone)]
     pub struct GroupsMap(BTreeMap<u16, Vec<Student>>);
 
@@ -248,6 +239,13 @@ pub mod grouper {
         fn rand_idx(vec_length: usize) -> usize {
             let mut rng = rand::thread_rng();
             rng.gen_range(0..vec_length)
+        }
+
+        //
+
+        pub fn num_groups(num_students: u16, group_size: u16) -> u16 {
+            let res: f32 = num_students as f32 / group_size as f32;
+            res.floor() as u16
         }
 
         //
@@ -305,13 +303,6 @@ pub mod grouper {
 
         //
 
-        pub fn num_groups(num_students: u16, group_size: u16) -> u16 {
-            let res: f32 = num_students as f32 / group_size as f32;
-            res.floor() as u16
-        }
-
-        //
-
         pub fn group_avgs_map(groups: &GroupsMap) -> HashMap<u16, f32> {
             let mut map = HashMap::new();
 
@@ -328,10 +319,39 @@ pub mod grouper {
 
         //
 
+        pub fn group_avgs_vec(map: HashMap<u16, f32>) -> Vec<f32> {
+            let mut avgs = vec![];
+            for (_, v) in map.into_iter() {
+                let avg = Self::round_to_dec_count(v, 2);
+                avgs.push(avg);
+            }
+            avgs
+        }
+
+        //
+
+        pub fn send_group_avgs(groups_json: String) -> Result<String, err_handle::Error> {
+            let _data: Students =
+                serde_json::from_str(&groups_json).expect("Failed to parse vector from json ...");
+
+            Ok("".into())
+        }
+
+        //
+
         pub fn students_from_json(json_str: &str) -> Result<Vec<Student>, err_handle::Error> {
             let people: Vec<Student> = serde_json::from_str(json_str)
                 .expect("Failed to parse students from json string ... ");
             Ok(people)
+        }
+
+        //
+
+        pub fn treemap_to_json(
+            groups: BTreeMap<u16, Vec<Student>>,
+        ) -> Result<String, Box<dyn std::error::Error>> {
+            let json = serde_json::to_string(&groups)?;
+            Ok(json)
         }
 
         //
@@ -346,36 +366,14 @@ pub mod grouper {
 
         //
 
-        pub fn group_avgs_vec(map: HashMap<u16, f32>) -> Vec<f32> {
-            let mut avgs = vec![];
-
-            for (_, v) in map.into_iter() {
-                avgs.push(Self::round_to_dec_count(v, 2));
-            }
-
-            avgs
-        }
-
-        //
-
-        pub fn send_group_avgs(groups_json: String) -> Result<String, err_handle::Error> {
-            let data: Students =
-                serde_json::from_str(&groups_json).expect("Failed to parse vector from json ...");
-            println!("{:?}", data);
-
-            Ok("".into())
-        }
-
-        //
-
         pub fn random_assignment(
             current: u16,
             mut students: Students,
-            mut groups_map: GroupsMap,
+            groups_map: &mut GroupsMap,
             num_groups: u16,
         ) -> GroupsMap {
-            if let 0 = students.len() {
-                return groups_map;
+            if students.len() == 0 {
+                return groups_map.to_owned();
             };
             let rand_idx = Self::rand_idx(students.len());
             let mut current_group = current;
@@ -384,11 +382,12 @@ pub mod grouper {
             random_student.set_group(current_group);
 
             let mut new_vec = groups_map.0.get(&current_group).unwrap().clone();
+
             new_vec.push(random_student);
 
-            groups_map.0.insert(current_group, new_vec.clone());
+            groups_map.0.insert(current_group, new_vec);
 
-            if let true = current_group == num_groups {
+            if current_group == num_groups {
                 current_group = 1;
             } else {
                 current_group += 1;
@@ -400,45 +399,64 @@ pub mod grouper {
         }
 
         //
-        #[tokio::main]
-        pub async fn balance(
-            students: Vec<Student>,
-            group_size: u16,
-            target_sd: u8,
-        ) -> BTreeMap<u16, Vec<Student>> {
-            let groups_map = GroupsMap::new(students.len() as u16, group_size);
-            let sorted = Self::sort_students(&students);
-            let num_groups = Self::num_groups(sorted.len() as u16, group_size);
+
+        fn balance(students: Vec<Student>, group_size: u16) -> (f32, BTreeMap<u16, Vec<Student>>) {
             //
-            let assigned = Box::new(Self::random_assignment(1, sorted, groups_map, num_groups));
-            let avgs_map = Self::group_avgs_map(&assigned);
+            let mut groups_map = GroupsMap::new(students.len() as u16, group_size);
+
+            let num_groups = Self::num_groups(students.len() as u16, group_size);
+            //
+            let assigned = Self::random_assignment(1, students, &mut groups_map, num_groups).0;
+
+            let avgs_map = Self::group_avgs_map(&groups_map);
+
             let avgs_vec = Self::group_avgs_vec(avgs_map);
+
+            let sd = Self::std_dev(avgs_vec);
+
+            (sd, assigned)
             //
-            if let true = Self::std_dev(avgs_vec) > target_sd as f32 {
-                Self::balance(students, group_size, target_sd)
-            } else {
-                assigned.0
-            }
         }
 
         //
-
         pub fn balancer_pool(
             students: Vec<Student>,
             group_size: u16,
-            target_sd: u8,
-        ) -> BTreeMap<u16, Vec<Student>> {
-            todo!()
+            _target_sd: f32,
+        ) -> StudentMap {
+            let mut handles = vec![];
+
+            let state = Arc::new(Mutex::new(5_f32));
+            let current = StudentMap(Arc::new(Mutex::new(BTreeMap::new())));
+
+            while handles.len() < 1000 {
+                let students = students.clone();
+                let state = Arc::clone(&state);
+                let current = Arc::clone(&current);
+                let handle = thread::spawn(move || {
+                    let (sd, groups) = Self::balance(students, group_size);
+                    let old_state = state.lock().unwrap();
+                    let mut data = current.lock().unwrap();
+                    if sd < *old_state {
+                        *data = groups;
+                    }
+                });
+                handles.push(handle)
+                //
+            }
+            for handle in handles {
+                handle.join().unwrap();
+            }
+            //
+            current
+            //
         }
+        // TODO
+        /*
+            UTILIZE THREAD POOL
+        */
 
         //
-
-        pub fn treemap_to_json(
-            groups: BTreeMap<u16, Vec<Student>>,
-        ) -> Result<String, Box<dyn std::error::Error>> {
-            let json = serde_json::to_string(&groups)?;
-            Ok(json)
-        }
     }
 
     #[cfg(test)]
@@ -471,6 +489,11 @@ pub mod grouper {
 /// Builders
 //////////////////
 pub mod models {
+    use std::{
+        collections::BTreeMap,
+        sync::{Arc, Mutex},
+    };
+
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
@@ -481,12 +504,27 @@ pub mod models {
         group: u16,
         email: String,
     }
+
     impl Student {
         pub fn set_group(&mut self, g: u16) {
             self.group = g;
         }
     }
 
+    #[derive(Debug)]
+    pub struct StudentMap(pub Arc<Mutex<BTreeMap<u16, Vec<Student>>>>);
+
+    impl std::ops::DerefMut for StudentMap {
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.0
+        }
+    }
+    impl std::ops::Deref for StudentMap {
+        type Target = Arc<Mutex<BTreeMap<u16, Vec<Student>>>>;
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
     pub struct StudentBuilder {
         id: Option<u32>,
         name: Option<String>,
@@ -552,7 +590,89 @@ pub mod models {
 //////////////////
 /// Multithreading
 //////////////////
-pub mod mutant {}
+// ? Experimental ? //
+// pub mod mutant {
+
+//     use std::{collections::BTreeMap, thread};
+
+//     use crate::models::Student;
+
+//     type Job =
+//         Box<dyn FnOnce(Vec<Student>, u16) -> (f32, BTreeMap<u16, Vec<Student>>) + Send + 'static>;
+//     type Args = (Vec<Student>, u16);
+//     enum Message {
+//         NewJob(Job, Args),
+//         Terminate,
+//     }
+
+//     pub struct ThreadPool {
+//         workers: Vec<Worker>,
+//         sender: channel::Sender<Message>,
+//     }
+
+//     impl ThreadPool {
+//         pub fn new(size: usize) -> ThreadPool {
+//             assert!(size > 0);
+
+//             let (sender, receiver) = channel::unbounded();
+
+//             let mut workers = Vec::with_capacity(size);
+
+//             for id in 0..size {
+//                 workers.push(Worker::new(id, receiver.clone()));
+//             }
+
+//             ThreadPool { workers, sender }
+//         }
+
+//         pub fn execute<F, A>(&self, f: F, args: Args)
+//         where
+//             F: FnOnce(Vec<Student>, u16) -> (f32, BTreeMap<u16, Vec<Student>>) + Send + 'static,
+//         {
+//             let job = Box::new(f);
+//             self.sender.send(Message::NewJob(job, args)).unwrap();
+//         }
+//     }
+
+//     impl Drop for ThreadPool {
+//         fn drop(&mut self) {
+//             for _ in &self.workers {
+//                 self.sender.send(Message::Terminate).unwrap();
+//             }
+
+//             for worker in &mut self.workers {
+//                 if let Some(thread) = worker.thread.take() {
+//                     thread.join().unwrap();
+//                 }
+//             }
+//         }
+//     }
+
+//     struct Worker {
+//         id: usize,
+//         thread: Option<thread::JoinHandle<()>>,
+//     }
+
+//     impl Worker {
+//         fn new(id: usize, receiver: channel::Receiver<Message>) -> Worker {
+//             let thread = thread::spawn(move || loop {
+//                 match receiver.recv().unwrap() {
+//                     Message::NewJob(job, args) => {
+//                         job(args.0, args.1);
+//                     }
+//                     Message::Terminate => {
+//                         break;
+//                     }
+//                 }
+//             });
+
+//             Worker {
+//                 id,
+//                 thread: Some(thread),
+//             }
+//         }
+//     }
+// }
 
 //////////////////
 /// Error Handling
@@ -583,3 +703,8 @@ pub mod err_handle {
         }
     }
 }
+
+//////////////////
+/// Experimenting
+//////////////////
+pub mod arc {}

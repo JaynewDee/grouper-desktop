@@ -89,6 +89,7 @@ const FileContextProvider = ({ children }: any) => {
 
   const getData = useCallback(
     async (text: string, groupSize: number) => {
+      setGroupsData({});
       const objName = text + ".json";
       setActiveFile(text);
       const res = await Invokers.buildGroups(objName, groupSize);
@@ -105,9 +106,10 @@ const FileContextProvider = ({ children }: any) => {
   const sendForGroups = useCallback(
     async (text: string, groupSize: number) => {
       if (students.length === 0) {
+        setGroupsData({});
         const objName = text + ".json";
+        setActiveFile(text);
         const res = await Invokers.buildGroups(objName, groupSize);
-
         const students = JSON.parse(res[0]);
         const groups = JSON.parse(res[1]);
 

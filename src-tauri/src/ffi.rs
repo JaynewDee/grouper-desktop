@@ -5,6 +5,7 @@ use std::io::Cursor;
 use super::s3::S3Client;
 use src_tauri::{files::FileHandler, grouper::Utils, models::Student};
 
+use std::time::Instant;
 ///
 /////////////////////////////
 /// Foreign Function API
@@ -47,27 +48,6 @@ pub fn delete_one_file(obj_name: &str) -> Result<String, String> {
     }
 }
 
-// BUILD GROUPS
-#[tauri::command]
-pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>, ()> {
-    let handler = FileHandler::new();
-    println!("{}", group_size);
-    let students = handler
-        .read_and_return_students(obj_name)
-        .expect("Failed to parse students from json ... ");
-
-    let students_json = handler
-        .read_and_return_json(obj_name)
-        .expect("Failed to parse file into json ...");
-
-    let balanced = Box::new(Utils::balance(students, group_size, 2));
-
-    let groups_json =
-        Utils::treemap_to_json(*balanced).expect("Failed to parse json from groups map ... ");
-
-    Ok(vec![students_json, groups_json])
-}
-
 // RETURN AVERAGES AS MAP
 #[tauri::command]
 pub async fn get_group_avgs(groups_json: String) -> Result<String, ()> {
@@ -77,17 +57,51 @@ pub async fn get_group_avgs(groups_json: String) -> Result<String, ()> {
     Ok(group_avgs)
 }
 
+// BUILD GROUPS
+#[tauri::command]
+pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>, ()> {
+    let test_sd = 2_f32;
+    let handler = FileHandler::new();
+
+    let students = handler
+        .read_and_return_students(obj_name)
+        .expect("Failed to parse students from json ... ");
+
+    let students_json = handler
+        .read_and_return_json(obj_name)
+        .expect("Failed to parse file into json ...");
+
+    let now = Instant::now();
+
+    let balanced = Utils::balancer_pool(students.clone(), group_size, test_sd)
+        .lock()
+        .unwrap()
+        .to_owned();
+
+    let elapsed = now.elapsed();
+    println!("Elapsed: {:.2?}", elapsed);
+
+    let groups_json =
+        Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... ");
+
+    Ok(vec![students_json, groups_json])
+}
+
 // BUILD GROUPS FROM JSON
 #[tauri::command]
 pub async fn groups_from_data(students_json: String, group_size: u16) -> Result<String, ()> {
+    let test_sd = 2_f32;
+
     let students = Utils::students_from_json(&students_json)
         .expect("Failed to parse students vector from json ... ");
 
-    let balanced = Utils::balance(students, group_size, 2);
+    let balanced = Utils::balancer_pool(students.clone(), group_size, test_sd)
+        .lock()
+        .unwrap()
+        .to_owned();
 
     let groups_json =
         Utils::treemap_to_json(balanced).expect("Failed to parse json from treemap ... ");
-
     Ok(groups_json)
 }
 
