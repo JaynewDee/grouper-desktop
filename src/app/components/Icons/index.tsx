@@ -5,7 +5,8 @@ import { TbHelp } from "react-icons/tb";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { TiDelete } from "react-icons/ti";
 import { HiUserGroup } from "react-icons/hi";
-import { GiMaterialsScience, GiSunglasses } from "react-icons/gi";
+import { GiSunglasses } from "react-icons/gi";
+import { TbDeviceFloppy } from "react-icons/tb";
 
 export const Unlocked = BsFillUnlockFill;
 export const Locked = BsFillLockFill;
@@ -33,7 +34,10 @@ export const GroupIcon = () =>
   IoIosPeople({ size: "2rem", className: "group-view-link" });
 
 export const Placeholder = () =>
-  GiSunglasses({ size: "2rem", className: "science-view-link" });
+  TbDeviceFloppy({
+    size: "1.5rem",
+    className: "science-view-link"
+  });
 
 export const NavArrow = () =>
   BiRightArrowAlt({

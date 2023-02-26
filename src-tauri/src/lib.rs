@@ -401,11 +401,10 @@ pub mod grouper {
         //
 
         fn balance(students: Vec<Student>, group_size: u16) -> (f32, BTreeMap<u16, Vec<Student>>) {
-            //
             let mut groups_map = GroupsMap::new(students.len() as u16, group_size);
 
             let num_groups = Self::num_groups(students.len() as u16, group_size);
-            //
+
             let assigned = Self::random_assignment(1, students, &mut groups_map, num_groups).0;
 
             let avgs_map = Self::group_avgs_map(&groups_map);
@@ -415,10 +414,10 @@ pub mod grouper {
             let sd = Self::std_dev(avgs_vec);
 
             (sd, assigned)
-            //
         }
 
         //
+
         pub fn balancer_pool(
             students: Vec<Student>,
             group_size: u16,
@@ -426,29 +425,40 @@ pub mod grouper {
         ) -> StudentMap {
             let mut handles = vec![];
 
-            let state = Arc::new(Mutex::new(5_f32));
-            let current = StudentMap(Arc::new(Mutex::new(BTreeMap::new())));
+            // Hold current smallest sd result
+            let sd_state = Arc::new(Mutex::new(5_f32));
+            // Hold groups corresponding to current smallest sd
+            let map_state = StudentMap(Arc::new(Mutex::new(BTreeMap::new())));
 
-            while handles.len() < 1000 {
+            // Iterate 5000 times with the help of threads,
+            // and return most optimal result
+            while handles.len() < 5000 {
                 let students = students.clone();
-                let state = Arc::clone(&state);
-                let current = Arc::clone(&current);
+
+                let sd_state = Arc::clone(&sd_state);
+
+                let map_state = Arc::clone(&map_state);
+
                 let handle = thread::spawn(move || {
+                    // Roll for groups with balancer function
                     let (sd, groups) = Self::balance(students, group_size);
-                    let old_state = state.lock().unwrap();
-                    let mut data = current.lock().unwrap();
+                    // Acquire lock on mutex state to check previous smallest
+                    let mut old_state = sd_state.lock().unwrap();
                     if sd < *old_state {
+                        // If sd result is better than previous, acquire lock and update state
+                        let mut data = map_state.lock().unwrap();
+                        //
+                        *old_state = sd;
                         *data = groups;
                     }
                 });
-                handles.push(handle)
-                //
+                handles.push(handle);
             }
             for handle in handles {
                 handle.join().unwrap();
             }
             //
-            current
+            map_state
             //
         }
         // TODO
@@ -481,6 +491,21 @@ pub mod grouper {
             let sd: f32 = mean_of_squared.sqrt();
 
             assert_eq!(sd, 6.2126956 as f32);
+        }
+
+        /*         fn round_to_dec_count(value: f32, dec_count: i32) -> f32 {
+            let multi = 10.0_f32.powi(dec_count);
+            (value * multi).round() / multi
+        } */
+        #[test]
+        fn test_round_to_dec_count() {
+            let case_one = 58.39295934_f32;
+            let round_to_two = Utils::round_to_dec_count(case_one, 2);
+            assert_eq!(round_to_two, 58.39_f32);
+
+            let case_two = 96.9999998_f32;
+            let round_to_three = Utils::round_to_dec_count(case_two, 3);
+            assert_eq!(round_to_three, 97.0_f32);
         }
     }
 }
