@@ -1,4 +1,6 @@
+import { tauri } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/tauri";
+import { getCurrent } from "@tauri-apps/api/window";
 
 export const Invokers = {
   showBuckets: async (): Promise<any> => await invoke("list_buckets"),
@@ -31,4 +33,8 @@ export const Invokers = {
     groupSize: number
   ): Promise<string> =>
     await invoke("groups_from_data", { studentsJson, groupSize })
+};
+
+export const Window = {
+  get: () => getCurrent()
 };

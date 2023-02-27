@@ -67,8 +67,10 @@ const FileContextProvider = ({ children }: any) => {
     async (file: File) => {
       const objName = file["name"].split(".")[0];
       setActiveFile(objName);
+
       const jsonString = await fileToString(file);
       await Invokers.uploadObject(jsonString, objName, false);
+
       const filenames = await Invokers.getFileList();
       setAvailableFiles(filenames);
     },
@@ -92,12 +94,14 @@ const FileContextProvider = ({ children }: any) => {
       setGroupsData({});
       const objName = text + ".json";
       setActiveFile(text);
+
       const res = await Invokers.buildGroups(objName, groupSize);
       const students = JSON.parse(res[0]);
       const groups = JSON.parse(res[1]);
 
       setStudentData(students);
       setGroupsData(groups);
+
       setView("students");
     },
     [setStudentData, setGroupsData, setView]
@@ -109,6 +113,7 @@ const FileContextProvider = ({ children }: any) => {
         setGroupsData({});
         const objName = text + ".json";
         setActiveFile(text);
+
         const res = await Invokers.buildGroups(objName, groupSize);
         const students = JSON.parse(res[0]);
         const groups = JSON.parse(res[1]);
@@ -117,6 +122,7 @@ const FileContextProvider = ({ children }: any) => {
         setGroupsData(groups);
       } else {
         const studentsJson = JSON.stringify(students);
+
         const groupsJson = await Invokers.groupsFromData(
           studentsJson,
           Number(groupSize)
@@ -126,6 +132,7 @@ const FileContextProvider = ({ children }: any) => {
 
         setGroupsData(parsed);
       }
+
       setView("groups");
     },
     [setGroupsData]
