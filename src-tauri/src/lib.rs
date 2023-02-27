@@ -375,6 +375,7 @@ pub mod grouper {
             if students.len() == 0 {
                 return groups_map.to_owned();
             };
+
             let rand_idx = Self::rand_idx(students.len());
             let mut current_group = current;
             let mut random_student: Student = students[rand_idx].clone();
@@ -432,7 +433,7 @@ pub mod grouper {
 
             // Iterate over threads,
             // return most optimal result
-            while handles.len() < 1000 {
+            while handles.len() < 100000 {
                 let students = students.clone();
 
                 let sd_state = Arc::clone(&sd_state);

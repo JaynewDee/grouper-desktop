@@ -10,6 +10,8 @@ use ffi::{
     groups_from_data, list_buckets, list_objects, read_json, upload_students_s3,
 };
 
+const _APP_NAME: &str = "GROUPER";
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
