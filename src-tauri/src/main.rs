@@ -25,6 +25,7 @@ fn main() {
             get_group_avgs,
             groups_from_data
         ])
+        .plugin(tauri_plugin_store::Builder::default().build())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

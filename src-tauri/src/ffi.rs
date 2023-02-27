@@ -73,7 +73,7 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
 
     let now = Instant::now();
 
-    let balanced = Utils::balancer_pool(students.clone(), group_size, test_sd)
+    let balanced = Utils::balancer_pool(students, group_size, test_sd)
         .lock()
         .unwrap()
         .to_owned();
@@ -95,7 +95,7 @@ pub async fn groups_from_data(students_json: String, group_size: u16) -> Result<
     let students = Utils::students_from_json(&students_json)
         .expect("Failed to parse students vector from json ... ");
 
-    let balanced = Utils::balancer_pool(students.clone(), group_size, test_sd)
+    let balanced = Utils::balancer_pool(students, group_size, test_sd)
         .lock()
         .unwrap()
         .to_owned();
