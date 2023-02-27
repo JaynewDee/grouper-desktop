@@ -6,6 +6,7 @@ header {
   align-items: flex-end;
   height: 4rem;
   border: 2px solid var(--alt);
+  box-shadow: 0 0 3px 3px rgba(20, 20, 20, 0.7);
   z-index: 3;
   width: 100%;
 }

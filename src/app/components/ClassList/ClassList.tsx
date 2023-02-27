@@ -76,7 +76,9 @@ export const Classes: FC<any> = memo(({ isData }) => {
               <Class groupSize={groupSize} opt={opt} id={idx} key={idx} />
             ))
           ) : (
-            <p>Upload a file to build your first classroom!</p>
+            <p style={{ maxWidth: "9rem", textAlign: "center" }}>
+              Upload a file to build your first classroom!
+            </p>
           )}
         </div>
       </div>

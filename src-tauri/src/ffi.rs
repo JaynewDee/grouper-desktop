@@ -6,6 +6,7 @@ use super::s3::S3Client;
 use src_tauri::{files::FileHandler, grouper::Utils, models::Student};
 
 use std::time::Instant;
+
 ///
 /////////////////////////////
 /// Foreign Function API
@@ -79,6 +80,7 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
         .to_owned();
 
     let elapsed = now.elapsed();
+
     println!("Elapsed: {:.2?}", elapsed);
 
     let groups_json =

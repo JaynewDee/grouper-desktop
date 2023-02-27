@@ -13,7 +13,7 @@ export const Group = (group: StudentGroup, idx: number, groupAvg: number) => {
   return (
     <div className="group-box" style={useAnimationDelay(idx + 1)} key={idx}>
       <h4>Group {idx + 1}</h4>
-      <h5>AVG: {groupAvg}</h5>
+      <h5 style={{ textAlign: "center" }}>{groupAvg}</h5>
       {group.map(({ name, avg }: AnyStudent) => Student({ name, avg }))}
     </div>
   );

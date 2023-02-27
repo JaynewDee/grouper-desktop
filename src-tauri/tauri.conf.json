@@ -11,6 +11,9 @@
 
   "tauri": {
     "allowlist": {
+      "window": {
+        "all": true
+      },
       "all": true,
       "shell": {
         "all": false,
@@ -72,6 +75,7 @@
       {
         "fullscreen": false,
         "height": 800,
+        "maxHeight": 1080,
         "resizable": true,
         "title": "Grouper",
         "width": 600,

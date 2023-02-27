@@ -7,7 +7,7 @@
 }
 
 .classes-box > button {
-  width: 66%;
+  width: 33%;
   margin: auto;
   font-size: 1rem;
   z-index: 1;
@@ -33,12 +33,15 @@
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-  overflow: auto;
-  width: 66%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 33%;
   height: 18vh;
   margin: auto;
   padding: 0.66rem 0;
   box-shadow: inset 0 0 3px 3px rgba(20, 20, 20, 0.7);
+  border-radius: 6px;
+
   transform: translateY(-0vh);
   transition: all 1s;
   transition-delay: 0.1s;

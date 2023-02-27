@@ -3,7 +3,7 @@
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: auto;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1rem 2rem;
   padding-bottom: 3rem;
 }
 
@@ -11,11 +11,10 @@
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-  border: 1px solid white;
   border-radius: 5px;
   background-color: black;
   padding-bottom: 3rem;
-  box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.639);
+  box-shadow: 0px 0px 18px 1px rgba(0, 0, 0, 0.639);
   font-size: 0;
   transform: scale(0);
   animation-duration: 0.66s;

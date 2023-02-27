@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Settings, Help, Unlocked, Locked } from "../Icons";
+import SettingsContent from "./SettingsContent";
 import "./Toolbar.css";
 const toolbarRoot = document.getElementById("toolbar-root") as HTMLElement;
 
 const Toolbar = ({ setLoggedIn, isLoggedIn }: any) => {
   const [toolbarState, setToolbarState] = useState(false);
-
   const [contentState, setContentState] = useState("settings");
 
   const viewLock = () => setContentState("lock");
@@ -18,13 +18,16 @@ const Toolbar = ({ setLoggedIn, isLoggedIn }: any) => {
 
   const ToolSwitch = (tool: string) => {
     type Tools = { [key: string]: any };
+
     const tools: Tools = {
       lock: "LOCK CONTENT",
-      settings: "SETTINGS CONTENT",
+      settings: <SettingsContent />,
       help: "HELP CONTENT"
     };
+
     return tools[tool] || <></>;
   };
+
   const Lock = isLoggedIn
     ? Unlocked({
         color: "white",
@@ -71,7 +74,6 @@ const Toolbar = ({ setLoggedIn, isLoggedIn }: any) => {
       </div>
       <div className="toolbar-content">{ToolSwitch(contentState)}</div>
     </div>,
-
     toolbarRoot
   );
 };

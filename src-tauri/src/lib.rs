@@ -432,7 +432,7 @@ pub mod grouper {
 
             // Iterate 5000 times with the help of threads,
             // and return most optimal result
-            while handles.len() < 5000 {
+            while handles.len() < 1000 {
                 let students = students.clone();
 
                 let sd_state = Arc::clone(&sd_state);
@@ -493,10 +493,6 @@ pub mod grouper {
             assert_eq!(sd, 6.2126956 as f32);
         }
 
-        /*         fn round_to_dec_count(value: f32, dec_count: i32) -> f32 {
-            let multi = 10.0_f32.powi(dec_count);
-            (value * multi).round() / multi
-        } */
         #[test]
         fn test_round_to_dec_count() {
             let case_one = 58.39295934_f32;
@@ -506,6 +502,10 @@ pub mod grouper {
             let case_two = 96.9999998_f32;
             let round_to_three = Utils::round_to_dec_count(case_two, 3);
             assert_eq!(round_to_three, 97.0_f32);
+
+            let case_three = 77.7373757375_f32;
+            let round_to_five = Utils::round_to_dec_count(case_three, 5);
+            assert_eq!(round_to_five, 77.73738);
         }
     }
 }
@@ -544,12 +544,14 @@ pub mod models {
             &mut self.0
         }
     }
+
     impl std::ops::Deref for StudentMap {
         type Target = Arc<Mutex<BTreeMap<u16, Vec<Student>>>>;
         fn deref(&self) -> &Self::Target {
             &self.0
         }
     }
+
     pub struct StudentBuilder {
         id: Option<u32>,
         name: Option<String>,

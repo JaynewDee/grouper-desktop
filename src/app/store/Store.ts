@@ -33,7 +33,7 @@ export const useSettingsStore = () => {
       const { getSettings, updateSettings } = StorageHandler();
       const current = await getSettings("settings");
       if (!current) {
-        await updateSettings("settings", {});
+        await updateSettings("settings", { window: "sm" });
       } else {
         setSettings(current);
       }

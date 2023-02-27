@@ -31,6 +31,10 @@ const App: FC = () => {
     return views[view] || <> No view here ... </>;
   };
 
+  type WindowSize = "sm" | "md" | "lg";
+
+  const handleWindowSize = (size: WindowSize) => {};
+
   useEffect(() => {
     adjustView("students");
   }, []);

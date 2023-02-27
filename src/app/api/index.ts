@@ -1,6 +1,11 @@
 import { tauri } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/tauri";
-import { getCurrent } from "@tauri-apps/api/window";
+import {
+  getCurrent,
+  appWindow,
+  PhysicalSize,
+  LogicalSize
+} from "@tauri-apps/api/window";
 
 export const Invokers = {
   showBuckets: async (): Promise<any> => await invoke("list_buckets"),
@@ -32,9 +37,13 @@ export const Invokers = {
     studentsJson: string,
     groupSize: number
   ): Promise<string> =>
-    await invoke("groups_from_data", { studentsJson, groupSize })
+    await invoke("groups_from_data", { studentsJson, groupSize }),
+  saveGroups: async (groupsJson: string): Promise<string> =>
+    await invoke("save_groups", { groupsJson })
 };
 
 export const Window = {
-  get: () => getCurrent()
+  app: () => appWindow,
+  get: () => getCurrent(),
+  setDims: (x: number, y: number) => getCurrent().setSize(new LogicalSize(x, y))
 };
