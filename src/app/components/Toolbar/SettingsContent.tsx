@@ -7,7 +7,7 @@ const SettingsContent = () => {
   const setLarge = () => Window.setDims(1920, 1080);
 
   return (
-    <div>
+    <div className="window-adjust-container">
       <h5>Window Size</h5>
       <button onClick={setSmall}>SMALL</button>
       <button onClick={setMedium}>MEDIUM</button>

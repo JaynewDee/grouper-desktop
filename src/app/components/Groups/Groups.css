@@ -2,8 +2,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: auto;
-  gap: 1rem;
-  padding: 1rem 2rem;
+  gap: 1.66rem;
+  padding: 1rem 2rem 3rem;
   padding-bottom: 3rem;
 }
 

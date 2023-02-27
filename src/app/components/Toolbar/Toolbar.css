@@ -42,3 +42,9 @@
   height: 100%;
   border-radius: 0 0 10px 10px;
 }
+
+.window-adjust-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}

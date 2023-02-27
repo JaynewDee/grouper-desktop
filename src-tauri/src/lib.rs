@@ -430,8 +430,8 @@ pub mod grouper {
             // Hold groups corresponding to current smallest sd
             let map_state = StudentMap(Arc::new(Mutex::new(BTreeMap::new())));
 
-            // Iterate 5000 times with the help of threads,
-            // and return most optimal result
+            // Iterate over threads,
+            // return most optimal result
             while handles.len() < 1000 {
                 let students = students.clone();
 

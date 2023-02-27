@@ -9,16 +9,11 @@ import { StudentView } from "./components/StudentView";
 import Navigation from "./components/Navigation/Navigation";
 import Toolbar from "./components/Toolbar/Toolbar";
 import { useSettingsStore } from "./store/Store";
-import { Window } from "./api";
 
 //
 
 const App: FC = () => {
   const { students, groups, view, adjustView } = useFileContextState();
-
-  const [settings] = useSettingsStore();
-  console.log(Window.get());
-  console.log(settings);
 
   const ViewSwitch = (view: string): JSX.Element => {
     type Views = { [key: string]: JSX.Element };
@@ -32,8 +27,6 @@ const App: FC = () => {
   };
 
   type WindowSize = "sm" | "md" | "lg";
-
-  const handleWindowSize = (size: WindowSize) => {};
 
   useEffect(() => {
     adjustView("students");

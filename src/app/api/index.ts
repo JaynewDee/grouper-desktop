@@ -1,11 +1,6 @@
 import { tauri } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/tauri";
-import {
-  getCurrent,
-  appWindow,
-  PhysicalSize,
-  LogicalSize
-} from "@tauri-apps/api/window";
+import { getCurrent, appWindow, LogicalSize } from "@tauri-apps/api/window";
 
 export const Invokers = {
   showBuckets: async (): Promise<any> => await invoke("list_buckets"),
