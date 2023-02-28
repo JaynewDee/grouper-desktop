@@ -462,10 +462,6 @@ pub mod grouper {
             map_state
             //
         }
-        // TODO
-        /*
-            UTILIZE THREAD POOL
-        */
 
         //
     }
