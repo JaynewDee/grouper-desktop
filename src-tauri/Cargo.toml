@@ -25,6 +25,7 @@ csv = "1.1"
 rand = "0.8.5"
 thiserror = "1.0"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
+mockall = "0.11.3"
 
 
 [features]

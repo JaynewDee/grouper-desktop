@@ -11,6 +11,7 @@ use ffi::{
 };
 
 const _APP_NAME: &str = "GROUPER";
+const _AUTHOR: &str = "Joshua Newell Diehl";
 
 fn main() {
     tauri::Builder::default()

@@ -425,7 +425,6 @@ pub mod grouper {
             _target_sd: f32,
         ) -> StudentMap {
             let mut handles = vec![];
-
             // Hold current smallest sd result
             let sd_state = Arc::new(Mutex::new(5_f32));
             // Hold groups corresponding to current smallest sd
@@ -608,6 +607,14 @@ pub mod models {
                 email: self.email.unwrap(),
             }
         }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn builder_returns_empty_template() {}
     }
 }
 
