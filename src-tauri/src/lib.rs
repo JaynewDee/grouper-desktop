@@ -614,7 +614,30 @@ pub mod models {
         use super::*;
 
         #[test]
-        fn builder_returns_empty_template() {}
+        fn builder_returns_empty_template() {
+            let default = StudentBuilder::default();
+            assert_eq!(default.id, None);
+            assert_eq!(default.name, None);
+            assert_eq!(default.avg, None);
+            assert_eq!(default.group, None);
+            assert_eq!(default.email, None);
+        }
+
+        #[test]
+        fn mock_instance() {
+            let student = StudentBuilder::new()
+                .id(1)
+                .name("Joshua Diehl".to_string())
+                .avg(99.53)
+                .group(0)
+                .email("jdiehl2236@gmail.com".to_string())
+                .build();
+            assert_eq!(student.id, 1);
+            assert_eq!(student.name, "Joshua Diehl");
+            assert_eq!(student.avg, 99.53);
+            assert_eq!(student.group, 0);
+            assert_eq!(student.email, "jdiehl2236@gmail.com");
+        }
     }
 }
 
