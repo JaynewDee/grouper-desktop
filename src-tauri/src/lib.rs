@@ -432,7 +432,7 @@ pub mod grouper {
 
             // Iterate over threads,
             // return most optimal result
-            while handles.len() < 100000 {
+            while handles.len() < 1000 {
                 let students = students.clone();
 
                 let sd_state = Arc::clone(&sd_state);
