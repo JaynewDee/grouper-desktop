@@ -19,7 +19,7 @@
 
 ---
 
-### **::: Preparing for development**
+### **::: Preparing for development :::**
 
 **1.** _Install && verify your rust toolchain:_
 
