@@ -29,7 +29,7 @@ export const useGroupAvgs = (input: GroupsObject) => {
       {}
     );
     setAvgs(avgsStruct);
-  }, []);
+  }, [avgs]);
 
   return [avgs, setAvgs];
 };

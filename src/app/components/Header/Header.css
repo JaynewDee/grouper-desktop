@@ -20,6 +20,7 @@ h1 {
 
 .title {
   pointer-events: none;
+  margin: auto 0 auto 0.33rem;
 }
 
 .unlocked,

@@ -8,7 +8,6 @@ import { useFileContextState } from "./context/FileContext";
 import { StudentView } from "./components/StudentView";
 import Navigation from "./components/Navigation/Navigation";
 import Toolbar from "./components/Toolbar/Toolbar";
-import { useSettingsStore } from "./store/Store";
 
 //
 
@@ -25,8 +24,6 @@ const App: FC = () => {
 
     return views[view] || <> No view here ... </>;
   };
-
-  type WindowSize = "sm" | "md" | "lg";
 
   useEffect(() => {
     adjustView("students");

@@ -12,7 +12,7 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
   const handleMouseEnter = (_: EvtUnused) => setHoverState(true);
   const handleMouseLeave = (_: EvtUnused) => setHoverState(false);
 
-  const { getData, deleteFile, sendForGroups } = useFileContextState();
+  const { getData, deleteFile } = useFileContextState();
 
   const handleFileSelection = (e: any) =>
     getData(e.target.textContent, Number(groupSize));
@@ -23,11 +23,11 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
     deleteFile(text || "");
   };
 
-  const handleBuildGroups = (_: EvtUnused) => {
-    const element = clickRef.current as HTMLInputElement;
-    const text = element.textContent;
-    sendForGroups(text, Number(groupSize));
-  };
+  // const handleBuildGroups = (_: EvtUnused) => {
+  //   const element = clickRef.current as HTMLInputElement;
+  //   const text = element.textContent;
+  //   sendForGroups(text, Number(groupSize));
+  // };
 
   return (
     <div
@@ -35,7 +35,11 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {hoverState && <div onClick={handleDeleteFile}>{DeleteClassBtn()}</div>}
+      {hoverState && (
+        <div className="delete-class-btn" onClick={handleDeleteFile}>
+          {DeleteClassBtn()}
+        </div>
+      )}
       <p
         key={id}
         ref={clickRef}
@@ -44,7 +48,7 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
       >
         {opt.split(".")[0]}
       </p>
-      {hoverState && <div onClick={handleBuildGroups}>{BuildGroupsBtn()}</div>}
+      {/* {hoverState && <div onClick={handleBuildGroups}>{BuildGroupsBtn()}</div>} */}
     </div>
   );
 };
@@ -56,8 +60,8 @@ export const Classes: FC<any> = memo(({ isData }) => {
   const { activeFile, files, sendForGroups } = useFileContextState();
 
   const handleSizeChange = (e: any) => {
-    setGroupSize(e.target.value);
     sendForGroups(activeFile, Number(e.target.value));
+    setGroupSize(e.target.value);
   };
 
   return (
