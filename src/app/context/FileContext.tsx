@@ -67,7 +67,7 @@ const FileContextProvider = ({ children }: any) => {
     async (file: File) => {
       const objName = file["name"].split(".")[0];
       setActiveFile(objName);
-
+      console.log(objName);
       const jsonString = await fileToString(file);
       await Invokers.uploadObject(jsonString, objName, false);
 

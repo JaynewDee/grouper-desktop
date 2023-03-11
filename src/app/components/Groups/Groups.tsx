@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { AnyStudent, GroupsObject, StudentGroup } from "../../Types";
+import { AnyStudent, StudentGroup } from "../../Types";
 import { useAnimationDelay } from "../Students/StudentCard";
 import "./Groups.css";
 

@@ -9,7 +9,9 @@ import { StudentView } from "./components/StudentView";
 import Navigation from "./components/Navigation/Navigation";
 import Toolbar from "./components/Toolbar/Toolbar";
 
-//
+// TODO
+// If no groups data, app must not attempt to display groups/groupAvgs/etc.
+// Preferably, app groups page displays only data that has been successfully processed.
 
 const App: FC = () => {
   const { students, groups, view } = useFileContextState();
