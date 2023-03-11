@@ -1,4 +1,4 @@
-import { FC, memo, useEffect } from "react";
+import { FC, memo } from "react";
 import "./App.css";
 import Header from "./components/Header/Header";
 import Upload from "./components/Upload/Upload";
@@ -12,7 +12,7 @@ import Toolbar from "./components/Toolbar/Toolbar";
 //
 
 const App: FC = () => {
-  const { students, groups, view, adjustView } = useFileContextState();
+  const { students, groups, view } = useFileContextState();
 
   const ViewSwitch = (view: string): JSX.Element => {
     type Views = { [key: string]: JSX.Element };
@@ -25,10 +25,6 @@ const App: FC = () => {
     return views[view] || <> No view here ... </>;
   };
 
-  useEffect(() => {
-    adjustView("students");
-  }, []);
-
   return (
     <>
       <Header />
@@ -40,8 +36,8 @@ const App: FC = () => {
       ) : (
         <div className="content-box">
           <p>
-            To begin building groups, upload some csv data, then select your
-            file from the list.
+            To begin building groups, upload some student data as a csv file,
+            then select your file from the list.
           </p>
         </div>
       )}

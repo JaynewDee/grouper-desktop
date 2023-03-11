@@ -43,25 +43,25 @@
 >
 > > > **Mac**:
 > >
-> > > > ```shell
-> > > > brew update
-> > > > brew install node
-> > > > node -v && npm -v
-> > > > ```
-> > > >
-> > > > _Restart your shell_
+> > > ```shell
+> > > brew update
+> > > brew install node
+> > > node -v && npm -v
+> > > ```
+> > >
+> > > _Restart your shell_
 >
 > ---
 >
 > ---
 >
 > > > **Windows**:
+> >
+> > > ```shell
+> > > curl -O https://nodejs.org/dist/v18.14.1/node-v18.14.1-x64.msi
+> > > ```
 > > >
-> > > > ```shell
-> > > > curl -O https://nodejs.org/dist/v18.14.1/node-v18.14.1-x64.msi
-> > > > ```
-> > > >
-> > > > Then run .msi installer
+> > > _Run the installed .msi installer_
 
 ---
 

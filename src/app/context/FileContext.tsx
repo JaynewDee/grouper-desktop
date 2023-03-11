@@ -31,7 +31,7 @@ const FileContextProvider = ({ children }: any) => {
   const [activeFile, setCurrentFile] = useState("");
   const [students, setStudentData] = useState<StudentType[]>([]);
   const [groups, setGroupsData] = useState<GroupsObject>({});
-  const [view, setView] = useState<string>("");
+  const [view, setView] = useState<string>("students");
 
   useEffect(() => {
     Invokers.getFileList()

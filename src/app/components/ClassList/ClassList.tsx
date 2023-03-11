@@ -48,7 +48,6 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
       >
         {opt.split(".")[0]}
       </p>
-      {/* {hoverState && <div onClick={handleBuildGroups}>{BuildGroupsBtn()}</div>} */}
     </div>
   );
 };
@@ -89,25 +88,7 @@ export const Classes: FC<any> = memo(({ isData }) => {
 
       <hr className="divider-md" />
 
-      {isData > 0 && (
-        <>
-          <div className="size-input-container">
-            <label htmlFor="groupSize">
-              <span className="group-size-label">GROUP SIZE</span>
-            </label>
-            <input
-              name="groupsize"
-              onMouseUp={handleSizeChange}
-              defaultValue={groupSize}
-              type="range"
-              min="2"
-              max="20"
-            ></input>
-            <span>{groupSize}</span>
-          </div>
-          <DisplayControls />
-        </>
-      )}
+      {isData > 0 && <DisplayControls />}
     </>
   );
 });
