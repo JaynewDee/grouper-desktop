@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Settings, Help, Unlocked, Locked } from "../Icons";
 import SettingsContent from "./SettingsContent";
 import "./Toolbar.css";
+
 const toolbarRoot = document.getElementById("toolbar-root") as HTMLElement;
 
 const Toolbar = ({ setLoggedIn, isLoggedIn }: any) => {
@@ -17,7 +18,8 @@ const Toolbar = ({ setLoggedIn, isLoggedIn }: any) => {
   const handleCollapse = () => setToolbarState(false);
 
   const ToolSwitch = (tool: string) => {
-    type Tools = { [key: string]: any };
+    type ToolValue = string | JSX.Element;
+    type Tools = { [key: string]: ToolValue };
 
     const tools: Tools = {
       lock: "LOCK CONTENT",

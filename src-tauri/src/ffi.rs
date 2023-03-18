@@ -86,6 +86,9 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
     let groups_json =
         Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... ");
 
+    // - Use groups_json to assign group field to each student
+    // - Send new students_json for single source of truth
+
     Ok(vec![students_json, groups_json])
 }
 
