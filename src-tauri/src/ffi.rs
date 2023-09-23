@@ -67,6 +67,7 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
     let students = handler
         .read_and_return_students(obj_name)
         .expect("Failed to parse students from json ... ");
+    println!("{:?}", students);
 
     let students_json = handler
         .read_and_return_json(obj_name)
@@ -78,6 +79,7 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
         .lock()
         .unwrap()
         .to_owned();
+    println!("{:?}", balanced);
 
     let elapsed = now.elapsed();
 
@@ -85,7 +87,6 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
 
     let groups_json =
         Utils::treemap_to_json(balanced).expect("Failed to parse json from groups map ... ");
-
     // - Use groups_json to assign group field to each student
     // - Send new students_json for single source of truth
 

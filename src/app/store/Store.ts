@@ -31,20 +31,23 @@ export const useSettingsStore = () => {
   useEffect(() => {
     const initialize = async () => {
       const { getSettings, updateSettings } = StorageHandler();
+
       const current = await getSettings("settings");
+
       if (!current) {
         await updateSettings("settings", { window: "sm" });
       } else {
         setSettings(current);
       }
     };
+
     initialize();
   }, []);
 
-  const updateSettings = useCallback(async ({ value }: { value: string }) => {
+  const update = useCallback(async ({ value }: { value: string }) => {
     const { updateSettings } = StorageHandler();
     return await updateSettings("settings", value);
   }, []);
 
-  return [settings, updateSettings];
+  return [settings, update];
 };

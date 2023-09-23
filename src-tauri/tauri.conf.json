@@ -81,7 +81,7 @@
         "width": 600,
         "maxWidth": 1920,
         "decorations": true,
-        "center": true
+        "center": false
       }
     ]
   }
