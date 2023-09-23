@@ -15,6 +15,7 @@ interface ContextState {
   activeFile: string;
   students: StudentType[];
   groups: GroupsObject;
+  groupAvgs: AvgsObject;
   view: string;
   setFiles: () => void;
   setActiveFile: (file: string) => void;
@@ -24,14 +25,35 @@ interface ContextState {
   getData: (text: string, groupSize: number) => void;
 }
 
+type AvgsObject = { [key: number]: number } | {};
+
 const FileContextState = createContext<ContextState | any>({});
 
 const FileContextProvider = ({ children }: any) => {
   const [files, setAvailableFiles] = useState<Files>([]);
   const [activeFile, setCurrentFile] = useState("");
+
   const [students, setStudentData] = useState<StudentType[]>([]);
   const [groups, setGroupsData] = useState<GroupsObject>({});
+
+
   const [view, setView] = useState<string>("students");
+
+  const groupAvgs: AvgsObject = useMemo(() => {
+    const avgsStruct = Object.values(groups).reduce(
+      (acc: AvgsObject, v: StudentType[], idx: number) => ({
+        ...acc,
+        [idx + 1]: (
+          v.reduce(
+            (acc: number, student: StudentType) => acc + student.avg,
+            0
+          ) / v.length
+        ).toFixed(2)
+      }),
+      {}
+    );
+    return avgsStruct
+  }, [groups])
 
   useEffect(() => {
     Invokers.getFileList()
@@ -144,6 +166,7 @@ const FileContextProvider = ({ children }: any) => {
       activeFile,
       students,
       groups,
+      groupAvgs,
       view,
       setFiles,
       setActiveFile,
@@ -158,6 +181,7 @@ const FileContextProvider = ({ children }: any) => {
       activeFile,
       students,
       groups,
+      groupAvgs,
       view,
       setFiles,
       setCurrentFile,
@@ -180,7 +204,7 @@ const useFileContextState = () => {
   const context = useContext(FileContextState);
 
   if (context === undefined) {
-    throw new Error("useUserContextState was used outside of its Provider");
+    throw new Error("useFileContextState was used outside of its Provider");
   }
 
   return context;

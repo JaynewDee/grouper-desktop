@@ -1,5 +1,5 @@
 import { FC, useState, memo, useRef } from "react";
-import { BuildGroupsBtn, DeleteClassBtn } from "../Icons";
+import { DeleteClassBtn } from "../Icons";
 import DisplayControls from "../DisplayControls/DisplayControls";
 import { useFileContextState } from "../../context/FileContext";
 import { ClassProps, EvtUnused } from "../../Types";
@@ -12,10 +12,15 @@ const Class: FC<ClassProps> = ({ opt, id, groupSize }) => {
   const handleMouseEnter = (_: EvtUnused) => setHoverState(true);
   const handleMouseLeave = (_: EvtUnused) => setHoverState(false);
 
-  const { getData, deleteFile } = useFileContextState();
+  const { view, getData, deleteFile, sendForGroups } = useFileContextState();
 
-  const handleFileSelection = (e: any) =>
-    getData(e.target.textContent, Number(groupSize));
+  const handleFileSelection = (e: any) => {
+    if (view === "groups") {
+      sendForGroups(opt.split(".")[0], Number(groupSize))
+    } else {
+      getData(e.target.textContent, Number(groupSize));
+    }
+  }
 
   const handleDeleteFile = (_: EvtUnused) => {
     const element = clickRef.current as HTMLInputElement;
@@ -56,20 +61,24 @@ export const Classes: FC<any> = memo(({ isData }) => {
   const [groupSize, setGroupSize] = useState(4);
   const [listState, setListState] = useState(false);
 
-  const { activeFile, files, sendForGroups } = useFileContextState();
+  const { files, } = useFileContextState();
 
   const handleSizeChange = (e: any) => {
-    sendForGroups(activeFile, Number(e.target.value));
     setGroupSize(e.target.value);
   };
 
+  const classContainerStyles = {
+    minWidth: "66vw",
+
+  }
   return (
     <>
       <div className="classes-box">
-        <button onClick={() => setListState((prev) => !prev)}>
+        <button style={classContainerStyles} onClick={() => setListState((prev) => !prev)}>
           CLASSROOMS
         </button>
         <div
+          style={classContainerStyles}
           className={
             listState ? "class-options-expanded" : "class-options-collapsed"
           }
@@ -85,9 +94,7 @@ export const Classes: FC<any> = memo(({ isData }) => {
           )}
         </div>
       </div>
-
       <hr className="divider-md" />
-
       {isData > 0 && <DisplayControls />}
     </>
   );

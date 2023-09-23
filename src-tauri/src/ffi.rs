@@ -28,7 +28,6 @@ pub async fn get_file_list() -> Result<Vec<String>, ()> {
 // RETURN JSON FROM FILE
 #[tauri::command]
 pub fn read_json(obj_name: &str) -> Result<String, ()> {
-    println!("{}", obj_name);
     let handler = FileHandler::new();
     let json = handler.read_and_return_json(obj_name).unwrap();
     Ok(json)
@@ -67,7 +66,6 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
     let students = handler
         .read_and_return_students(obj_name)
         .expect("Failed to parse students from json ... ");
-    println!("{:?}", students);
 
     let students_json = handler
         .read_and_return_json(obj_name)
@@ -75,11 +73,10 @@ pub async fn build_groups(obj_name: &str, group_size: u16) -> Result<Vec<String>
 
     let now = Instant::now();
 
-    let balanced = Utils::balancer_pool(students, group_size, test_sd)
+    let balanced = Utils::balancer_pool(students, group_size, 10000, test_sd)
         .lock()
         .unwrap()
         .to_owned();
-    println!("{:?}", balanced);
 
     let elapsed = now.elapsed();
 
@@ -101,7 +98,7 @@ pub async fn groups_from_data(students_json: String, group_size: u16) -> Result<
     let students = Utils::students_from_json(&students_json)
         .expect("Failed to parse students vector from json ... ");
 
-    let balanced = Utils::balancer_pool(students, group_size, test_sd)
+    let balanced = Utils::balancer_pool(students, group_size, 500, test_sd)
         .lock()
         .unwrap()
         .to_owned();

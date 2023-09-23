@@ -422,17 +422,17 @@ pub mod grouper {
         pub fn balancer_pool(
             students: Vec<Student>,
             group_size: u16,
+            pool_size: usize,
             _target_sd: f32,
         ) -> StudentMap {
             let mut handles = vec![];
             // Hold current smallest sd result
-            let sd_state = Arc::new(Mutex::new(5_f32));
+            let sd_state = Arc::new(Mutex::new(3_f32));
             // Hold groups corresponding to current smallest sd
             let map_state = StudentMap(Arc::new(Mutex::new(BTreeMap::new())));
-
             // Iterate over threads,
             // return most optimal result
-            while handles.len() < 100 {
+            while handles.len() < pool_size {
                 let students = students.clone();
 
                 let sd_state = Arc::clone(&sd_state);
@@ -455,15 +455,14 @@ pub mod grouper {
                 handles.push(handle);
             }
             //
+            // the usual drill
             for handle in handles {
                 handle.join().unwrap();
             }
             //
+            println!("{}", sd_state.lock().unwrap());
             map_state
-            //
         }
-
-        //
     }
 
     #[cfg(test)]
@@ -601,11 +600,11 @@ pub mod models {
 
         pub fn build(self) -> Student {
             Student {
-                id: self.id.unwrap(),
-                name: self.name.unwrap(),
-                avg: self.avg.unwrap(),
-                group: self.group.unwrap(),
-                email: self.email.unwrap(),
+                id: self.id.unwrap_or_default(),
+                name: self.name.unwrap_or_default(),
+                avg: self.avg.unwrap_or_default(),
+                group: self.group.unwrap_or_default(),
+                email: self.email.unwrap_or_default(),
             }
         }
     }
@@ -649,7 +648,6 @@ pub mod err_handle {
     use std::fmt;
 
     #[derive(Debug, thiserror::Error)]
-
     pub enum Error {
         #[error(transparent)]
         Io(#[from] std::io::Error),

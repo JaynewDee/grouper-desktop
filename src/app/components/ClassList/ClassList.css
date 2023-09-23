@@ -70,8 +70,9 @@
 .class-option {
   text-align: right;
   margin: 0.33rem auto 0;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: rgba(235, 235, 235, 0.8);
+  letter-spacing: 1px
 }
 
 .class-option:hover {

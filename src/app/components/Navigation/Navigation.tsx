@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Navigation.css";
 
 import { GroupIcon, NavArrow, Placeholder, StudentIcon } from "../Icons";
